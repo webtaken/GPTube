@@ -1,3 +1,5 @@
+import { AiFillFacebook, AiFillInstagram } from "react-icons/ai";
+
 const Footer: React.FC = () => {
   return (
     <footer className="bg-[#F8F8F8] mt-auto">
@@ -5,8 +7,12 @@ const Footer: React.FC = () => {
         <p className="text-[#006FFF] text-4xl float-left">Connect</p>
       </div>
       <div className="grid grid-cols-5 m-8">
-        <div>Instagram</div>
-        <div>Facebook</div>
+        <div className="flex items-center space-x-1">
+          <AiFillFacebook /> <p>Facebook</p>
+        </div>
+        <div className="flex items-center space-x-1">
+          <AiFillInstagram /> <p>Instagram</p>
+        </div>
       </div>
     </footer>
   );

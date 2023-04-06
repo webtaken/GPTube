@@ -10,7 +10,7 @@ const Layout: React.FunctionComponent<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main>{children}</main>
+      <main className="my-auto">{children}</main>
       <Footer />
     </div>
   );

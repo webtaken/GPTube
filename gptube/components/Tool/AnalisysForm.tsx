@@ -1,16 +1,45 @@
+import { useState } from "react";
 import { FormEvent } from "react";
 import { useRouter } from "next/router";
+import { extractYTVideoID } from "@/utils";
+import { toast, Toaster } from "react-hot-toast";
 
 const AnalisysForm: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [videoURL, setVideoURL] = useState<string>("");
   const router = useRouter();
 
-  const submitVideoHandler = (e: FormEvent) => {
+  const submitVideoHandler = async (e: FormEvent) => {
     e.preventDefault();
-    router.push("/confirmation");
+    const videoID = extractYTVideoID(videoURL);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ video_id: videoID, email: email }),
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+        throw new Error("Failed to send data.");
+      }
+      router.push("/confirmation");
+    } catch (error) {
+      toast.error(String(error));
+    }
   };
 
   return (
     <form onSubmit={submitVideoHandler}>
+      <div>
+        <Toaster />
+      </div>
       <div className="mb-6">
         <label
           htmlFor="yt-url"
@@ -21,9 +50,12 @@ const AnalisysForm: React.FC = () => {
         <input
           type="text"
           id="yt-url"
+          name="videoURL"
           placeholder="https://youtu.be/yBHA62SSJ0w"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           required
+          value={videoURL}
+          onChange={(e) => setVideoURL(e.target.value)}
         />
       </div>
       <div className="mb-6">
@@ -36,9 +68,12 @@ const AnalisysForm: React.FC = () => {
         <input
           type="email"
           id="email"
+          name="email"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="somebody@email.com"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div className="flex justify-center">

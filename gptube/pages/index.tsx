@@ -3,8 +3,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="grid grid-cols-2 gap-8 m-6">
-      <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-6">
+      <div className="col-span-1 space-y-4">
         <p className="text-4xl text-[#006FFF] text-center">
           Check what people think about your content
         </p>
@@ -22,7 +22,9 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <div className="bg-black opacity-25 rounded-lg"></div>
+      <div className="col-span-1 bg-black opacity-25 rounded-lg">
+        <p>Video</p>
+      </div>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { google } from "googleapis";
 const SHEET_ID = `${process.env.SPREADSHEET_ID}`;
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 const SERVICE_ACCOUNT_EMAIL = `${process.env.GOOGLE_SHEETS_CLIENT_EMAIL}`;
-const SERVICE_ACCOUNT_PRIVATE_KEY = `${process.env.GOOGLE_SHEETS_PRIVATE_KEY}`;
+const SERVICE_ACCOUNT_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----${process.env.GOOGLE_SHEETS_PRIVATE_KEY}-----END PRIVATE KEY-----`;
 
 type sheetForm = {
   email: string;

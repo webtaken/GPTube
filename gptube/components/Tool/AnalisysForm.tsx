@@ -3,7 +3,6 @@ import { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { extractYTVideoID } from "@/utils";
 import { toast, Toaster } from "react-hot-toast";
-// import { appendToSheet } from "@/utils/sheets";
 
 const AnalisysForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -14,26 +13,24 @@ const AnalisysForm: React.FC = () => {
     e.preventDefault();
     const videoID = extractYTVideoID(videoURL);
     try {
-      let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ video_id: videoID, email: email }),
-        }
-      );
+      // let response = await fetch(
+      //   `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({ video_id: videoID, email: email }),
+      //   }
+      // );
 
-      if (!response.ok) {
-        const data = await response.json();
-        console.log(data);
-        throw new Error("Failed to send data.");
-      }
+      // if (!response.ok) {
+      //   const data = await response.json();
+      //   console.log(data);
+      //   throw new Error("Failed to send data.");
+      // }
 
-      // await appendToSheet(email);
-
-      response = await fetch("/api/sheets", {
+      let response = await fetch("/api/sheets", {
         method: "POST",
         headers: {
           Accept: "application/json",

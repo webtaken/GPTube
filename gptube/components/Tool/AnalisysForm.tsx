@@ -13,34 +13,22 @@ const AnalisysForm: React.FC = () => {
     e.preventDefault();
     const videoID = extractYTVideoID(videoURL);
     try {
-      // let response = await fetch(
-      //   `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ video_id: videoID, email: email }),
-      //   }
-      // );
+      let response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ video_id: videoID, email: email }),
+        }
+      );
 
-      // if (!response.ok) {
-      //   const data = await response.json();
-      //   console.log(data);
-      //   throw new Error("Failed to send data.");
-      // }
-
-      let response = await fetch("/api/sheets", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-        }),
-      });
-
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+        throw new Error("Failed to send data.");
+      }
       router.push("/confirmation");
     } catch (error) {
       toast.error(String(error));

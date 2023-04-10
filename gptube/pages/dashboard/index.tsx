@@ -3,7 +3,7 @@ import AnalisysForm from "@/components/Tool/AnalisysForm";
 const Dashboard: React.FC = () => {
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-center pt-8">
         <h2 className="text-xl text-[#006FFF]">
           Let&#900;s check what your subscriber think about your video
         </h2>

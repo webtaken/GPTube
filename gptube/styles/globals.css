@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+section {
+    height: 85vh;
+    padding: 120px 30px;
+}
+
+header {
+    background: rgb(255, 255, 255);
+    background: linear-gradient(44deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 56%, rgba(91, 166, 251, 1) 100%);
+}
+
+.link {
+    padding: 10px 20px;
+    color: #006FFF;
+    transition: all 0.3s ease-in-out;
+}
+
+.link:hover {
+    color: #ffffff;
+    background-color: #006FFF;
+}
+
+.home {
+    background: rgb(255, 255, 255);
+    background: linear-gradient(13deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 86%, rgba(112, 178, 254, 1) 100%);
+}
+
+.card {
+    margin: 14px;
+    padding: 10px 16px;
+    height: auto;
+    width: 220px;
+    background-color: #f7f7f7;
+    border-radius: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+    border: 1px solid #f7f7f7;
+}
+
+.card:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #202020;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+}
+
+img {
+    margin: auto;
+    margin: 20px auto;
+}
+
+body {
+    font-family: 'Jost', sans-serif;
+}

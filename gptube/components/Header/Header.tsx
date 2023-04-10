@@ -1,9 +1,26 @@
 import Link from "next/link";
 
-const Header:React.FC = () => {
-return <div className="flow-root p-6">
-    <Link href="/" className="float-left text-5xl text-[#006FFF]">GPTube</Link>
-</div>;
+const Header: React.FC = () => {
+  return (
+    <header className="flex justify-between h-24">
+      <div className="flex my-auto mx-8">
+        <Link href="/" className="text-4xl mx-10 text-[#3081FD] rounded-lg">
+          GPTube
+        </Link>
+      </div>
+      <div className="flex order-last gap-14 mx-12 my-auto">
+        <Link href="/#about" className="link text-lg rounded-lg">
+          ABOUT
+        </Link>
+        <Link href="/#service" className="link text-lg rounded-lg">
+          SERVICE
+        </Link>
+        <Link href="/#register" className="link text-lg rounded-lg">
+          SIGN UP
+        </Link>
+      </div>
+    </header>
+  );
 };
 
 export default Header;

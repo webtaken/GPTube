@@ -3,6 +3,7 @@ import { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { extractYTVideoID } from "@/utils";
 import { toast, Toaster } from "react-hot-toast";
+import { Button } from "antd";
 
 const AnalysisForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -77,12 +78,14 @@ const AnalysisForm: React.FC = () => {
         />
       </div>
       <div className="flex justify-center">
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-sm text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        <Button
+          type="primary"
+          htmlType="submit"
+          size="large"
+          className="text-white bg-blue-500 font-medium text-sm"
         >
-          Start
-        </button>
+          Analyze video
+        </Button>
       </div>
     </form>
   );

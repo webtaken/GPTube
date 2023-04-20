@@ -1,4 +1,4 @@
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { toast, Toaster } from "react-hot-toast";
 

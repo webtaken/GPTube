@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { extractYTVideoID } from "@/utils";
 import { toast, Toaster } from "react-hot-toast";
 
-const AnalisysForm: React.FC = () => {
+const AnalysisForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [videoURL, setVideoURL] = useState<string>("");
   const router = useRouter();
@@ -88,4 +88,4 @@ const AnalisysForm: React.FC = () => {
   );
 };
 
-export default AnalisysForm;
+export default AnalysisForm;

@@ -1,4 +1,5 @@
-import AnalisysForm from "@/components/Tool/AnalisysForm";
+import AnalysisForm from "@/components/Tool/AnalysisForm";
+import PreAnalysisResult from "@/components/Tool/PreAnalysisResult";
 
 const Dashboard: React.FC = () => {
   return (
@@ -9,7 +10,10 @@ const Dashboard: React.FC = () => {
         </h2>
       </div>
       <div className="mx-60 my-16">
-        <AnalisysForm />
+        <AnalysisForm />
+      </div>
+      <div className="bg-slate-50">
+        <PreAnalysisResult />
       </div>
     </>
   );

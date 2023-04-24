@@ -4,7 +4,7 @@ const Header: React.FC = () => {
   return (
     <header className="flex justify-between h-24">
       <div className="flex my-auto mx-8">
-        <Link href="/" className="text-4xl mx-10 text-[#3081FD] rounded-lg">
+        <Link href="/" className="text-4xl font-semibold mx-10 text-blue-600 rounded-lg">
           GPTube
         </Link>
       </div>

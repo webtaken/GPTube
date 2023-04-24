@@ -1,28 +1,35 @@
-import { AiFillGoogleCircle, AiFillInstagram } from "react-icons/ai";
+import { Button } from "antd";
+import { GithubOutlined, LinkedinOutlined, GoogleOutlined } from "@ant-design/icons";
+
+const iconSize = {
+    fontSize: "30px",
+    backgroundColor: "#6C6C6C",
+    padding: "10px",
+    borderRadius: "100%",
+    color: "white"
+};
 
 const Footer: React.FC = () => {
-  return (
-    <footer className="bg-[#F8F8F8] mt-auto">
-      <div className="flow-root ml-6 mx-8 mt-2">
-        <p className="text-[#006FFF] text-4xl float-left">Connect with us</p>
-      </div>
-      <div className="grid grid-cols-5 m-6">
-        <div className="flex items-center space-x-1">
-          <a
-            href="mailto:gptube.team@gmail.com?subject=Hi, I want to know something"
-            className="flex items-center gap-1"
-          >
-            <AiFillGoogleCircle /> <p>G-Mail</p>
-          </a>
-        </div>
-      </div>
-      <div className="my-2">
-        <p className="text-center">
-          GPTube © 2023 - All right reserved
-        </p>
-      </div>
-    </footer>
-  );
+    return (
+        <footer className="bg-black-full my-6 mx-14">
+            <Button className="text-white">
+                CONTACT US
+            </Button>
+            <div className="flex gap-4 mb-4 justify-center">
+                <a
+                    href="mailto:gptube.team@gmail.com?subject=Hi, I want to know something"
+                    className="flex items-center gap-1"
+                >
+                    <GoogleOutlined style={iconSize} />
+                </a>
+                <a href=""><GithubOutlined style={iconSize} className="" /></a>
+                <a href=""><LinkedinOutlined style={iconSize} /></a>
+            </div>
+            <p className="text-center text-white mt-2">
+                Copyright © 2023 GPTube, 2023
+            </p>
+        </footer>
+    );
 };
 
 export default Footer;

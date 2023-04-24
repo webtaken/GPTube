@@ -82,7 +82,7 @@ const AnalysisForm: React.FC = () => {
           type="primary"
           htmlType="submit"
           size="large"
-          className="text-white bg-blue-500 font-medium text-sm"
+          className="text-white bg-blue-700 font-medium text-sm"
         >
           Analyze video
         </Button>

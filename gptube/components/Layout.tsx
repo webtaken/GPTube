@@ -8,7 +8,7 @@ interface LayoutProps {
 
 const Layout: React.FunctionComponent<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-black-full">
       <Header />
       <main className="my-auto">{children}</main>
       <Footer />

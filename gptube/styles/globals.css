@@ -11,25 +11,10 @@ section {
     padding: 120px 30px;
 }
 
-header {
-    background: rgb(255, 255, 255);
-    background: linear-gradient(44deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 56%, rgba(91, 166, 251, 1) 100%);
-}
-
 .link {
     padding: 10px 20px;
-    color: #006FFF;
+    color: #F2F2F2;
     transition: all 0.3s ease-in-out;
-}
-
-.link:hover {
-    color: #ffffff;
-    background-color: #006FFF;
-}
-
-.home {
-    background: rgb(255, 255, 255);
-    background: linear-gradient(13deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 86%, rgba(112, 178, 254, 1) 100%);
 }
 
 .card {

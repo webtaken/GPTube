@@ -2,15 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-a {
-    font-family: 'Josefin Sans', sans-serif;
-}
-
-section {
-    height: 85vh;
-    padding: 120px 30px;
-}
-
 .link {
     padding: 10px 20px;
     color: #F2F2F2;
@@ -33,7 +24,7 @@ section {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.card-title {
+/* .card-title {
     font-family: 'Josefin Sans', sans-serif;
     font-size: 1.5rem;
     font-weight: 600;
@@ -41,13 +32,4 @@ section {
     margin: 20px auto;
     display: flex;
     justify-content: center;
-}
-
-img {
-    margin: auto;
-    margin: 20px auto;
-}
-
-body {
-    font-family: 'Jost', sans-serif;
-}
+} */

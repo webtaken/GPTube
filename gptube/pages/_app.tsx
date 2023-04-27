@@ -1,10 +1,15 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Layout from "@/components/Layout";
+import { Open_Sans } from "next/font/google";
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
+    <Layout className={openSans.className}>
       <Component {...pageProps} />
     </Layout>
   );

@@ -11,7 +11,7 @@ const iconSize = {
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-black-full my-6 mx-14">
+        <footer className="bg-black-full mt-auto mb-6 mx-10">
             <Button className="text-white">
                 CONTACT US
             </Button>
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
                 >
                     <GoogleOutlined style={iconSize} />
                 </a>
-                <a href=""><GithubOutlined style={iconSize} className="" /></a>
+                <a href=""><GithubOutlined style={iconSize} /></a>
                 <a href=""><LinkedinOutlined style={iconSize} /></a>
             </div>
             <p className="text-center text-white mt-2">

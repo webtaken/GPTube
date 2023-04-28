@@ -1,7 +1,8 @@
+import { MyPage } from "@/components/Common/Types";
 import AnalysisForm from "@/components/Tool/AnalysisForm";
 import PreAnalysisResult from "@/components/Tool/PreAnalysisResult";
 
-const Dashboard: React.FC = () => {
+const Dashboard: MyPage = () => {
   return (
     <>
       <div className="flex justify-center pt-8">
@@ -20,3 +21,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+Dashboard.Layout = "Admin";

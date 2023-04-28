@@ -1,6 +1,7 @@
+import { MyPage } from "@/components/Common/Types";
 import Link from "next/link";
 
-const Confirmation = () => {
+const Confirmation: MyPage = () => {
   return (
     <div className="space-y-6 mt-24">
       <div className="flex justify-center">
@@ -24,3 +25,4 @@ const Confirmation = () => {
 };
 
 export default Confirmation;
+Confirmation.Layout = "Admin";

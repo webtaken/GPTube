@@ -1,5 +1,6 @@
-import ResultsBanner from "@/components/Tool/Youtube/ResultsBanner";
 import { useRouter } from "next/router";
+import ResultsBanner from "@/components/Tool/Youtube/ResultsBanner";
+import { MyPage } from "@/components/Common/Types";
 import { AiFillYoutube } from "react-icons/ai";
 
 enum Votes {
@@ -10,7 +11,7 @@ enum Votes {
   votes5,
 }
 
-const VideoResults: React.FC = () => {
+const VideoResults: MyPage = () => {
   const router = useRouter();
   let {
     videoID,
@@ -57,3 +58,4 @@ const VideoResults: React.FC = () => {
 };
 
 export default VideoResults;
+VideoResults.Layout = "Admin";

@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Service from "@/components/Service/Service";
 import Link from "next/link";
+import { MyPage } from "@/components/Common/Types";
+import { openSans } from "@/components/Common/Fonts";
 
 import HappyNews from "@/assets/icons/happy_news.svg";
 
-export default function Home() {
+const Home: MyPage = () => {
   return (
-    <div className="gap-2 my-20">
+    <div className={`gap-2 my-20 ${openSans.className}`}>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 opacity-1">
         <div className="grid grid-cols-1 gap-8 my-auto mx-16">
           <p className="text-lg md:text-4xl text-typo text-center">
@@ -25,7 +27,7 @@ export default function Home() {
           <div className="flex justify-center">
             <Link
               href="/dashboard"
-              className="px-4 py-2 text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-primary-low rounded-lg"
+              className="px-4 py-2 text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg"
             >
               Try GPTube
             </Link>
@@ -40,4 +42,7 @@ export default function Home() {
       <Service />
     </div>
   );
-}
+};
+
+export default Home;
+Home.Layout = "Admin";

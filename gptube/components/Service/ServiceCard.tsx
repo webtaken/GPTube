@@ -1,11 +1,8 @@
 import Image from "next/image";
-import { Open_Sans } from "next/font/google";
+import { openSans } from "../Common/Fonts";
 import { Layout } from "antd";
 
 const { Content } = Layout;
-const openSans = Open_Sans({
-  subsets: ["latin"],
-});
 
 interface ServiceCardProps {
   left?: boolean;
@@ -27,7 +24,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ left, content, image }) => {
         <div className="grid lg:gap-6 gap-2 mx-4">
           <div className="flex gap-2">
             <p
-              className={`${openSans.className} text-typo text-lg text-justify font-medium mx-5`}
+              className={`${openSans.className} text-typo text-lg text-justify mx-5`}
             >
               {content}
             </p>
@@ -41,7 +38,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ left, content, image }) => {
       <div className="grid lg:gap-6 gap-2 mx-4">
         <div className="flex gap-2">
           <p
-            className={`${openSans.className} text-typo text-lg text-justify font-medium mx-5`}
+            className={`${openSans.className} text-typo text-lg text-justify mx-5`}
           >
             {content}
           </p>

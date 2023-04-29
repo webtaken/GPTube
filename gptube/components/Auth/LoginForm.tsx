@@ -6,7 +6,7 @@ import { openSans } from "@/components/Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
 
 const LoginForm: React.FC = () => {
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const router = useRouter();
 
   const onFinishHandler = async ({
@@ -18,7 +18,7 @@ const LoginForm: React.FC = () => {
   }) => {
     try {
       await login(email, password);
-      router.push("/dashboard");
+      router.push("/youtube");
     } catch (error) {
       toast.error(String(error));
     }

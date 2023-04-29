@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import ResultsBanner from "@/components/Tool/Youtube/ResultsBanner";
+import ResultsBanner from "@/components/Tools/Youtube/ResultsBanner";
 import { MyPage } from "@/components/Common/Types";
 import { AiFillYoutube } from "react-icons/ai";
 

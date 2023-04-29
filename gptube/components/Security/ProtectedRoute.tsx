@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, localStoreAuthVar } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -6,8 +6,11 @@ const ProtectedRoute: React.FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    const isAuthenticated = localStorage.getItem(localStoreAuthVar);
+    if (!user && !isAuthenticated) {
       router.push("/login");
+    } else {
+      localStorage.setItem(localStoreAuthVar, "true");
     }
   }, [router, user]);
   return <>{user ? children : null}</>;

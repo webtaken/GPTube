@@ -26,7 +26,7 @@ const Home: MyPage = () => {
           </p>
           <div className="flex justify-center">
             <Link
-              href="/dashboard"
+              href="/youtube"
               className="px-4 py-2 text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg"
             >
               Try GPTube

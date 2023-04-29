@@ -29,7 +29,7 @@ const SignUpForm: React.FC = () => {
     }
     try {
       await signup(email, password);
-      router.push("/dashboard");
+      router.push("/youtube");
     } catch (error) {
       toast.error(String(error));
     }

@@ -29,6 +29,8 @@ type AuthContextProps = {
 
 const AuthContext = createContext({} as AuthContextProps);
 
+export const localStoreAuthVar = "GPTubeAuthenticated";
+
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthContextProvider = ({

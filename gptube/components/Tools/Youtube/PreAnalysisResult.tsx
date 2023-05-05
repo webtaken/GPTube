@@ -58,7 +58,6 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
       }
 
       const data = await response.json();
-      console.log(data);
       if (!response.ok) {
         throw new Error(data?.error || "Failed to send data.");
       }
@@ -67,7 +66,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
       router.push(`/youtube/${data.results_id}`);
     } catch (error) {
       toast.dismiss(toastLoading);
-      toast.error(String(error));
+      toast.error(`${String(error)}. Try again later.`);
     }
   };
 

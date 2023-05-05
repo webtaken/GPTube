@@ -50,7 +50,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
           body: JSON.stringify(bodyAnalysis),
         }
       );
-      
+
       if (response.ok && requiresEmail) {
         toast.success("Results were sent");
         toast.dismiss(toastLoading);
@@ -58,13 +58,13 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
       }
 
       const data = await response.json();
+      console.log(data);
       if (!response.ok) {
         throw new Error(data?.error || "Failed to send data.");
       }
 
       toast.dismiss(toastLoading);
       router.push(`/youtube/${data.results_id}`);
-
     } catch (error) {
       toast.dismiss(toastLoading);
       toast.error(String(error));

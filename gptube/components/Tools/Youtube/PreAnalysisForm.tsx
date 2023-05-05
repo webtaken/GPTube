@@ -46,7 +46,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       setRequiresEmail(data.requires_email ?? false);
       setNumberOfComments(data.number_of_comments);
     } catch (error) {
-      toast.error(String(error));
+      toast.error(`${String(error)}. Please try again later.`);
     }
   };
 

@@ -5,6 +5,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { Form, Input } from "antd";
 
 interface PreAnalysisFormProps {
+  setVideoID: Dispatch<SetStateAction<string>>;
   setVideoTitle: Dispatch<SetStateAction<string>>;
   setImageURL: Dispatch<SetStateAction<string>>;
   setTags: Dispatch<SetStateAction<string[]>>;
@@ -13,6 +14,7 @@ interface PreAnalysisFormProps {
 }
 
 const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
+  setVideoID,
   setVideoTitle,
   setImageURL,
   setTags,
@@ -23,7 +25,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
     const videoID = extractYTVideoID(url);
     try {
       let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT/pre-analysis`,
         {
           method: "POST",
           headers: {
@@ -37,7 +39,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       if (!response.ok) {
         throw new Error(data?.error || "Failed to send data.");
       }
-      console.log(data);
+      setVideoID(data.video_id);
       setVideoTitle(data.snippet.title);
       setImageURL(data.snippet.thumbnails.standard.url);
       setTags(data.snippet.tags);
@@ -76,7 +78,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 10, span: 4 }}>
-        <button className="px-4 mx-auto text-sm md:text-base w-full h-10 bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg">
+        <button className="text-sm md:text-base w-full h-10 bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg">
           <span className={`${openSans.className}`}>Start</span>
         </button>
       </Form.Item>

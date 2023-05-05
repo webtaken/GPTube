@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { Layout, Tag, Progress, Image } from "antd";
+import { Layout, Tag, Image, Input } from "antd";
+
 import { openSans } from "@/components/Common/Fonts";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import { useAuth } from "@/context/AuthContext";
 
 const { Content } = Layout;
 
 const TIME_OUT = 100;
 
 interface PreAnalysisResultProps {
+  videoID: string;
   videoTitle: string;
   tags: string[];
   numberOfComments: number;
@@ -15,13 +20,56 @@ interface PreAnalysisResultProps {
 }
 
 const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
+  videoID,
   videoTitle,
   tags,
   numberOfComments,
   imageURL,
   requiresEmail,
 }) => {
+  const { user } = useAuth();
   const [time, setTime] = useState<number>(10);
+  const [email, setEmail] = useState(requiresEmail ? user?.email ?? "" : "");
+  const router = useRouter();
+
+  const startAnalysisHandler = async () => {
+    const bodyAnalysis = {
+      video_id: videoID,
+      video_title: videoTitle,
+      email: email,
+    };
+    const toastLoading = toast.loading("Analyzing...");
+    try {
+      let response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT/analysis`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyAnalysis),
+        }
+      );
+      
+      if (response.ok && requiresEmail) {
+        toast.success("Results were sent");
+        toast.dismiss(toastLoading);
+        return;
+      }
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to send data.");
+      }
+
+      toast.dismiss(toastLoading);
+      router.push(`/youtube/${data.results_id}`);
+
+    } catch (error) {
+      toast.dismiss(toastLoading);
+      toast.error(String(error));
+    }
+  };
 
   const progress = setTimeout(() => {
     if (time > 0) {
@@ -32,8 +80,10 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
   }, 1000);
 
   return (
-    <div className="grid gap-6 lg:mx-48 sm:mx-10 lg:p-10 px-4">
-      <Content className="bg-black-medium grid w-full mx-auto grid-cols-1 rounded-2xl shadow-lg px-6 py-4 items-center">
+    <div
+      className={`${openSans.className} grid gap-6 lg:mx-48 sm:mx-10 px-4 mb-6`}
+    >
+      {/* <Content className="bg-black-medium grid w-full mx-auto grid-cols-1 rounded-2xl shadow-lg px-6 py-4 items-center">
         <div className="flex justify-between">
           {time === 0 ? (
             <p className={`${openSans.className} flex items-end text-2xl font-medium text-typo my-1`}>
@@ -63,8 +113,8 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
           status={time === 0 ? "success" : "active"}
           showInfo={false}
         />
-      </Content>
-      <Content className="bg-black-medium grid mx-auto w-full lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 rounded-2xl shadow-lg md:p-6 sm:py-4 px-4 py-2 items-center">
+      </Content> */}
+      <Content className="grid grid-cols-1 md:grid-cols-2 bg-black-medium mx-auto w-full rounded-2xl shadow-lg md:p-6 sm:py-4 px-4 py-2 items-center">
         <div className="grid lg:gap-6 gap-2 mx-4">
           <div className="flex gap-2">
             <p className="text-typo text-2xl font-medium">{videoTitle}</p>
@@ -91,9 +141,45 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
             })}
           </div>
         </div>
-        <div className="grid justify-center w-fit mx-auto">
+        <div className="grid justify-center mx-auto">
           <Image className="rounded-xl" src={imageURL} alt="Video image" />
         </div>
+        {requiresEmail ? (
+          <>
+            <div className="col-span-2 mt-4 mx-4">
+              <p className={`text-typo mb-2 ${openSans.className}`}>
+                We'll sent your results later
+              </p>
+              <div className="flex items-center space-x-4">
+                <Input
+                  className="focus:border-none hover:border-none h-8"
+                  defaultValue={user?.email ?? ""}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const { value } = e.target;
+                    setEmail(value);
+                  }}
+                />
+                <button
+                  onClick={startAnalysisHandler}
+                  className="mx-auto text-sm md:text-base w-48 h-8 bg-primary border-2 border-primary font-medium text-typo hover:text-primary hover:bg-white rounded-lg"
+                >
+                  <span className={`${openSans.className}`}>
+                    Start Analysis
+                  </span>{" "}
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="col-span-2 mt-4 mx-auto">
+            <button
+              onClick={startAnalysisHandler}
+              className="mx-auto text-sm md:text-base w-60 h-8 bg-primary border-2 border-primary font-medium text-typo hover:text-primary hover:bg-white rounded-lg"
+            >
+              <span className={`${openSans.className}`}>Start Analysis</span>{" "}
+            </button>
+          </div>
+        )}
       </Content>
     </div>
   );

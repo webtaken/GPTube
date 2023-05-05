@@ -3,6 +3,7 @@ import PreAnalysisForm from "./PreAnalysisForm";
 import PreAnalysisResult from "./PreAnalysisResult";
 
 const PreAnalysis: React.FC = () => {
+  const [videoID, setVideoID] = useState("");
   const [videoTitle, setVideoTitle] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -11,8 +12,9 @@ const PreAnalysis: React.FC = () => {
 
   return (
     <>
-      <div className="mx-60 my-16">
+      <div className="mx-60 mt-10">
         <PreAnalysisForm
+          setVideoID={setVideoID}
           setVideoTitle={setVideoTitle}
           setImageURL={setImageURL}
           setTags={setTags}
@@ -23,6 +25,7 @@ const PreAnalysis: React.FC = () => {
       {videoTitle !== "" && (
         <div className="w-full">
           <PreAnalysisResult
+            videoID={videoID}
             videoTitle={videoTitle}
             imageURL={imageURL}
             tags={tags}

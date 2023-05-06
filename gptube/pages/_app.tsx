@@ -1,11 +1,26 @@
 import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import Layout from "@/components/Layout";
+import { MyAppProps } from "@/components/Common/Types";
+import { Layouts } from "@/components/Layouts/Layouts";
+import { AuthContextProvider } from "@/context/AuthContext";
+import { useRouter } from "next/router";
+import ProtectedRoute from "@/components/Security/ProtectedRoute";
 
-export default function App({ Component, pageProps }: AppProps) {
+const noAuthRequired = ["/", "/login", "/sign-up"];
+
+export default function App({ Component, pageProps }: MyAppProps) {
+  const router = useRouter();
+  const Layout = Layouts[Component.Layout] ?? ((page) => page);
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <AuthContextProvider>
+      <Layout>
+        {noAuthRequired.includes(router.pathname) ? (
+          <Component {...pageProps} />
+        ) : (
+          <ProtectedRoute>
+            <Component {...pageProps} />
+          </ProtectedRoute>
+        )}
+      </Layout>
+    </AuthContextProvider>
   );
 }

@@ -8,3 +8,13 @@ export const extractYTVideoID = (youtubeURL: string) => {
     return ""
   }
 };
+
+export const paramValToString = (str: string | string[] | undefined): string => {
+  if (typeof str === 'string') {
+    return str
+  }
+  if (Array.isArray(str)) {
+    return str.join(',')
+  }
+  return ''
+}

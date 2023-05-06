@@ -1,22 +1,16 @@
-import AnalysisForm from "@/components/Tool/AnalysisForm";
-import PreAnalysisResult from "@/components/Tool/PreAnalysisResult";
+import { MyPage } from "@/components/Common/Types";
+import { useAuth } from "@/context/AuthContext";
 
-const Dashboard: React.FC = () => {
+const Dashboard: MyPage = () => {
+  const { user } = useAuth();
   return (
     <>
       <div className="flex justify-center pt-8">
-        <h2 className="text-xl text-blue-600">
-          Let&#900;s check what your subscriber think about your video
-        </h2>
-      </div>
-      <div className="mx-60 my-16">
-        <AnalysisForm />
-      </div>
-      <div className="w-full">
-        <PreAnalysisResult />
+        <h2 className="text-xl text-typo">Welcome {user?.email}</h2>
       </div>
     </>
   );
 };
 
 export default Dashboard;
+Dashboard.Layout = "Admin";

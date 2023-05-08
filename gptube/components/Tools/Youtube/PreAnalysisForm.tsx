@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { extractYTVideoID } from "@/utils";
 import { openSans } from "../../Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
-import { Form, Input } from "antd";
+import { Form, Input, Button } from "antd";
 
 interface PreAnalysisFormProps {
   setVideoID: Dispatch<SetStateAction<string>>;
@@ -78,9 +78,9 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 10, span: 4 }}>
-        <button className="text-sm md:text-base w-full h-10 bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg">
+        <Button className="primary-button w-full" htmlType="submit">
           <span className={`${openSans.className}`}>Start</span>
-        </button>
+        </Button>
       </Form.Item>
     </Form>
   );

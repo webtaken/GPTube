@@ -24,10 +24,11 @@ const Home: MyPage = () => {
             </span>
             .
           </p>
-          <div className="flex justify-center">
+          <div className="flex justify-center w-full">
             <Link
               href="/youtube"
-              className="px-4 py-2 text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg"
+              // className="px-4 py-2 text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg"
+              className="primary-button"
             >
               Try GPTube
             </Link>

@@ -26,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       {user ? (
         <div className="flex order-last my-auto space-x-8 mr-5">
           <button
-            className="text-base font-medium px-5 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+            className="text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
             onClick={() => {
               logout();
               router.push("/");

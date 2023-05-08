@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    transition: all 0.2s ease-in-out;
+}
+
 .link {
     padding: 10px 20px;
     color: #F2F2F2;
@@ -24,12 +28,22 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* .card-title {
-    font-family: 'Josefin Sans', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #202020;
-    margin: 20px auto;
+.primary-button {
     display: flex;
+    background-color: #D91E1E;
     justify-content: center;
-} */
+    align-items: center;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 30px;
+    font-weight: 500;
+    font-size: 16px;
+    height: 36px;
+    color: white;
+}
+
+.primary-button:hover {
+    background-color: #E84545;
+    cursor: pointer;
+    color: white !important;
+}

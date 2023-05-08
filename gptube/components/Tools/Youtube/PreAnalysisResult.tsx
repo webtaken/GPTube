@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Tag, Image, Input } from "antd";
+import { Layout, Tag, Image, Input, Button, Progress } from "antd";
 
 import { openSans } from "@/components/Common/Fonts";
 import toast from "react-hot-toast";
@@ -98,9 +98,9 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
               </p>
             </>
           )}
-          <button className="text-base bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-primary-low rounded-lg px-3 py-2">
-            {time === 0 ? "Send email" : "Send email when completed"}
-          </button>
+          <Button className="primary-button">
+            Send to email
+          </Button>
         </div>
         <Progress
           className="my-2"
@@ -158,25 +158,25 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
                     setEmail(value);
                   }}
                 />
-                <button
+                <Button
                   onClick={startAnalysisHandler}
-                  className="mx-auto text-sm md:text-base w-48 h-8 bg-primary border-2 border-primary font-medium text-typo hover:text-primary hover:bg-white rounded-lg"
+                  className="primary-button"
                 >
                   <span className={`${openSans.className}`}>
-                    Start Analysis
+                    Analyze
                   </span>{" "}
-                </button>
+                </Button>
               </div>
             </div>
           </>
         ) : (
           <div className="col-span-2 mt-4 mx-auto">
-            <button
+            <Button
               onClick={startAnalysisHandler}
-              className="mx-auto text-sm md:text-base w-60 h-8 bg-primary border-2 border-primary font-medium text-typo hover:text-primary hover:bg-white rounded-lg"
+              className="primary-button"
             >
-              <span className={`${openSans.className}`}>Start Analysis</span>{" "}
-            </button>
+              <span className={`${openSans.className}`}>Analyze</span>{" "}
+            </Button>
           </div>
         )}
       </Content>

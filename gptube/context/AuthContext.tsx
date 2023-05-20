@@ -10,10 +10,11 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   UserCredential,
 } from "firebase/auth";
-import { auth } from "@/config/firebase";
+import { auth, googleAuth } from "@/config/firebase";
 
 type UserProps = {
   uid: string;
@@ -24,6 +25,7 @@ type UserProps = {
 type AuthContextProps = {
   user: UserProps;
   login: (email: string, password: string) => Promise<UserCredential>;
+  loginGoogle: () => Promise<UserCredential>;
   signup: (email: string, password: string) => Promise<UserCredential>;
   resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -65,6 +67,9 @@ export const AuthContextProvider = ({
   const login = (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
+  const loginGoogle = () => {
+    return signInWithPopup(auth, googleAuth);
+  };
   const resetPassword = (email: string) => {
     return sendPasswordResetEmail(auth, email);
   };
@@ -75,7 +80,7 @@ export const AuthContextProvider = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, login, signup, resetPassword, logout }}
+      value={{ user, login, loginGoogle, signup, resetPassword, logout }}
     >
       {!loading && children}
     </AuthContext.Provider>

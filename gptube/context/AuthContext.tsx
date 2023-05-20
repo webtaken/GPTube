@@ -8,6 +8,7 @@ import {
 import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   UserCredential,
@@ -24,6 +25,7 @@ type AuthContextProps = {
   user: UserProps;
   login: (email: string, password: string) => Promise<UserCredential>;
   signup: (email: string, password: string) => Promise<UserCredential>;
+  resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -63,13 +65,18 @@ export const AuthContextProvider = ({
   const login = (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
+  const resetPassword = (email: string) => {
+    return sendPasswordResetEmail(auth, email);
+  };
   const logout = async () => {
     setUser(null);
     await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, login, signup, resetPassword, logout }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );

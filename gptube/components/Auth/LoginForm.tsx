@@ -4,9 +4,10 @@ import { Form, Input } from "antd";
 import { useRouter } from "next/router";
 import { openSans } from "@/components/Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
+import { FirebaseError } from "firebase/app";
 
 const LoginForm: React.FC = () => {
-  const { user, login } = useAuth();
+  const { login, signup } = useAuth();
   const router = useRouter();
 
   const onFinishHandler = async ({
@@ -20,7 +21,20 @@ const LoginForm: React.FC = () => {
       await login(email, password);
       router.push("/youtube");
     } catch (error) {
-      toast.error(String(error));
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/user-not-found") {
+          try {
+            await signup(email, password);
+            router.push("/youtube");
+          } catch (error) {
+            toast.error(String(error));
+          }
+          return;
+        }
+        toast.error(String(error.message));
+      } else {
+        toast.error(String(error));
+      }
     }
   };
 
@@ -56,16 +70,16 @@ const LoginForm: React.FC = () => {
         <Input.Password />
       </Form.Item>
       <Form.Item wrapperCol={{ span: 24 }}>
-        <Link href="/sign-up">
+        <Link href="/reset">
           <span
             className={`text-primary hover:text-white underline ${openSans.className}`}
           >
-            Sign Up
+            Forgot your password?
           </span>
         </Link>
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-        <button className="px-4 mt-2 text-base w-full h-9 bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg">
+        <button className="primary-button py-2 px-4 mx-auto">
           <span className={`${openSans.className}`}>Login</span>
         </button>
       </Form.Item>

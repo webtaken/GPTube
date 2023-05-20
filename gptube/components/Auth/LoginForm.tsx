@@ -1,12 +1,16 @@
-import { useAuth } from "@/context/AuthContext";
+import { Fragment } from "react";
 import Link from "next/link";
-import { Form, Input } from "antd";
 import { useRouter } from "next/router";
-import { openSans } from "@/components/Common/Fonts";
+import { Form, Input, Button } from "antd";
+import { FirebaseError } from "firebase/app";
 import { toast, Toaster } from "react-hot-toast";
 
+import { useAuth } from "@/context/AuthContext";
+import Google from "@/assets/icons/Google";
+import { openSans } from "@/components/Common/Fonts";
+
 const LoginForm: React.FC = () => {
-  const { user, login } = useAuth();
+  const { login, signup, loginGoogle } = useAuth();
   const router = useRouter();
 
   const onFinishHandler = async ({
@@ -18,6 +22,30 @@ const LoginForm: React.FC = () => {
   }) => {
     try {
       await login(email, password);
+      toast.success("logged in 😸");
+      router.push("/youtube");
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/user-not-found") {
+          try {
+            await signup(email, password);
+            router.push("/youtube");
+          } catch (error) {
+            toast.error(String(error));
+          }
+          return;
+        }
+        toast.error(String(error.message));
+      } else {
+        toast.error(String(error));
+      }
+    }
+  };
+
+  const loginWithGoogleHandler = async () => {
+    try {
+      await loginGoogle();
+      toast.success("logged in 😸");
       router.push("/youtube");
     } catch (error) {
       toast.error(String(error));
@@ -25,51 +53,62 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <Form
-      name="login_form"
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
-      onFinish={onFinishHandler}
-      autoComplete="off"
-      className="w-96 mx-auto"
-    >
-      <Toaster />
-      <Form.Item
-        label={<p className={`text-typo ${openSans.className}`}>E-mail</p>}
-        name="email"
-        rules={[
-          {
-            required: true,
-            type: "email",
-            message: "Please input your email!",
-          },
-        ]}
+    <Fragment>
+      <div className="flex items-center">
+        <Button
+          icon={<Google className="w-4 h-4 mx-auto" />}
+          className="primary-button bg-white mx-auto gap-2"
+          onClick={loginWithGoogleHandler}
+        >
+          Google
+        </Button>
+      </div>
+      <Form
+        name="login_form"
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+        onFinish={onFinishHandler}
+        autoComplete="off"
+        className="w-96 mx-auto"
       >
-        <Input />
-      </Form.Item>
+        <Toaster />
+        <Form.Item
+          label={<p className={`text-typo ${openSans.className}`}>E-mail</p>}
+          name="email"
+          rules={[
+            {
+              required: true,
+              type: "email",
+              message: "Please input your email!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
 
-      <Form.Item
-        label={<p className={`text-typo ${openSans.className}`}>Password</p>}
-        name="password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <Input.Password />
-      </Form.Item>
-      <Form.Item wrapperCol={{ span: 24 }}>
-        <Link href="/sign-up">
-          <span
-            className={`text-primary hover:text-white underline ${openSans.className}`}
-          >
-            Sign Up
-          </span>
-        </Link>
-      </Form.Item>
-      <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-        <button className="px-4 mt-2 text-base w-full h-9 bg-primary border-2 border-primary font-medium text-typo hover:text-primary order-last hover:bg-white rounded-lg">
-          <span className={`${openSans.className}`}>Login</span>
-        </button>
-      </Form.Item>
-    </Form>
+        <Form.Item
+          label={<p className={`text-typo ${openSans.className}`}>Password</p>}
+          name="password"
+          rules={[{ required: true, message: "Please input your password!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item wrapperCol={{ span: 24 }}>
+          <Link href="/reset">
+            <span
+              className={`text-primary hover:text-white underline ${openSans.className}`}
+            >
+              Forgot your password?
+            </span>
+          </Link>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
+          <button className="primary-button py-2 px-4 mx-auto">
+            <span className={`${openSans.className}`}>Login</span>
+          </button>
+        </Form.Item>
+      </Form>
+    </Fragment>
   );
 };
 

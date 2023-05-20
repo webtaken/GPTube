@@ -12,7 +12,7 @@ const Login: MyPage = () => {
         </Link>{" "}
         Login
       </h1>
-      <div className="flex mt-10">
+      <div className="mt-10">
         <LoginForm />
       </div>
     </div>

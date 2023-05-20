@@ -39,15 +39,9 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         <div className="flex order-last my-auto space-x-8 mr-5">
           <Link
             href="/login"
-            className="text-base font-medium px-5 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+            className="text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
           >
             Log In
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-base font-medium px-5 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
-          >
-            Sign Up
           </Link>
         </div>
       )}

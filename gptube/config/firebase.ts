@@ -18,6 +18,11 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+if (process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID) {
+  firebaseConfig["measurementId"] =
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
+}
+
 let analytics: Analytics;
 const app = initializeApp(firebaseConfig);
 

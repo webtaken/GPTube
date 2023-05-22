@@ -41,7 +41,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
     const toastLoading = toast.loading("Analyzing...");
     try {
       let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT/analysis`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/youtube/analysis`,
         {
           method: "POST",
           headers: {
@@ -162,19 +162,14 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
                   onClick={startAnalysisHandler}
                   className="primary-button"
                 >
-                  <span className={`${openSans.className}`}>
-                    Analyze
-                  </span>{" "}
+                  <span className={`${openSans.className}`}>Analyze</span>{" "}
                 </Button>
               </div>
             </div>
           </>
         ) : (
           <div className="col-span-2 mt-4 mx-auto">
-            <Button
-              onClick={startAnalysisHandler}
-              className="primary-button"
-            >
+            <Button onClick={startAnalysisHandler} className="primary-button">
               <span className={`${openSans.className}`}>Analyze</span>{" "}
             </Button>
           </div>

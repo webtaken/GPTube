@@ -25,7 +25,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
     const videoID = extractYTVideoID(url);
     try {
       let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT/pre-analysis`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/youtube/pre-analysis`,
         {
           method: "POST",
           headers: {
@@ -52,7 +52,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
 
   return (
     <Form
-      name="analysis_form"
+      name="pre-analysis_form"
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       onFinish={onFinishHandler}

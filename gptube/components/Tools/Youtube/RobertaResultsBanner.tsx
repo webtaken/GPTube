@@ -46,59 +46,57 @@ const RobertaResultsBanner: React.FC<RobertaResultsBannerProps> = ({
   };
   return (
     <Content
-      className={`${openSans.className} bg-black-medium mt-6 mx-20 rounded-md text-typo`}
+      className={`${openSans.className} max-w-full bg-black-medium mx-20 rounded-md text-typo`}
     >
-      <p className="p-4 text-center text-lg font-semibold">Sentiment Analysis ⭐🤗</p>
-      <div className="grid grid-cols-1 mt-8">
-        <div className="col-span-1 m-auto">
-          <div className="bg-black-full mx-40 rounded-md">
-            <div className="grid grid-cols-1 md:grid-cols-3 place-content-evenly">
-              <div className="m-4 text-xl">
-                <p className="text-center">
-                  {percentageHandler(negative)}%
-                  <br />
-                  😠
-                  <br />
-                  <span className="text-base">Negative</span>
-                </p>
-              </div>
-              <div className="m-4 text-xl">
-                <p className="text-center">
-                  {percentageHandler(neutral)}%
-                  <br />
-                  😐
-                  <br />
-                  <span className="text-base">Neutral</span>
-                </p>
-              </div>
-              <div className="m-4 text-xl">
-                <p className="text-center">
-                  {percentageHandler(positive)}%
-                  <br />
-                  😃
-                  <br />
-                  <span className="text-base">Positive</span>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="m-8">
-            <p className="text-center text-base">
-              RoBERTa model ranks the sentiment of the comments, this is the
-              average perception about your video. <br />
-              {textHelper}
+      <p className="pt-4 text-center text-lg font-semibold">
+        Sentiment Analysis <span className="font-bold">(RoBERTa)</span> 🤗
+      </p>
+      <div className="bg-black-full rounded-md w-full mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 place-content-evenly">
+          <div className="m-4 text-xl">
+            <p className="text-center">
+              {percentageHandler(negative)}%
+              <br />
+              😠
+              <br />
+              <span className="text-base">Negative</span>
             </p>
-            {errors_count !== 0 && (
-              <p className="text-center text-base">
-                Some comments couldn't be processed 😵{" "}
-                <span className="text-red-500 font-bold">
-                  {errors_count} comments
-                </span>{" "}
-                🚫
-              </p>
-            )}
+          </div>
+          <div className="m-4 text-xl">
+            <p className="text-center">
+              {percentageHandler(neutral)}%
+              <br />
+              😐
+              <br />
+              <span className="text-base">Neutral</span>
+            </p>
+          </div>
+          <div className="m-4 text-xl">
+            <p className="text-center">
+              {percentageHandler(positive)}%
+              <br />
+              😃
+              <br />
+              <span className="text-base">Positive</span>
+            </p>
           </div>
         </div>
+      </div>
+      <div className="my-8 w-full text-justify">
+        <p className="text-base">
+          RoBERTa model classifies the sentiment of the comments in negative, neutral or positive, this is the average
+          perception about your video. <br />
+          {textHelper}
+        </p>
+        {errors_count !== 0 && (
+          <p className="text-base">
+            Some comments couldn't be processed 😵{" "}
+            <span className="text-red-500 font-bold">
+              {errors_count} comments
+            </span>{" "}
+            🚫
+          </p>
+        )}
       </div>
     </Content>
   );

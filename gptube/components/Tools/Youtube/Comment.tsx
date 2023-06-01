@@ -1,7 +1,6 @@
-import { Layout } from "antd";
-import { AiFillLike } from "react-icons/ai";
-
-const { Content } = Layout;
+import { Menu } from "@headlessui/react";
+import { Fragment } from "react";
+import { AiFillLike, AiOutlineEllipsis } from "react-icons/ai";
 
 interface CommentProps {
   key?: React.Key;
@@ -30,18 +29,38 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   return (
     <div className="border rounded-md p-3 my-3">
-      <div className="flex gap-3 items-center">
+      <div className="flow-root space-x-2 items-center">
         <img
           src={authorProfileImageURL}
           alt="profile image"
-          className="object-cover rounded-full h-8 w-8"
+          className="float-left object-cover rounded-full h-8 w-8"
         />
-        <a href={url} target="_blank" className="font-bold">
+        <a href={url} target="_blank" className="font-bold text-typo">
           {authorName}
         </a>
+        <div className="float-right">
+          <Menu as="div" className="inline-block relative">
+            <Menu.Button className="text-typo primary-button">
+              <AiOutlineEllipsis className="w-5 h-5" />
+            </Menu.Button>
+            <Menu.Items className="text-typo text-center bg-primary hover:bg-white hover:text-black-low rounded absolute right-0 w-36 origin-top-right">
+              <Menu.Item>
+                {({ active }) => (
+                  <a
+                    className={`w-full ${active && "text-primary"}`}
+                    target="_blank"
+                    href={url}
+                  >
+                    Link to comment
+                  </a>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        </div>
       </div>
       <p className="text-typo mt-2">{text}</p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-typo">
         <AiFillLike /> {likes ?? 0}
       </div>
     </div>

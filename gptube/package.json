@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
-    "@headlessui/react": "^1.7.13",
+    "@headlessui/react": "^1.7.14",
     "@next/font": "^13.3.1",
     "@types/node": "18.15.5",
     "@types/react": "18.0.28",

@@ -41,7 +41,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
     const toastLoading = toast.loading("Analyzing...");
     try {
       let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/YT/analysis`,
+        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/youtube/analysis`,
         {
           method: "POST",
           headers: {
@@ -82,63 +82,38 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
     <div
       className={`${openSans.className} grid gap-6 lg:mx-48 sm:mx-10 px-4 mb-6`}
     >
-      {/* <Content className="bg-black-medium grid w-full mx-auto grid-cols-1 rounded-2xl shadow-lg px-6 py-4 items-center">
-        <div className="flex justify-between">
-          {time === 0 ? (
-            <p className={`${openSans.className} flex items-end text-2xl font-medium text-typo my-1`}>
-              Your video have been analyzed!!
-            </p>
-          ) : (
-            <>
-              <p className="text-typo text-lg font-light">
-                Estimated time to complete analyze ...&nbsp;
-                <span className="text-white text-2xl font-semibold">
-                  {time}s
-                </span>
-              </p>
-            </>
-          )}
-          <Button className="primary-button">
-            Send to email
-          </Button>
-        </div>
-        <Progress
-          className="my-2"
-          strokeColor={{
-            "0%": "#108ee9",
-            "100%": "#87d068",
-          }}
-          percent={(TIME_OUT / 100) * (TIME_OUT - time)}
-          status={time === 0 ? "success" : "active"}
-          showInfo={false}
-        />
-      </Content> */}
       <Content className="grid grid-cols-1 md:grid-cols-2 bg-black-medium mx-auto w-full rounded-2xl shadow-lg md:p-6 sm:py-4 px-4 py-2 items-center">
         <div className="grid lg:gap-6 gap-2 mx-4">
           <div className="flex gap-2">
-            <p className="text-typo text-2xl font-medium">{videoTitle}</p>
+            <p className="text-typo text-2xl font-medium">
+              {videoTitle || "Without title"}
+            </p>
           </div>
           <div className="flex items-center justify-center gap-2 p-2 border-2 border-typo rounded-lg w-fit">
             <p className="text-xl sm:text-lg font-normal text-typo px-1">
               Comments to analyze
             </p>
-            <p className="text-2xl font-bold text-typo">{numberOfComments}</p>
+            <p className="text-2xl font-bold text-typo">
+              {numberOfComments || "No comments"}
+            </p>
           </div>
-          <div className="flex-col gap-2">
-            {tags.map((tag: string, index: number) => {
-              if (index < 10) {
-                return (
-                  <Tag
-                    className="border-1 mt-1 border-white bg-black-low text-white font-light"
-                    key={index}
-                  >
-                    #{tag}
-                  </Tag>
-                );
-              }
-              return null;
-            })}
-          </div>
+          {tags && (
+            <div className="flex-col gap-2">
+              {tags.map((tag: string, index: number) => {
+                if (index < 10) {
+                  return (
+                    <Tag
+                      className="border-1 mt-1 border-white bg-black-low text-white font-light"
+                      key={index}
+                    >
+                      #{tag}
+                    </Tag>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          )}
         </div>
         <div className="grid justify-center mx-auto">
           <Image className="rounded-xl" src={imageURL} alt="Video image" />
@@ -162,19 +137,14 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
                   onClick={startAnalysisHandler}
                   className="primary-button"
                 >
-                  <span className={`${openSans.className}`}>
-                    Analyze
-                  </span>{" "}
+                  <span className={`${openSans.className}`}>Analyze</span>{" "}
                 </Button>
               </div>
             </div>
           </>
         ) : (
           <div className="col-span-2 mt-4 mx-auto">
-            <Button
-              onClick={startAnalysisHandler}
-              className="primary-button"
-            >
+            <Button onClick={startAnalysisHandler} className="primary-button">
               <span className={`${openSans.className}`}>Analyze</span>{" "}
             </Button>
           </div>

@@ -12,7 +12,9 @@ import NegativeComments from "@/components/Tools/Youtube/NegativeComments";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { paramValToString } from "@/utils";
-import { Spin } from "antd";
+import { Layout } from "antd";
+
+const { Content } = Layout;
 
 const YoutubeResults: MyPage = () => {
   const router = useRouter();
@@ -57,47 +59,55 @@ const YoutubeResults: MyPage = () => {
     <>
       <Toaster />
       {analysis ? (
-        <div className={`${openSans.className}`}>
-          <p className="text-2xl text-typo text-center mt-6">
-            Here is the analysis of your video 🤗!
-          </p>
-          <p className="text-lg text-typo text-center my-4">
-            "{analysis?.video_title}"
-          </p>
-          <div className="grid justify-items-center">
-            <a
-              href={`https://youtu.be/${analysis?.video_id}`}
-              target="_blank"
-              className="flex gap-2 items-center mx-auto font-medium text-typo hover:underline"
-            >
-              <AiFillYoutube className="text-red-600" />{" "}
-              <span className="text-center">
-                https://youtu.be/{analysis.video_id}
-              </span>
-            </a>
-          </div>
-          <BertResultsBanner
-            score_1={analysis.results.bert_results.score_1}
-            score_2={analysis.results.bert_results.score_2}
-            score_3={analysis.results.bert_results.score_3}
-            score_4={analysis.results.bert_results.score_4}
-            score_5={analysis.results.bert_results.score_5}
-            success_count={analysis.results.bert_results.success_count}
-            errors_count={analysis.results.bert_results.errors_count}
-          />
-          <RobertaResultsBanner
-            positive={analysis.results.roberta_results.positive}
-            neutral={analysis.results.roberta_results.neutral}
-            negative={analysis.results.roberta_results.negative}
-            success_count={analysis.results.roberta_results.success_count}
-            errors_count={analysis.results.roberta_results.errors_count}
-          />
-          <NegativeComments
-            videoID={analysis.video_id}
-            comments={analysis.results.negative_comments}
-            recommendationChatGPT="Here is your recommendation"
-          />
-        </div>
+        <>
+          <Content
+            className={`${openSans.className} bg-black-medium border-gray-500 border my-6 pb-6 mx-20 rounded-md text-typo`}
+          >
+            <p className="text-2xl font-black text-typo pt-6 px-6">
+              Here is the analysis of your video 🤗!
+            </p>
+            <p className="flex items-center gap-2 text-lg font-bold text-typo py-6 px-6">
+              <AiFillYoutube className="text-red-600 w-6 h-6" />
+              <a
+                href={`https://youtu.be/${analysis?.video_id}`}
+                target="_blank"
+                className="font-bold text-typo hover:underline"
+              >
+                <span className="text-center">"{analysis?.video_title}"</span>
+              </a>
+            </p>
+            <NegativeComments
+              videoID={analysis.video_id}
+              comments={analysis.results.negative_comments}
+              recommendationChatGPT={analysis.results.recommendation_chat_gpt}
+            />
+          </Content>
+          <Content
+            className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
+          >
+            <p className="text-2xl font-black text-typo pt-6 px-6">
+              AI models results 🧠
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <BertResultsBanner
+                score_1={analysis.results.bert_results.score_1}
+                score_2={analysis.results.bert_results.score_2}
+                score_3={analysis.results.bert_results.score_3}
+                score_4={analysis.results.bert_results.score_4}
+                score_5={analysis.results.bert_results.score_5}
+                success_count={analysis.results.bert_results.success_count}
+                errors_count={analysis.results.bert_results.errors_count}
+              />
+              <RobertaResultsBanner
+                positive={analysis.results.roberta_results.positive}
+                neutral={analysis.results.roberta_results.neutral}
+                negative={analysis.results.roberta_results.negative}
+                success_count={analysis.results.roberta_results.success_count}
+                errors_count={analysis.results.roberta_results.errors_count}
+              />
+            </div>
+          </Content>
+        </>
       ) : (
         <p>No Data</p>
       )}

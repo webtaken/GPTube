@@ -7,6 +7,11 @@ export interface YoutubeComment {
   likeCount: number;
 }
 
+export interface NegativeYoutubeComment {
+  comment: YoutubeComment;
+  priority: number;
+}
+
 export interface BertResults {
   score_1: number;
   score_2: number;
@@ -31,7 +36,7 @@ export interface AnalysisResults {
   results: {
     bert_results: BertResults;
     roberta_results: RobertaResults;
-    negative_comments: YoutubeComment[];
+    negative_comments: NegativeYoutubeComment[];
     recommendation_chat_gpt: string;
   };
 }

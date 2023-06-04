@@ -78,7 +78,6 @@ const YoutubeResults: MyPage = () => {
             </p>
             <NegativeComments
               videoID={analysis.video_id}
-              comments={analysis.results.negative_comments}
               recommendationChatGPT={analysis.results.recommendation_chat_gpt}
             />
           </Content>
@@ -109,7 +108,13 @@ const YoutubeResults: MyPage = () => {
           </Content>
         </>
       ) : (
-        <p>No Data</p>
+        <Content
+          className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
+        >
+          <p className="text-center m-auto p-10 text-4xl text-typo">
+            We couldn't find your result 🙀!
+          </p>
+        </Content>
       )}
     </>
   );

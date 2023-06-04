@@ -36,7 +36,6 @@ export interface AnalysisResults {
   results: {
     bert_results: BertResults;
     roberta_results: RobertaResults;
-    negative_comments: NegativeYoutubeComment[];
     recommendation_chat_gpt: string;
   };
 }

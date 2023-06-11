@@ -1,10 +1,9 @@
-import Image from "next/image";
 import Service from "@/components/Service/Service";
 import Link from "next/link";
 import { MyPage } from "@/components/Common/Types";
 import { openSans } from "@/components/Common/Fonts";
 
-import HappyNews from "@/assets/icons/happy_news.svg";
+import YoutubeEmbed from "@/components/UI/YoutubeEmbed";
 
 const Home: MyPage = () => {
   return (
@@ -22,7 +21,6 @@ const Home: MyPage = () => {
             <span className="font-bold">
               Youtube, TikTok, Instagram, Facebook, etc...
             </span>
-            .
           </p>
           <div className="flex justify-center w-full">
             <Link href="/youtube" className="primary-button p-2">
@@ -30,11 +28,7 @@ const Home: MyPage = () => {
             </Link>
           </div>
         </div>
-        <Image
-          className="h-64 w-64 md:h-72 md:w-72 lg:w-80 lg:h-80 my-auto mx-auto"
-          src={HappyNews}
-          alt="Analysis Report"
-        />
+        <YoutubeEmbed title="GPTube demo" embedId="-PFT1hEgxGY" />
       </section>
       <Service />
     </div>

@@ -2,13 +2,13 @@ import { useRouter } from "next/router";
 import { doc, getDoc } from "firebase/firestore";
 import { AiFillYoutube } from "react-icons/ai";
 
-import BertResultsBanner from "@/components/Tools/Youtube/BertResultsBanner";
-import RobertaResultsBanner from "@/components/Tools/Youtube/RobertaResultsBanner";
+import BertResultsBanner from "@/components/SocialMedia/Youtube/BertResultsBanner";
+import RobertaResultsBanner from "@/components/SocialMedia/Youtube/RobertaResultsBanner";
 import { MyPage } from "@/components/Common/Types";
 import { openSans } from "@/components/Common/Fonts";
 import { AnalysisResults } from "@/types/youtube";
 import { firestore } from "@/config/firebase";
-import NegativeComments from "@/components/Tools/Youtube/NegativeComments";
+import NegativeComments from "@/components/SocialMedia/Youtube/NegativeComments";
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { paramValToString } from "@/utils";

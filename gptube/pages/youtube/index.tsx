@@ -1,6 +1,6 @@
 import { MyPage } from "@/components/Common/Types";
 import { openSans } from "@/components/Common/Fonts";
-import PreAnalysis from "@/components/Tools/Youtube/PreAnalysis";
+import PreAnalysis from "@/components/SocialMedia/Youtube/PreAnalysis";
 
 const YoutubePanel: MyPage = () => {
   return (

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { AiFillYoutube } from "react-icons/ai";
 
 import BertResultsBanner from "@/components/SocialMedia/Youtube/BertResultsBanner";
@@ -13,10 +13,12 @@ import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { paramValToString } from "@/utils";
 import { Layout } from "antd";
+import { useAuth } from "@/context/AuthContext";
 
 const { Content } = Layout;
 
 const YoutubeResults: MyPage = () => {
+  const { user } = useAuth();
   const router = useRouter();
   const resultID = paramValToString(router.query.resultID);
   const [analysis, setAnalysis] = useState<AnalysisResults>();
@@ -25,8 +27,17 @@ const YoutubeResults: MyPage = () => {
   useEffect(() => {
     const getResults = async () => {
       try {
-        const docRef = doc(firestore, "YoutubeResults", resultID);
-        const docSnap = await getDoc(docRef);
+        if (!user) throw new Error("no user email");
+        const userEmail = user.email || "";
+        const userYoutubeColl = collection(
+          firestore,
+          "users",
+          userEmail,
+          "youtube"
+        );
+        const resultDoc = doc(userYoutubeColl, resultID);
+        const docSnap = await getDoc(resultDoc);
+        
         // Check if the document exists
         if (!docSnap.exists()) {
           setLoaded(true);

@@ -4,11 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 const Dashboard: MyPage = () => {
   const { user } = useAuth();
   return (
-    <>
-      <div className="flex justify-center pt-8">
-        <h2 className="text-xl text-typo">Welcome {user?.email}</h2>
-      </div>
-    </>
+    <div className="mx-8">
+      <h2 className="text-2xl text-typo absolute">
+        Welcome {user?.displayName || user?.email}
+      </h2>
+    </div>
   );
 };
 

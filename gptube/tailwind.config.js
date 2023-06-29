@@ -14,7 +14,9 @@ module.exports = {
         "black-low": "#494949",
         primary: "#D91E1E",
         "primary-low": "#F4A4A4",
-        typo: "#F2F2F2",
+        typo: "#EDEDED",
+        "white-full": "#EDEDED",
+        "white-low": "#A1A1A1"
       },
     },
   },

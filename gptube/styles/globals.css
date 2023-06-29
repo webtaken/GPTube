@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-    transition: all 0.2s ease-in-out;
-}
-
 .link {
     padding: 10px 20px;
     color: #F2F2F2;

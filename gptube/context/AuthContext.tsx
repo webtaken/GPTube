@@ -20,6 +20,7 @@ type UserProps = {
   uid: string;
   email: string | null;
   displayName: string | null;
+  photoURL: string | null;
 } | null;
 
 type AuthContextProps = {
@@ -48,10 +49,12 @@ export const AuthContextProvider = ({
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
         setUser({
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
+          photoURL: user.photoURL,
         });
       } else {
         setUser(null);

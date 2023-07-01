@@ -3,6 +3,7 @@ import { openSans } from "../Common/Fonts";
 import { useAuth } from "@/context/AuthContext";
 import { AiOutlineTwitter, AiOutlineGithub } from "react-icons/ai";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import { Divider } from "antd";
 
 interface HeaderProps {
@@ -12,7 +13,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ className }) => {
   const { user, logout } = useAuth();
   const router = useRouter();
-  console.log(user);
   return (
     <>
       <header
@@ -27,12 +27,14 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           </Link>
           {user && (
             <div className="flex items-end gap-2">
-              <img
+              <Image
                 className="w-7 h-7 rounded-full"
                 src={
                   user.photoURL ||
                   "https://vercel.com/api/www/avatar/vz3qUGHwDbSCNuPeeDxSsJZk?&s=60"
                 }
+                width={28}
+                height={28}
                 alt="photo"
               />
               <p className="text-xl text-typo">

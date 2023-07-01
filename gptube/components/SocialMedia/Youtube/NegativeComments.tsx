@@ -39,7 +39,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   const [page, setPage] = useState(1);
   const [loadedComments, setLoadedComments] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const pageSize = 1;
+  const pageSize = 10;
 
   const countComments = async () => {
     try {
@@ -159,7 +159,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
       commentsSection = (
         <>
           {commentsPage.length === 0 ? (
-            <p className="text-center text-typo">There aren't comments</p>
+            <p className="text-center text-typo">There aren&apos;t comments</p>
           ) : (
             <div className="bg-black-medium">
               <div className="flex flex-col pb-4">

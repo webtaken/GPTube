@@ -78,6 +78,7 @@ export const AuthContextProvider = ({
   };
   const logout = async () => {
     setUser(null);
+    localStorage.removeItem(localStoreAuthVar);
     await signOut(auth);
   };
 

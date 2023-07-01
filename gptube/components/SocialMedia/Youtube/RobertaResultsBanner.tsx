@@ -36,7 +36,7 @@ const RobertaResultsBanner: React.FC<RobertaResultsBannerProps> = ({
     textHelper = (
       <span>
         From <span className="font-bold">{success_count}</span> comments, your
-        video has a major negative impact, don't give up 🤙
+        video has a major negative impact, don&apos;t give up 🤙
       </span>
     );
   }
@@ -90,7 +90,7 @@ const RobertaResultsBanner: React.FC<RobertaResultsBannerProps> = ({
         </p>
         {errors_count !== 0 && (
           <p className="text-base">
-            Some comments couldn't be processed 😵{" "}
+            Some comments couldn&apos;t be processed 😵{" "}
             <span className="text-red-500 font-bold">
               {errors_count} comments
             </span>{" "}

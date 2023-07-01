@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Tag, Image, Input, Button, Progress } from "antd";
+import { Layout, Tag, Image, Input, Button } from "antd";
 
 import { openSans } from "@/components/Common/Fonts";
 import toast from "react-hot-toast";
@@ -7,8 +7,6 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/context/AuthContext";
 
 const { Content } = Layout;
-
-const TIME_OUT = 100;
 
 interface PreAnalysisResultProps {
   videoID: string;
@@ -122,7 +120,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
           <>
             <div className="col-span-2 mt-4 mx-4">
               <p className={`text-typo mb-2 ${openSans.className}`}>
-                We'll sent your results later
+                We&apos;ll sent your results later
               </p>
               <div className="flex items-center space-x-4">
                 <Input

@@ -157,7 +157,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
         </p>
         {errors_count !== 0 && (
           <p className="text-center text-base">
-            Sorry 😵 We couldn't process{" "}
+            Sorry 😵 We couldn&apos;t process{" "}
             <span className="text-red-500 font-bold">
               {errors_count} comments
             </span>{" "}

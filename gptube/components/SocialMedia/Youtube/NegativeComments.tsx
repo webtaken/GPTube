@@ -39,7 +39,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   const [page, setPage] = useState(1);
   const [loadedComments, setLoadedComments] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const pageSize = 10;
+  const pageSize = 5;
 
   const countComments = async () => {
     try {

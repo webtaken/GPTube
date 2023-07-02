@@ -45,3 +45,18 @@
     background-color: #1A1A1A !important;
     border-color: #EDEDED ! important;
 }
+
+.custom-pagination .ant-select-selector {
+    background-color: #1A1A1A !important;
+    color: #EDEDED !important;
+    border-color: #EDEDED ! important;
+}
+
+.custom-pagination .ant-select-selection-item {
+    color: #EDEDED !important;
+    background-color: #1A1A1A !important;
+}
+
+.custom-pagination .ant-select-arrow {
+    color: #EDEDED !important;
+}

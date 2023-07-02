@@ -97,7 +97,7 @@ const YoutubePanel: MyPage = () => {
   useEffect(() => {
     getYoutubeRecords(1);
   }, []);
-  
+
   return (
     <div className={`${openSans.className}`}>
       <Toaster />
@@ -118,7 +118,10 @@ const YoutubePanel: MyPage = () => {
                 setSearchVal(searchVal);
               }}
             />
-            <Link href="/youtube/labs" className="rounded-sm primary-button w-32 py-2">
+            <Link
+              href="/youtube/labs"
+              className="rounded-sm primary-button w-32 py-2"
+            >
               New analysis
             </Link>
           </div>
@@ -156,7 +159,6 @@ const YoutubePanel: MyPage = () => {
                         )}`}
                       >
                         <span className="text-white-low text-sm">
-                          {" "}
                           {dayjs(record.last_update).fromNow()}
                         </span>
                       </Tooltip>
@@ -179,6 +181,26 @@ const YoutubePanel: MyPage = () => {
               pageSize={pageSize}
               onChange={(page, _) => getYoutubeRecords(page)}
               itemRender={(current, type, originalElement) => {
+                if (type === "jump-next") {
+                  return (
+                    <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
+                      <BsChevronRight
+                        className="h-5 w-5 text-white-low hover:text-primary"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  );
+                }
+                if (type === "jump-prev") {
+                  return (
+                    <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
+                      <BsChevronLeft
+                        className="h-5 w-5 text-white-low hover:text-primary"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  );
+                }
                 if (type === "prev") {
                   return (
                     <button className="bg-none rounded-r-md px-2 py-2 text-white-full">

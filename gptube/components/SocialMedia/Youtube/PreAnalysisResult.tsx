@@ -35,6 +35,7 @@ const PreAnalysisResult: React.FC<PreAnalysisResultProps> = ({
       video_id: videoID,
       video_title: videoTitle,
       email: email,
+      owner_email: user?.email,
     };
     const toastLoading = toast.loading("Analyzing...");
     try {

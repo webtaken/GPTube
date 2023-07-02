@@ -99,7 +99,7 @@ const YoutubePanel: MyPage = () => {
   };
 
   useEffect(() => {
-    // getYoutubeRecords(1);
+    getYoutubeRecords(1);
   }, []);
 
   let recordsGrid = (

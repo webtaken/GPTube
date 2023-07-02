@@ -150,7 +150,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   }, []);
 
   let commentsSection = (
-    <p className="text-center text-5xl animate-bounce">🐱</p>
+    <p className="text-center mt-8 text-2xl animate-bounce">🐱</p>
   );
 
   if (loadedComments) {

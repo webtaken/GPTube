@@ -74,7 +74,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
           },
         ]}
       >
-        <Input />
+        <Input className="border-none" />
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 10, span: 4 }}>

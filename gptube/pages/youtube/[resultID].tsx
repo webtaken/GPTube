@@ -125,7 +125,7 @@ const YoutubeResults: MyPage = () => {
           className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
         >
           <p className="text-center m-auto p-10 text-4xl text-typo">
-            We couldn&apos;t find your result 🙀!
+            We couldn&apos;t find your result 🙀 (404)!.
           </p>
         </Content>
       )}

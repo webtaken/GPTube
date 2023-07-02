@@ -31,7 +31,6 @@ const YoutubePanel: MyPage = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchVal, setSearchVal] = useState("");
   const [records, setRecords] = useState<YoutubeRecord[]>([]);
-  const [searchRecords, setSearchRecords] = useState<YoutubeRecord[]>([]);
   const [loadedRecords, setLoadedRecords] = useState(false);
 
   const pageSize = 10;
@@ -54,6 +53,12 @@ const YoutubePanel: MyPage = () => {
       const totalRecords = await getCountFromServer(userYoutubeColl);
       setTotalRecords(totalRecords.data().count);
       /* ------------------------------------ */
+
+      if (totalRecords.data().count === 0) {
+        // No records
+        setLoadedRecords(true);
+        return;
+      }
 
       const order = orderBy("last_update", "desc");
       let q = query(userYoutubeColl, order, limit(pageSize));
@@ -86,7 +91,6 @@ const YoutubePanel: MyPage = () => {
         };
       });
       setRecords([...tmpYoutubeRecords]);
-      setSearchRecords([...tmpYoutubeRecords]);
       setLoadedRecords(true);
     } catch (error) {
       toast.error(String(error));
@@ -95,11 +99,144 @@ const YoutubePanel: MyPage = () => {
   };
 
   useEffect(() => {
-    getYoutubeRecords(1);
+    // getYoutubeRecords(1);
   }, []);
 
+  let recordsGrid = (
+    <div className="bg-black-full border border-white-full rounded-md my-4 p-4">
+      <p className="text-center mb-4 text-base sm:text-lg md:text-xl lg:text-2xl text-typo">
+        You don&apos;t have analyzed any youtube video yet 🙀!
+      </p>
+      <Link
+        href="/youtube/labs"
+        className="primary-button w-1/2 sm:w-1/3 md:w-1/4 mx-auto px-1 py-2 text-center"
+      >
+        Analyze new video
+      </Link>
+    </div>
+  );
+
+  if (loadedRecords && totalRecords > 0) {
+    recordsGrid = (
+      <>
+        <div className="grid grid-cols-1 py-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {records
+            .filter(
+              (record) =>
+                searchVal === "" ||
+                record.video_title.toLowerCase().includes(searchVal)
+            )
+            .map((record, index) => {
+              return (
+                <div
+                  key={index}
+                  className="grid grid-cols-1 content-between gap-y-2 bg-black-full py-4 px-3 rounded-lg border border-white-low hover:border-white-full"
+                >
+                  <div>
+                    <p className="text-typo text-base font-medium">
+                      {record.video_title}
+                    </p>
+                    <a
+                      href={`https://youtu.be/${record.video_id}`}
+                      target="_blank"
+                      className="flex items-center gap-1 text-white-low text-sm hover:underline"
+                    >
+                      https://youtu.be/{record.video_id}
+                      <BiLinkExternal />
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Tooltip
+                      title={`${dayjs(record.last_update).format(
+                        "DD MMM, YYYY"
+                      )}`}
+                    >
+                      <span className="text-white-low text-sm">
+                        {dayjs(record.last_update).fromNow()}
+                      </span>
+                    </Tooltip>
+                    <Link
+                      href={`/youtube/${record.video_id}`}
+                      className="flex items-center gap-1 text-typo hover:underline"
+                    >
+                      See results <AiOutlineLink className="text-typo" />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+        <div className="grid my-2">
+          <Pagination
+            className="custom-pagination mx-auto"
+            defaultCurrent={page}
+            total={totalRecords}
+            pageSize={pageSize}
+            onChange={(page, _) => getYoutubeRecords(page)}
+            itemRender={(current, type, originalElement) => {
+              if (type === "jump-next") {
+                return (
+                  <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
+                    <BsChevronRight
+                      className="h-5 w-5 text-white-low hover:text-primary"
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              }
+              if (type === "jump-prev") {
+                return (
+                  <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
+                    <BsChevronLeft
+                      className="h-5 w-5 text-white-low hover:text-primary"
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              }
+              if (type === "prev") {
+                return (
+                  <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
+                    <BsChevronLeft
+                      className={`h-5 w-5 text-white-low ${
+                        page !== 1 ? "hover:stroke-2" : "cursor-not-allowed"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              }
+              if (type === "next") {
+                return (
+                  <button className="bg-black-full rounded-r-md px-2 py-2 text-white-full">
+                    <BsChevronRight
+                      className={`h-5 w-5 text-white-low ${
+                        page !== totalPages
+                          ? "hover:stroke-2"
+                          : "cursor-not-allowed"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              }
+              if (type === "page") {
+                return (
+                  <button className="w-full border text-typo border-white-low text rounded-md">
+                    {current}
+                  </button>
+                );
+              }
+              return originalElement;
+            }}
+          />
+        </div>
+      </>
+    );
+  }
+
   return (
-    <div className={`${openSans.className}`}>
+    <div className={`${openSans.className} w-full`}>
       <Toaster />
       {loadedRecords ? (
         <div className="px-8">
@@ -125,119 +262,7 @@ const YoutubePanel: MyPage = () => {
               New analysis
             </Link>
           </div>
-
-          <div className="grid grid-cols-1 py-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {records
-              .filter(
-                (record) =>
-                  searchVal === "" ||
-                  record.video_title.toLowerCase().includes(searchVal)
-              )
-              .map((record, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="grid grid-cols-1 content-between gap-y-2 bg-black-full py-4 px-3 rounded-lg border border-white-low hover:border-white-full"
-                  >
-                    <div>
-                      <p className="text-typo text-base font-medium">
-                        {record.video_title}
-                      </p>
-                      <a
-                        href={`https://youtu.be/${record.video_id}`}
-                        target="_blank"
-                        className="flex items-center gap-1 text-white-low text-sm hover:underline"
-                      >
-                        https://youtu.be/{record.video_id}
-                        <BiLinkExternal />
-                      </a>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Tooltip
-                        title={`${dayjs(record.last_update).format(
-                          "DD MMM, YYYY"
-                        )}`}
-                      >
-                        <span className="text-white-low text-sm">
-                          {dayjs(record.last_update).fromNow()}
-                        </span>
-                      </Tooltip>
-                      <Link
-                        href={`/youtube/${record.video_id}`}
-                        className="flex items-center gap-1 text-typo hover:underline"
-                      >
-                        See results <AiOutlineLink className="text-typo" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-          <div className="grid my-2">
-            <Pagination
-              className="custom-pagination mx-auto"
-              defaultCurrent={page}
-              total={totalRecords}
-              pageSize={pageSize}
-              onChange={(page, _) => getYoutubeRecords(page)}
-              itemRender={(current, type, originalElement) => {
-                if (type === "jump-next") {
-                  return (
-                    <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
-                      <BsChevronRight
-                        className="h-5 w-5 text-white-low hover:text-primary"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  );
-                }
-                if (type === "jump-prev") {
-                  return (
-                    <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
-                      <BsChevronLeft
-                        className="h-5 w-5 text-white-low hover:text-primary"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  );
-                }
-                if (type === "prev") {
-                  return (
-                    <button className="bg-none rounded-r-md px-2 py-2 text-white-full">
-                      <BsChevronLeft
-                        className={`h-5 w-5 text-white-low ${
-                          page !== 1 ? "hover:stroke-2" : "cursor-not-allowed"
-                        }`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  );
-                }
-                if (type === "next") {
-                  return (
-                    <button className="bg-black-full rounded-r-md px-2 py-2 text-white-full">
-                      <BsChevronRight
-                        className={`h-5 w-5 text-white-low ${
-                          page !== totalPages
-                            ? "hover:stroke-2"
-                            : "cursor-not-allowed"
-                        }`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  );
-                }
-                if (type === "page") {
-                  return (
-                    <button className="w-full border text-typo border-white-low text rounded-md">
-                      {current}
-                    </button>
-                  );
-                }
-                return originalElement;
-              }}
-            />
-          </div>
+          {recordsGrid}
         </div>
       ) : (
         <div className="py-52 w-full">

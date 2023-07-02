@@ -5,6 +5,7 @@ import { AiOutlineTwitter, AiOutlineGithub } from "react-icons/ai";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { Divider } from "antd";
+import DefaultUserImage from "../../assets/img/default_user_image.jpg";
 
 interface HeaderProps {
   className?: string;
@@ -29,10 +30,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             <div className="flex items-end gap-2">
               <Image
                 className="w-7 h-7 rounded-full"
-                src={
-                  user.photoURL ||
-                  "https://vercel.com/api/www/avatar/vz3qUGHwDbSCNuPeeDxSsJZk?&s=60"
-                }
+                src={user.photoURL || DefaultUserImage}
                 width={28}
                 height={28}
                 alt="photo"
@@ -78,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           )}
         </div>
       </header>
-      <Divider style={{ backgroundColor: "#F2F2F2" }} />
+      <Divider className="w-full" style={{ backgroundColor: "#F2F2F2" }} />
     </>
   );
 };

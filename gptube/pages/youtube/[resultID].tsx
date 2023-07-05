@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { AiFillYoutube } from "react-icons/ai";
 
 import BertResultsBanner from "@/components/SocialMedia/Youtube/BertResultsBanner";
@@ -13,10 +13,12 @@ import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { paramValToString } from "@/utils";
 import { Layout } from "antd";
+import { useAuth } from "@/context/AuthContext";
 
 const { Content } = Layout;
 
 const YoutubeResults: MyPage = () => {
+  const { user } = useAuth();
   const router = useRouter();
   const resultID = paramValToString(router.query.resultID);
   const [analysis, setAnalysis] = useState<AnalysisResults>();
@@ -25,8 +27,17 @@ const YoutubeResults: MyPage = () => {
   useEffect(() => {
     const getResults = async () => {
       try {
-        const docRef = doc(firestore, "YoutubeResults", resultID);
-        const docSnap = await getDoc(docRef);
+        if (!user) throw new Error("no user email");
+        const userEmail = user.email || "";
+        const userYoutubeColl = collection(
+          firestore,
+          "users",
+          userEmail,
+          "youtube"
+        );
+        const resultDoc = doc(userYoutubeColl, resultID);
+        const docSnap = await getDoc(resultDoc);
+
         // Check if the document exists
         if (!docSnap.exists()) {
           setLoaded(true);
@@ -49,10 +60,10 @@ const YoutubeResults: MyPage = () => {
       }
     };
     getResults();
-  }, []);
+  }, [resultID, user]);
 
   if (!loaded) {
-    return <p className="text-center text-6xl animate-bounce">🐱</p>;
+    return <p className="text-center text-5xl animate-bounce my-52">🐱</p>;
   }
 
   return (
@@ -71,9 +82,11 @@ const YoutubeResults: MyPage = () => {
               <a
                 href={`https://youtu.be/${analysis?.video_id}`}
                 target="_blank"
-                className="font-bold text-typo hover:underline"
+                className="font-bold text-typo hover:underline hover:text-typo"
               >
-                <span className="text-center">"{analysis?.video_title}"</span>
+                <span className="text-center">
+                  &quot;{analysis?.video_title}&quot;
+                </span>
               </a>
             </p>
             <NegativeComments
@@ -112,7 +125,7 @@ const YoutubeResults: MyPage = () => {
           className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
         >
           <p className="text-center m-auto p-10 text-4xl text-typo">
-            We couldn't find your result 🙀!
+            We couldn&apos;t find your result 🙀 (404)!.
           </p>
         </Content>
       )}

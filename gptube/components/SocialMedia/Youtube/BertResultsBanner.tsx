@@ -39,7 +39,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
         <div className="grid grid-cols-1 space-y-2 my-2 pb-2">
           <div className="flex justify-center items-center gap-x-4 mx-4">
             <p className="col-span-1 text-base">😃</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-black-full">
               <div
                 className="bg-[#57FF1C] h-2.5 rounded-full"
                 style={{
@@ -53,7 +53,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
           </div>
           <div className="flex justify-center items-center gap-x-4 mx-4">
             <p className="col-span-1 text-base">🙂</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-black-full">
               <div
                 className="bg-[#57FF1C] h-2.5 rounded-full"
                 style={{
@@ -67,7 +67,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
           </div>
           <div className="flex justify-center items-center gap-x-4 mx-4">
             <p className="col-span-1 text-base">😐</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-black-full">
               <div
                 className="bg-[#57FF1C] h-2.5 rounded-full"
                 style={{
@@ -81,7 +81,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
           </div>
           <div className="flex justify-center items-center gap-x-4 mx-4">
             <p className="col-span-1 text-base">😑</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-black-full">
               <div
                 className="bg-[#57FF1C] h-2.5 rounded-full"
                 style={{
@@ -95,7 +95,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
           </div>
           <div className="flex justify-center items-center gap-x-4 mx-4">
             <p className="col-span-1 text-base">😠</p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-black-full">
               <div
                 className="bg-[#57FF1C] h-2.5 rounded-full"
                 style={{
@@ -157,7 +157,7 @@ const BertResultsBanner: React.FC<BertResultsBannerProps> = ({
         </p>
         {errors_count !== 0 && (
           <p className="text-center text-base">
-            Sorry 😵 We couldn't process{" "}
+            Sorry 😵 We couldn&apos;t process{" "}
             <span className="text-red-500 font-bold">
               {errors_count} comments
             </span>{" "}

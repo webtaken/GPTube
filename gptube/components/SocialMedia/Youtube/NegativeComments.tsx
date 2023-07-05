@@ -18,6 +18,7 @@ import {
 import { firestore } from "@/config/firebase";
 import Comment from "./Comment";
 import { NegativeYoutubeComment } from "@/types/youtube";
+import { useAuth } from "@/context/AuthContext";
 
 const { Content } = Layout;
 
@@ -30,6 +31,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   videoID,
   recommendationChatGPT,
 }) => {
+  const { user } = useAuth();
   const [comments, setComments] = useState<
     Map<number, NegativeYoutubeComment[]>
   >(new Map<number, NegativeYoutubeComment[]>());
@@ -37,21 +39,31 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   const [page, setPage] = useState(1);
   const [loadedComments, setLoadedComments] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const pageSize = 10;
+  const pageSize = 5;
 
   const countComments = async () => {
-    const youtubeResultDocRef = doc(firestore, "YoutubeResults", videoID);
-    const docSnap = await getDoc(youtubeResultDocRef);
-    // Check if the document exists
-    if (!docSnap.exists()) {
-      return;
+    try {
+      if (!user) throw new Error("no user email");
+      const userEmail = user.email || "";
+      const userYoutubeColl = collection(
+        firestore,
+        "users",
+        userEmail,
+        "youtube"
+      );
+      const resultDoc = doc(userYoutubeColl, videoID);
+      const docSnap = await getDoc(resultDoc);
+
+      // Check if the document exists
+      if (!docSnap.exists()) {
+        return;
+      }
+      const negativeCommentsColl = collection(resultDoc, "NegativeComments");
+      const snapshot = await getCountFromServer(negativeCommentsColl);
+      setNumComments(snapshot.data().count);
+    } catch (error) {
+      toast.error(String(error));
     }
-    const negativeCommentsColl = collection(
-      youtubeResultDocRef,
-      "NegativeComments"
-    );
-    const snapshot = await getCountFromServer(negativeCommentsColl);
-    setNumComments(snapshot.data().count);
   };
 
   const getPaginatedComments = async (newPage: number) => {
@@ -63,17 +75,22 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
     }
 
     try {
-      const youtubeResultDocRef = doc(firestore, "YoutubeResults", videoID);
-      const docSnap = await getDoc(youtubeResultDocRef);
+      if (!user) throw new Error("no user email");
+      const userEmail = user.email || "";
+      const userYoutubeColl = collection(
+        firestore,
+        "users",
+        userEmail,
+        "youtube"
+      );
+      const resultDoc = doc(userYoutubeColl, videoID);
+      const docSnap = await getDoc(resultDoc);
       // Check if the document exists
       if (!docSnap.exists()) {
         setLoadedComments(true);
         return;
       }
-      const negativeCommentsColl = collection(
-        youtubeResultDocRef,
-        "NegativeComments"
-      );
+      const negativeCommentsColl = collection(resultDoc, "NegativeComments");
 
       let q = query(negativeCommentsColl, limit(pageSize));
 
@@ -133,7 +150,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   }, []);
 
   let commentsSection = (
-    <p className="text-center text-5xl animate-bounce">🐱</p>
+    <p className="text-center mt-8 text-2xl animate-bounce">🐱</p>
   );
 
   if (loadedComments) {
@@ -142,7 +159,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
       commentsSection = (
         <>
           {commentsPage.length === 0 ? (
-            <p className="text-center text-typo">There aren't comments</p>
+            <p className="text-center text-typo">There aren&apos;t comments</p>
           ) : (
             <div className="bg-black-medium">
               <div className="flex flex-col pb-4">

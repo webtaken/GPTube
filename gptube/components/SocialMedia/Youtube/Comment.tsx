@@ -1,5 +1,5 @@
 import { Menu } from "@headlessui/react";
-import { Fragment } from "react";
+import Image from "next/image";
 import { AiFillLike, AiOutlineEllipsis } from "react-icons/ai";
 
 interface CommentProps {
@@ -30,9 +30,11 @@ const Comment: React.FC<CommentProps> = ({
   return (
     <div className="border rounded-md p-3 my-3">
       <div className="flow-root space-x-2 items-center">
-        <img
+        <Image
           src={authorProfileImageURL}
           alt="profile image"
+          width={32}
+          height={32}
           className="float-left object-cover rounded-full h-8 w-8"
         />
         <a href={url} target="_blank" className="font-bold text-typo">

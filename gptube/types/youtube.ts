@@ -39,3 +39,10 @@ export interface AnalysisResults {
     recommendation_chat_gpt: string;
   };
 }
+
+export interface YoutubeRecord {
+  video_id: string;
+  video_title: string;
+  created_at: Date;
+  last_update: Date;
+}

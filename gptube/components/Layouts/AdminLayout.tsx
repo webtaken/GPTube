@@ -14,7 +14,7 @@ const AdminLayout: React.FunctionComponent<AdminLayoutProps> = ({
   return (
     <div className={`flex flex-col min-h-screen bg-black-full ${className}`}>
       <Header />
-      <main className="my-auto">{children}</main>
+      <main>{children}</main>
       <Footer />
     </div>
   );

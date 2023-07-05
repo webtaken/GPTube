@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-    transition: all 0.2s ease-in-out;
-}
-
 .link {
     padding: 10px 20px;
     color: #F2F2F2;
@@ -34,7 +30,7 @@
     justify-content: center;
     align-items: center;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 500;
     color: white;
 }
@@ -43,4 +39,24 @@
     background-color: #E84545;
     cursor: pointer;
     color: white !important;
+}
+
+.custom-pagination .ant-pagination-item-active {
+    background-color: #1A1A1A !important;
+    border-color: #EDEDED ! important;
+}
+
+.custom-pagination .ant-select-selector {
+    background-color: #1A1A1A !important;
+    color: #EDEDED !important;
+    border-color: #EDEDED ! important;
+}
+
+.custom-pagination .ant-select-selection-item {
+    color: #EDEDED !important;
+    background-color: #1A1A1A !important;
+}
+
+.custom-pagination .ant-select-arrow {
+    color: #EDEDED !important;
 }

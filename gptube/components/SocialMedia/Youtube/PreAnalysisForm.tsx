@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { extractYTVideoID } from "@/utils";
 import { openSans } from "../../Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 import { Form, Input, Button } from "antd";
 
 interface PreAnalysisFormProps {
@@ -21,9 +22,34 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
   setRequiresEmail,
   setNumberOfComments,
 }) => {
+  const { user } = useAuth();
+
+  const usageLimitReached = async () => {
+    try {
+      const userEmail = user?.email || "";
+      const response = await fetch(
+        "/api/usage-limit-youtube?" +
+          new URLSearchParams({
+            ownerEmail: userEmail,
+          })
+      );
+      const data = await response.json();
+      return data.usage_limit_reached;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const onFinishHandler = async ({ url }: { url: string }) => {
     const videoID = extractYTVideoID(url);
     try {
+      const usageLimit = await usageLimitReached();
+      if (usageLimit === true) {
+        throw new Error(
+          "Usage limit reached!, please contact @node_srojas1 on twitter with the hashtag #gptube"
+        );
+      }
+
       let response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/youtube/pre-analysis`,
         {
@@ -37,7 +63,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error || "Failed to send data.");
+        throw new Error(`${data?.error || "Failed to send data"}. Please try again later.`);
       }
       setVideoID(data.video_id);
       setVideoTitle(data.snippet.title);
@@ -46,7 +72,7 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       setRequiresEmail(data.requires_email ?? false);
       setNumberOfComments(data.number_of_comments);
     } catch (error) {
-      toast.error(`${String(error)}. Please try again later.`);
+      toast.error(`${String(error)}`);
     }
   };
 

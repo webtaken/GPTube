@@ -29,12 +29,14 @@ export default async function handler(
       const signatureBuffer = Buffer.from(signature, "hex");
 
       if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
+        console.log("Invalid signature");
         throw new Error("Invalid signature.");
       }
       console.log(req.body);
 
       res.status(200);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error });
     }
   }

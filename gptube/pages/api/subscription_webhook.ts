@@ -8,19 +8,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("gaa");
   if (req.method === "POST") {
     try {
       const secret = webhookPass;
-      console.log(secret);
       const hmac = crypto.createHmac("sha256", secret);
       const requestBody = Array.isArray(req.body)
         ? req.body.join("")
         : JSON.stringify(req.body);
 
       // Access the X-Signature header directly from the `req.headers` object
-      const signature = req.headers["X-Signature"];
-      console.log(signature);
+      const signature = req.headers["x-signature"];
       if (!signature || typeof signature !== "string") {
         throw new Error("Invalid signature.");
       }

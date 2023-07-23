@@ -26,7 +26,7 @@ export default async function handler(
         hmac.update(requestBody).digest("hex"),
         "utf8"
       );
-      const signatureBuffer = Buffer.from(signature, "hex");
+      const signatureBuffer = Buffer.from(signature, "utf8");
 
       if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
         console.log("Invalid signature");

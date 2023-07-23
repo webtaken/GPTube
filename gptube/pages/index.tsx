@@ -10,10 +10,10 @@ const Home: MyPage = () => {
     <div className={`gap-2 my-20 ${openSans.className}`}>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 opacity-1">
         <div className="grid grid-cols-1 gap-8 my-auto mx-16">
-          <p className="text-lg md:text-4xl text-typo text-center">
+          <p className="text-2xl md:text-4xl text-typo text-center">
             Check what people think about your content
           </p>
-          <p className="text-xs md:text-lg text-white text-justify">
+          <p className="text-base md:text-lg text-white text-justify">
             Powered by AI technology, with{" "}
             <span className="font-bold">GPTube</span> you can analyze in a easy
             way what people think about your social media content in various

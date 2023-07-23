@@ -35,7 +35,7 @@ export default async function handler(
 
       res.status(200);
     } catch (error) {
-      res.status(500).json({ error: "Error processing request." });
+      res.status(500).json({ error });
     }
   }
   res.status(403);

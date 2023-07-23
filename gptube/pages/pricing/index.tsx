@@ -12,10 +12,10 @@ const subscriptions: Subscription[] = [
     name: "Hobby creator",
     subType: "hobby",
     benefits: [
-      <span>
+      <span key="hobby-benefit-1">
         Up to <b>1000 comments</b> (on a video)
       </span>,
-      <span>
+      <span key="hobby-benefit-2">
         Up to <b>30 videos</b> per month
       </span>,
     ],
@@ -28,10 +28,10 @@ const subscriptions: Subscription[] = [
     name: "Popular creator",
     subType: "popular",
     benefits: [
-      <span>
+      <span key="popular-benefit-1">
         Up to <b>5000 comments</b> (on a video)
       </span>,
-      <span>
+      <span key="popular-benefit-1">
         Up to <b>50 videos</b> per month
       </span>,
     ],

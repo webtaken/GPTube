@@ -9,8 +9,9 @@ const verifySignature = (req: NextApiRequest) => {
   const hmac = crypto.createHmac("sha256", secret);
   const requestBody = JSON.stringify(req.body);
 
-  const signature = req.headers["x-signature"];
+  const signature = req.headers["x-signature"] || "";
   if (!signature || typeof signature !== "string") {
+    console.log("I am failing here");
     throw new Error("Invalid signature.");
   }
   console.log("x-signature header:", signature);

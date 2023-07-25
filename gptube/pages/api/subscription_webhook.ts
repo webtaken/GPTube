@@ -5,7 +5,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 const webhookPass = process.env.LEMON_WEBHOOK_PASS || "";
 
 const verifySignature = (req: NextApiRequest) => {
-  console.log("password webhook: ", webhookPass);
   const secret = webhookPass;
   const hmac = crypto.createHmac("sha256", secret);
   const requestBody = JSON.stringify(req.body);
@@ -15,8 +14,8 @@ const verifySignature = (req: NextApiRequest) => {
     throw new Error("Invalid signature.");
   }
 
-  const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "hex");
-  const signatureBuffer = Buffer.from(signature, "hex");
+  const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
+  const signatureBuffer = Buffer.from(signature, "utf-8");
   console.log(
     `digestLength: ${digest.length}\nsignatureBuffLength: ${signatureBuffer.length}`
   );

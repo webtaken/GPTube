@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 const webhookPass = process.env.LEMON_WEBHOOK_PASS || "";
 
 const verifySignature = (req: NextApiRequest) => {
+  console.log("password webhook: ", webhookPass);
   const secret = webhookPass;
   const hmac = crypto.createHmac("sha256", secret);
   const requestBody = Array.isArray(req.body)

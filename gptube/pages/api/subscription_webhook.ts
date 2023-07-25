@@ -8,7 +8,7 @@ const verifySignature = (req: NextApiRequest) => {
   const secret = webhookPass;
   const hmac = crypto.createHmac("sha256", secret);
   const requestBody = JSON.stringify(req.body);
-
+  console.log(req.headers);
   const signature = req.headers["x-signature"] || "";
   if (!signature || typeof signature !== "string") {
     console.log("I am failing here");

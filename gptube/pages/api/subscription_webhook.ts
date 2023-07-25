@@ -8,9 +8,7 @@ const verifySignature = (req: NextApiRequest) => {
   console.log("password webhook: ", webhookPass);
   const secret = webhookPass;
   const hmac = crypto.createHmac("sha256", secret);
-  const requestBody = Array.isArray(req.body)
-    ? req.body.join("")
-    : JSON.stringify(req.body);
+  const requestBody = JSON.stringify(req.body);
 
   const signature = req.headers["x-signature"];
   if (!signature || typeof signature !== "string") {
@@ -19,7 +17,9 @@ const verifySignature = (req: NextApiRequest) => {
 
   const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "hex");
   const signatureBuffer = Buffer.from(signature, "hex");
-
+  console.log(
+    `digestLength: ${digest.length}\nsignatureBuffLength: ${signatureBuffer.length}`
+  );
   if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
     throw new Error("Invalid signature.");
   }

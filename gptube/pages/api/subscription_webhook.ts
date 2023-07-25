@@ -13,7 +13,7 @@ const verifySignature = (req: NextApiRequest) => {
   if (!signature || typeof signature !== "string") {
     throw new Error("Invalid signature.");
   }
-
+  console.log("x-signature header:", signature);
   const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
   const signatureBuffer = Buffer.from(signature, "utf-8");
   console.log(

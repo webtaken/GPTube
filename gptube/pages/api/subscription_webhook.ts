@@ -1,6 +1,29 @@
 import crypto from "crypto";
 import { LemonsqueezyClient } from "lemonsqueezy.ts";
 import { NextApiRequest, NextApiResponse } from "next";
+import bodyParser from "body-parser";
+
+// Custom middleware to store the raw body in req.rawBody
+function rawBodyMiddleware(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  next: () => void
+) {
+  if (!req.rawBody) {
+    req.setEncoding("utf8");
+    req.rawBody = "";
+
+    req.on("data", function (chunk: string) {
+      req.rawBody += chunk;
+    });
+
+    req.on("end", function () {
+      next();
+    });
+  } else {
+    next();
+  }
+}
 
 const webhookPass = process.env.LEMON_WEBHOOK_PASS || "";
 
@@ -28,6 +51,14 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
+    // Add the custom middleware to parse raw body
+    bodyParser.urlencoded({ extended: true })(req, res, function () {
+      // Access the raw body as req.rawBody
+      console.log(req.rawBody);
+
+      // Rest of your logic
+      res.status(200).json({ message: "Request received successfully." });
+    });
     try {
       verifySignature(req);
       console.log(req.body);

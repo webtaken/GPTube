@@ -11,14 +11,12 @@ const verifySignature = (req: NextApiRequest) => {
   console.log(req.headers);
   const signature = req.headers["x-signature"] || "";
   if (!signature || typeof signature !== "string") {
-    console.log("I am failing here");
     throw new Error("Invalid signature.");
   }
-  console.log("x-signature header:", signature);
   const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
   const signatureBuffer = Buffer.from(signature, "utf-8");
   console.log(
-    `digestLength: ${digest.length}\nsignatureBuffLength: ${signatureBuffer.length}`
+    `digest: ${digest.toString()}\nsignature: ${signatureBuffer.toString()}`
   );
   if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
     throw new Error("Invalid signature.");

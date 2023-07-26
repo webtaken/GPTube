@@ -2,7 +2,7 @@ export const config = {
   api: {
     bodyParser: false,
   },
-}
+};
 
 import crypto from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -30,7 +30,7 @@ const verifySignature = (req: NextApiRequest) => {
     const secret = webhookPass;
     const hmac = crypto.createHmac("sha256", secret);
 
-    const chunks: any[] = [];
+    const chunks: Buffer[] = [];
     let requestBodySize = 0;
 
     req.on("data", (chunk) => {
@@ -40,14 +40,20 @@ const verifySignature = (req: NextApiRequest) => {
 
     req.on("end", () => {
       const requestBody = Buffer.concat(chunks, requestBodySize);
-      const signature = String(req.headers["x-signature"] || "");
+      const signature = req.headers["x-signature"] ?? "";
 
-      if (typeof signature !== "string") {
+      if (!signature || typeof signature !== "string") {
         reject(new Error("Invalid signature."));
       }
 
-      const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
-      const signatureBuffer = Buffer.from(signature, "utf-8");
+      const digest = Buffer.from(
+        hmac.update(requestBody).digest("hex"),
+        "utf-8"
+      );
+      const signatureBuffer = Buffer.from(
+        !Array.isArray(signature) ? signature : "",
+        "utf-8"
+      );
 
       console.log(digest.toString());
       console.log(requestBody.toString());

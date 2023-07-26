@@ -58,7 +58,7 @@ const RegisterForm: React.FC = () => {
         </Form.Item>
         <Form.Item>
           <Button size="large" htmlType="submit" className="flex">
-            <SendOutlined className="my-auto " />
+            <SendOutlined rev className="my-auto " />
             Contact us
           </Button>
         </Form.Item>

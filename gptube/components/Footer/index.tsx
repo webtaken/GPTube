@@ -19,13 +19,13 @@ const Footer: React.FC = () => {
           href="mailto:gptube.team@gmail.com?subject=Hi, I want to know more about GPTube"
           className="flex items-center gap-1"
         >
-          <GoogleOutlined style={iconSize} />
+          <GoogleOutlined rev style={iconSize} />
         </a>
         <a
           href="https://www.linkedin.com/posts/saul-rojas-6885b1188_buildinpublic-vercel-activity-7071255622289117184-lyh8?utm_source=share&utm_medium=member_desktop"
           target="_blank"
         >
-          <LinkedinOutlined style={iconSize} />
+          <LinkedinOutlined rev style={iconSize} />
         </a>
       </div>
       <p className="text-center text-white mt-2">

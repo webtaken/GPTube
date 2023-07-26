@@ -8,19 +8,27 @@ app.get("/", (_req, res) => {
   return res.send("GPTUBE-subscriptions server");
 });
 
-app.get(
+app.post(
   "/subscriptions",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    const hmac = crypto.createHmac("sha256", secret);
-    const digest = Buffer.from(hmac.update(req.rawBody).digest("hex"), "utf8");
-    const signature = Buffer.from(request.get("X-Signature") || "", "utf8");
+    try {
+      const hmac = crypto.createHmac("sha256", secret);
+      const digest = Buffer.from(
+        hmac.update(req.rawBody).digest("hex"),
+        "utf8"
+      );
+      const signature = Buffer.from(request.get("X-Signature") || "", "utf8");
 
-    if (!crypto.timingSafeEqual(digest, signature)) {
-      throw new Error("Invalid signature.");
+      if (!crypto.timingSafeEqual(digest, signature)) {
+        throw new Error("Invalid signature.");
+      }
+
+      const body = JSON.parse(req.body);
+      res.status(200).json({ ...body });
+    } catch (error) {
+      res.status(500).json({ ...error });
     }
-    const body = JSON.parse(req.body);
-    res.json({ ...body });
   }
 );
 

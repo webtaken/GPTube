@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { LemonsqueezyClient } from "lemonsqueezy.ts";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const webhookPass = process.env.LEMON_WEBHOOK_PASS || "";
@@ -19,7 +18,7 @@ const verifySignature = (req: NextApiRequest) => {
     `digest: ${digest.toString()}\nsignature: ${signatureBuffer.toString()}`
   );
   console.log(digest.toString());
-  console.log(JSON.stringify(req.body, null, 2));
+  console.log(JSON.stringify(req.body));
   if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
     throw new Error("Invalid signature.");
   }

@@ -1,22 +1,26 @@
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 import crypto from "crypto";
+import getRawBody from "raw-body";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const webhookPass = process.env.LEMON_WEBHOOK_PASS || "";
 
-const verifySignature = (req: NextApiRequest) => {
+const verifySignature = async (req: NextApiRequest) => {
   const secret = webhookPass;
   const hmac = crypto.createHmac("sha256", secret);
-  const requestBody = JSON.stringify(req.body);
-  console.log(req.headers);
+  const requestBody = await getRawBody(req.body);
   const signature = req.headers["x-signature"] || "";
-  if (!signature || typeof signature !== "string") {
+  if (typeof signature !== "string") {
     throw new Error("Invalid signature.");
   }
   const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
   const signatureBuffer = Buffer.from(signature, "utf-8");
-  console.log(
-    `digest: ${digest.toString()}\nsignature: ${signatureBuffer.toString()}`
-  );
+
   console.log(digest.toString());
   console.log(JSON.stringify(req.body));
   if (!crypto.timingSafeEqual(digest, signatureBuffer)) {

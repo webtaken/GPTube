@@ -75,8 +75,9 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       verifySignature(req);
-      console.log(req.body);
-      res.status(200).json({ valid: "ok" });
+      const reqBody = JSON.parse(Buffer.from(req.body).toString());
+      console.log(reqBody);
+      res.status(200).json({ reqBody });
       return;
     } catch (error) {
       console.log(error);

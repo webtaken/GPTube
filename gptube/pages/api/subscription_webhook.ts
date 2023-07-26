@@ -55,9 +55,6 @@ const verifySignature = (req: NextApiRequest) => {
         "utf-8"
       );
 
-      console.log(digest.toString());
-      console.log(requestBody.toString());
-
       if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
         reject(new Error("Invalid signature."));
       }
@@ -79,7 +76,8 @@ export default async function handler(
     try {
       verifySignature(req);
       console.log(req.body);
-      res.status(200);
+      res.status(200).json({ valid: "ok" });
+      return;
     } catch (error) {
       console.log(error);
       if (error instanceof Error) {

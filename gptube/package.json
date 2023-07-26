@@ -22,7 +22,6 @@
     "firebase": "^9.20.0",
     "lemonsqueezy.ts": "^0.1.7",
     "next": "13.2.4",
-    "raw-body": "^2.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",

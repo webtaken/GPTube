@@ -15,8 +15,6 @@ const verifySignature = async (req: NextApiRequest) => {
   const digest = Buffer.from(hmac.update(requestBody).digest("hex"), "utf-8");
   const signatureBuffer = Buffer.from(signature, "utf-8");
 
-  console.log(digest.toString());
-  console.log(JSON.stringify(req.body));
   if (!crypto.timingSafeEqual(digest, signatureBuffer)) {
     throw new Error("Invalid signature.");
   }

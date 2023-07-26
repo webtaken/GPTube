@@ -1,9 +1,3 @@
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 import crypto from "crypto";
 import getRawBody from "raw-body";
 import { NextApiRequest, NextApiResponse } from "next";

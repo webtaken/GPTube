@@ -42,12 +42,12 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           )}
         </div>
         <div className="flex order-last my-auto space-x-8 mr-5">
-          <Link
+          {/* <Link
             href="/pricing"
             className="text-base font-medium text-typo hover:border-primary hover:text-primary"
           >
             Pricing
-          </Link>
+          </Link> */}
           <a
             href="https://twitter.com/node_srojas1/status/1665489150156439553"
             target="_blank"

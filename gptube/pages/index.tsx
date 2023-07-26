@@ -23,7 +23,10 @@ const Home: MyPage = () => {
             </span>
           </p>
           <div className="flex justify-center w-full">
-            <Link href="/youtube" className="primary-button p-2">
+            <Link
+              href={{ pathname: "/youtube", query: { from: "youtube" } }}
+              className="primary-button p-2"
+            >
               Try GPTube
             </Link>
           </div>

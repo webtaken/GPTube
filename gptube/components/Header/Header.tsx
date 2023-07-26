@@ -42,26 +42,32 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           )}
         </div>
         <div className="flex order-last my-auto space-x-8 mr-5">
+          {/* <Link
+            href="/pricing"
+            className="text-base font-medium text-typo hover:border-primary hover:text-primary"
+          >
+            Pricing
+          </Link> */}
           <a
             href="https://twitter.com/node_srojas1/status/1665489150156439553"
             target="_blank"
-            className="flex items-center gap-3 text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+            className="flex items-center gap-1 text-base font-medium text-typo hover:border-primary hover:text-primary"
           >
             <AiOutlineTwitter className="w-6 h-6" /> Follow us
           </a>
           <a
             href="https://github.com/webtaken/GPTube.git"
             target="_blank"
-            className="flex items-center gap-3 text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+            className="flex items-center gap-1 text-base font-medium text-typo hover:border-primary hover:text-primary"
           >
             <AiOutlineGithub className="w-6 h-6" /> Developers
           </a>
           {user ? (
             <button
-              className="text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+              className="text-base font-semibold text-typo hover:border-primary hover:text-primary"
               onClick={() => {
                 logout();
-                router.push("/");
+                router.push({ pathname: "/" });
               }}
             >
               Logout
@@ -69,9 +75,9 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           ) : (
             <Link
               href="/login"
-              className="text-base font-medium px-5 py-1 text-typo border-2 rounded-lg border-typo hover:border-primary hover:text-primary"
+              className="text-base font-semibold text-typo hover:border-primary hover:text-primary"
             >
-              Log In
+              Login
             </Link>
           )}
         </div>

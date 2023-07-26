@@ -12,6 +12,12 @@ import { openSans } from "@/components/Common/Fonts";
 const LoginForm: React.FC = () => {
   const { login, signup, loginGoogle } = useAuth();
   const router = useRouter();
+  const { from } = router.query;
+
+  const redirection = () => {
+    if (from && !Array.isArray(from)) router.push(from);
+    else router.push("/");
+  };
 
   const onFinishHandler = async ({
     email,
@@ -23,13 +29,13 @@ const LoginForm: React.FC = () => {
     try {
       await login(email, password);
       toast.success("logged in 😸");
-      router.push("/youtube");
+      redirection();
     } catch (error) {
       if (error instanceof FirebaseError) {
         if (error.code === "auth/user-not-found") {
           try {
             await signup(email, password);
-            router.push("/youtube");
+            redirection();
           } catch (error) {
             toast.error(String(error));
           }
@@ -46,7 +52,7 @@ const LoginForm: React.FC = () => {
     try {
       await loginGoogle();
       toast.success("logged in 😸");
-      router.push("/youtube");
+      redirection();
     } catch (error) {
       toast.error(String(error));
     }

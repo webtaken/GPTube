@@ -1,9 +1,8 @@
 require("dotenv").config();
 const express = require("express");
-const crypto = require("crypto");
+const { validateSignature } = require("./utils.js");
 const app = express();
 const port = process.env.PORT || 8080;
-const secret = process.env.LEMON_WEBHOOK_PASS || "";
 
 // Custom middleware to store the raw body in the request object
 app.use(express.raw({ type: "application/json" }));
@@ -18,19 +17,11 @@ app.get("/", (_req, res) => {
 
 app.post("/subscriptions", async (req, res) => {
   try {
-    const hmac = crypto.createHmac("sha256", secret);
-    const digest = Buffer.from(hmac.update(req.rawBody).digest("hex"), "utf8");
-    const signature = Buffer.from(req.get("X-Signature") || "", "utf8");
-
-    if (!crypto.timingSafeEqual(digest, signature)) {
-      throw new Error("Invalid signature.");
-    }
-
+    validateSignature(req);
     const body = JSON.parse(req.body);
     console.log(JSON.stringify(body, null, 2));
-    res.status(200).json({ ...body });
+    res.status(200).json({ message: "success subscription_created" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ ...error });
   }
 });

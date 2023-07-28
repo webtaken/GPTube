@@ -27,6 +27,7 @@ app.post("/subscriptions", async (req, res) => {
     }
 
     const body = JSON.parse(req.body);
+    console.log(JSON.stringify(body, null, 2));
     res.status(200).json({ ...body });
   } catch (error) {
     console.log(error);

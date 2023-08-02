@@ -14,6 +14,8 @@ const serviceAccount = {
   client_x509_cert_url: process.env.CLIENT_X509_CERT_URL || "",
 };
 
+console.log(serviceAccount["project_id"]);
+
 initializeApp({
   credential: cert(serviceAccount),
 });

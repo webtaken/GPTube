@@ -14,8 +14,6 @@ const serviceAccount = {
   client_x509_cert_url: process.env.CLIENT_X509_CERT_URL || "",
 };
 
-console.log(serviceAccount["project_id"]);
-
 initializeApp({
   credential: cert(serviceAccount),
 });
@@ -63,7 +61,7 @@ const subscriptionCreatedHandler = async (payload) => {
     console.log(`subscription created: \n${JSON.stringify(newSub, null, 2)}`);
   } catch (error) {
     console.error(error);
-    throw new Error("error on subscription created handler");
+    console.log("error on subscription created handler");
   }
 };
 
@@ -80,7 +78,7 @@ const subscriptionUpdatedHandler = async (payload) => {
     );
   } catch (error) {
     console.error(error);
-    throw new Error("error on subscription updated handler");
+    console.log("error on subscription updated handler");
   }
 };
 
@@ -101,7 +99,7 @@ const subscriptionPaymentSuccessHandler = async (payload) => {
     );
   } catch (error) {
     console.error(error);
-    throw new Error("error on subscription payment success handler");
+    console.log("error on subscription payment success handler");
   }
 };
 

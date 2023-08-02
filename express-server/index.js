@@ -24,7 +24,7 @@ app.post("/subscriptions", async (req, res) => {
     console.log(JSON.stringify(body, null, 2));
     const event_type = body["meta"]["event_name"];
     const handler = webhook_events[`${event_type}`];
-    handler && handler(body);
+    handler && (await handler(body));
     res.status(200).json({ message: "webhook handled" });
   } catch (error) {
     res.status(500).json({ error: `${error}` });

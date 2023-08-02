@@ -12,7 +12,7 @@ const noAuthRequired = ["/", "/login", "/reset", "/pricing"];
 export default function App({ Component, pageProps }: MyAppProps) {
   const router = useRouter();
   const Layout = Layouts[Component.Layout] ?? ((page) => page);
-  
+
   return (
     <>
       <AuthContextProvider>
@@ -26,7 +26,6 @@ export default function App({ Component, pageProps }: MyAppProps) {
           )}
         </Layout>
       </AuthContextProvider>
-      <Script src="https://assets.lemonsqueezy.com/lemon.js" defer />
     </>
   );
 }

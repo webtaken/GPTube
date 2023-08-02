@@ -1,8 +1,11 @@
 export interface Subscription {
   id: string;
+  variantId: string;
   name: string;
-  subType: "hobby" | "popular";
+  description: string;
+  period: "monthly" | "yearly";
   benefits: JSX.Element[];
   price: number;
-  checkoutURL: string;
+  priceFormatted: number;
+  freeTrialDays: number;
 }

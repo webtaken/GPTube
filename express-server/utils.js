@@ -1,4 +1,3 @@
-require("dotenv").config();
 const crypto = require("crypto");
 const secret = process.env.LEMON_WEBHOOK_PASS || "";
 

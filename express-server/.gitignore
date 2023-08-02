@@ -1,2 +1,5 @@
 node_modules
-.env
+.env.development
+.env.production
+gptube-firebase-sdk-dev.json
+gptube-firebase-sdk-prod.json

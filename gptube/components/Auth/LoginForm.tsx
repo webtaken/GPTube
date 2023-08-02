@@ -69,6 +69,7 @@ const LoginForm: React.FC = () => {
           Google
         </Button>
       </div>
+
       <Form
         name="login_form"
         labelCol={{ span: 24 }}
@@ -89,7 +90,7 @@ const LoginForm: React.FC = () => {
             },
           ]}
         >
-          <Input />
+          <Input placeholder="your-email@email.com" />
         </Form.Item>
 
         <Form.Item
@@ -97,7 +98,7 @@ const LoginForm: React.FC = () => {
           name="password"
           rules={[{ required: true, message: "Please input your password!" }]}
         >
-          <Input.Password />
+          <Input.Password placeholder="***********" />
         </Form.Item>
         <Form.Item wrapperCol={{ span: 24 }}>
           <Link href="/reset">

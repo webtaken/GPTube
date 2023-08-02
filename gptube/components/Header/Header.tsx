@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { Divider } from "antd";
 import DefaultUserImage from "../../assets/img/default_user_image.jpg";
+import UserDropdown from "./UserDropdown";
 
 interface HeaderProps {
   className?: string;
@@ -26,22 +27,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           >
             GPTube
           </Link>
-          {user && (
-            <div className="flex items-end gap-2">
-              <Image
-                className="w-7 h-7 rounded-full"
-                src={user.photoURL || DefaultUserImage}
-                width={28}
-                height={28}
-                alt="photo"
-              />
-              <p className="text-xl text-typo">
-                {user.displayName || user?.email}
-              </p>
-            </div>
-          )}
         </div>
-        <div className="flex order-last my-auto space-x-8 mr-5">
+        <div className="flex order-last items-center my-auto space-x-8 mr-5">
           <Link
             href="/pricing"
             className="text-base font-medium text-typo hover:border-primary hover:text-primary"
@@ -63,15 +50,35 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             <AiOutlineGithub className="w-6 h-6" /> Developers
           </a>
           {user ? (
-            <button
-              className="text-base font-semibold text-typo hover:border-primary hover:text-primary"
-              onClick={() => {
-                logout();
-                router.push({ pathname: "/" });
-              }}
-            >
-              Logout
-            </button>
+            <UserDropdown
+              userEmail={String(user.email)}
+              profileImage={
+                <Image
+                  className="w-7 h-7 rounded-full"
+                  src={user.photoURL || DefaultUserImage}
+                  width={28}
+                  height={28}
+                  alt="photo"
+                />
+              }
+              options={[
+                {
+                  key: "billing",
+                  label: "Billing",
+                  onClick: () => {
+                    router.push({ pathname: "/dashboard/billing" });
+                  },
+                },
+                {
+                  key: "logout",
+                  label: "Logout",
+                  onClick: () => {
+                    logout();
+                    router.push({ pathname: "/" });
+                  },
+                },
+              ]}
+            />
           ) : (
             <Link
               href="/login"

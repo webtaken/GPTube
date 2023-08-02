@@ -5,9 +5,8 @@ import ServiceCard from "./ServiceCard";
 
 const Service: React.FC = () => {
   return (
-    <div className="grid grid-cols-1 m-10">
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 justify-items-center m-10">
       <ServiceCard
-        left
         content="Natural language processing to categorize comments and improve
               your content strategy..."
         image={AnalysisReport}
@@ -18,7 +17,6 @@ const Service: React.FC = () => {
         image={SentimentAnalysis}
       />
       <ServiceCard
-        left
         content="Don't miss out on the opportunity to take your content to the next
         level - try our tool today!"
         image={ProudSelf}

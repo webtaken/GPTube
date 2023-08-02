@@ -16,9 +16,9 @@ module.exports = {
         "primary-low": "#F4A4A4",
         typo: "#EDEDED",
         "white-full": "#EDEDED",
-        "white-low": "#A1A1A1"
+        "white-low": "#A1A1A1",
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 };

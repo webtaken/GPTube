@@ -1,4 +1,4 @@
-import { Subscription } from "@/types/subscription";
+import { Subscription } from "@/types/billing";
 
 export const subscriptionsDev: Subscription[] = [
   {

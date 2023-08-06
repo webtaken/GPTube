@@ -1,9 +1,9 @@
-import { Subscription } from "@/types/subscription";
+import { SubscriptionRequest } from "@/types/billing";
 import { Button } from "antd";
 import React from "react";
 
 interface PricingPlanProps {
-  subscription: Subscription;
+  subscription: SubscriptionRequest;
   onSubscribe: () => void;
 }
 

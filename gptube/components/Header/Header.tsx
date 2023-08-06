@@ -89,7 +89,10 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           )}
         </div>
       </header>
-      <Divider className="w-full" style={{ backgroundColor: "#F2F2F2" }} />
+      <Divider
+        className="w-full invisible sm:visible md:visible"
+        style={{ backgroundColor: "#F2F2F2" }}
+      />
     </>
   );
 };

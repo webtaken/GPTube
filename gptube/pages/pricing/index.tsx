@@ -3,7 +3,7 @@ import { MyPage } from "@/components/Common/Types";
 import PricingPlan from "@/components/Pricing/PricingPlan";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
-import { Subscription } from "@/types/subscription";
+import { SubscriptionRequest } from "@/types/billing";
 import { toast, Toaster } from "react-hot-toast";
 import { subscriptionsDev } from "@/utils/common";
 
@@ -12,7 +12,7 @@ const Subscriptions: MyPage = () => {
   const { user } = useAuth();
   const router = useRouter();
 
-  const onSubscribeHandler = async (sub: Subscription) => {
+  const onSubscribeHandler = async (sub: SubscriptionRequest) => {
     if (!user) {
       router.push({
         pathname: "/login",

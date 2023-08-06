@@ -1,19 +1,15 @@
-import { Subscription } from "@/types/subscription";
-import { LemonsqueezyClient } from "lemonsqueezy.ts";
+import { SubscriptionRequest } from "@/types/billing";
+import { ls, storeId } from "@/services";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const apiKey = process.env.LEMON_API_KEY || "";
-const storeId = process.env.LEMON_STORE_ID || "";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const subscription: Subscription = req.body;
+  const subscription: SubscriptionRequest = req.body;
 
   try {
-    const client = new LemonsqueezyClient(apiKey);
-    const newCheckout = await client.createCheckout({
+    const newCheckout = await ls.createCheckout({
       store: storeId,
       variant: subscription.variantId,
       custom_price: subscription.price,

@@ -28,7 +28,9 @@ const getSubscriptionSchema = (subscription) => {
   return {
     user_email: subscription["attributes"]["user_email"],
     subscription_id: subscription["id"],
+    order_id: subscription["attributes"]["order_id"],
     product_id: subscription["attributes"]["product_id"],
+    product_name: subscription["attributes"]["product_name"],
     variant_id: subscription["attributes"]["variant_id"],
     customer_id: subscription["attributes"]["customer_id"],
     status: subscription["attributes"]["status"],
@@ -36,17 +38,11 @@ const getSubscriptionSchema = (subscription) => {
     trial_ends_at: subscription["attributes"]["trial_ends_at"],
     renews_at: subscription["attributes"]["renews_at"],
     ends_at: subscription["attributes"]["ends_at"],
+    created_at: subscription["attributes"]["created_at"],
     card_brand: subscription["attributes"]["card_brand"],
     card_last_four: subscription["attributes"]["card_last_four"],
     update_payment_method:
       subscription["attributes"]["urls"]["update_payment_method"],
-  };
-};
-
-const getSubscriptionInvoiceSchema = (subscriptionInvoice) => {
-  return {
-    invoice_id: subscriptionInvoice["id"],
-    invoice_url: subscriptionInvoice["attributes"]["urls"]["invoice_url"],
   };
 };
 
@@ -82,31 +78,9 @@ const subscriptionUpdatedHandler = async (payload) => {
   }
 };
 
-const subscriptionPaymentSuccessHandler = async (payload) => {
-  const subscriptionInvoice = getObjectFromPayload(payload);
-  const subscriptionId = subscriptionInvoice["attributes"]["subscription_id"];
-  const data = getSubscriptionInvoiceSchema(subscriptionInvoice);
-  try {
-    const subscriptionDoc = db
-      .collection("subscriptions")
-      .doc(`${subscriptionId}`);
-    const newInvoice = await subscriptionDoc
-      .collection("invoices")
-      .doc(`${subscriptionInvoice["id"]}`)
-      .set(data);
-    console.log(
-      `subscription invoice created: ${JSON.stringify(newInvoice, null, 2)}`
-    );
-  } catch (error) {
-    console.error(error);
-    console.log("error on subscription payment success handler");
-  }
-};
-
 const webhook_events = {
   subscription_created: subscriptionCreatedHandler,
   subscription_updated: subscriptionUpdatedHandler,
-  subscription_payment_success: subscriptionPaymentSuccessHandler,
 };
 
 module.exports = webhook_events;

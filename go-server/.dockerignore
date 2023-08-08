@@ -1,0 +1,13 @@
+.git/
+
+.dockerignore
+
+.gitignore
+
+tmp/
+
+Dockerfile
+
+.vscode
+
+.air.toml

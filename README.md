@@ -1,2 +1,1 @@
-# The frontend of GPTube!
-
+# The GPTube side project!

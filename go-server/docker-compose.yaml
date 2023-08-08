@@ -1,0 +1,21 @@
+version: '3'
+services:
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./acme.json:/acme.json"
+      - "./traefik.yml:/traefik.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  gptube:
+    image: gptube-go:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gptube.rule=Host(`api.gptube.ink`)"
+      - "traefik.http.routers.gptube.entrypoints=websecure"
+      - "traefik.http.routers.gptube.tls=true"
+      - "traefik.http.routers.gptube.tls.certresolver=gptube_resolver"
+      - "traefik.http.services.app.loadbalancer.server.port=8000"

@@ -6,11 +6,6 @@ import { toast } from "react-hot-toast";
 import { SubscriptionsResponse } from "../api/subscriptions";
 import Subscription from "@/components/Billing/Subscription";
 
-interface Option {
-  key: string;
-  label: string;
-}
-
 const Billing: MyPage = () => {
   const [activeSubscription, setActiveSubscription] =
     useState<SubscriptionData>({} as SubscriptionData);

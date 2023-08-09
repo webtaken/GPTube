@@ -7,9 +7,12 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
-	api.Get("", handler.HomeHandler)
+	billing := app.Group("/billing")
+	billing.Get("", handler.BillingHandler)
+	billing.Post("/invoices", handler.BillingSubscriptionInvoices)
 
+	api := app.Group("/api")
+	api.Get("", handler.ApiHandler)
 	youtubeRoutes := api.Group("/youtube")
 	youtubeRoutes.Post("/pre-analysis", handler.YoutubePreAnalysisHandler)
 	youtubeRoutes.Post("/analysis", handler.YoutubeAnalysisHandler)

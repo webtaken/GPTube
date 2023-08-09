@@ -1,5 +1,5 @@
 import { SubscriptionData } from "@/types/billing";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 interface SubscriptionProps {
@@ -7,6 +7,12 @@ interface SubscriptionProps {
 }
 
 const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
+  const [showInvoices, setShowInvoices] = useState(false);
+  const [pageInvoices, setPageInvoices] = useState(1);
+  const [loadedInvoices, setLoadedInvoices] = useState(false);
+
+  const pageSize = 10;
+
   const updatePaymentMethodHandler = async () => {
     const baseUrl = "/api/update-payment-method";
     const queryParams = new URLSearchParams({
@@ -21,6 +27,17 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
       toast.error(`${error}`);
     }
   };
+
+  const showInvoicesHandler = async (page: number) => {
+    setLoadedInvoices(false);
+    setPageInvoices(page);
+  };
+
+  useEffect(() => {
+    if (showInvoices) {
+      showInvoicesHandler(pageInvoices);
+    }
+  }, [showInvoices]);
 
   return (
     <div className="bg-black-medium w-full rounded-xl p-8 text-typo">
@@ -46,6 +63,9 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
         </p>
       </div>
       <div className="card-actions justify-end">
+        <button className="btn" onClick={() => setSh()}>
+          Show invoices
+        </button>
         <button className="btn" onClick={() => updatePaymentMethodHandler()}>
           Update payment method
         </button>

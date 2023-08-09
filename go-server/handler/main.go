@@ -4,8 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func HomeHandler(c *fiber.Ctx) error {
+func ApiHandler(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "GPTube api",
+	})
+}
+
+func BillingHandler(c *fiber.Ctx) error {
+	return c.JSON(fiber.Map{
+		"message": "GPTube billing",
 	})
 }

@@ -4,6 +4,7 @@ import { openSans } from "../../Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import { Form, Input, Button } from "antd";
+import { GO_API_ENDPOINT } from "@/services";
 
 interface PreAnalysisFormProps {
   setVideoID: Dispatch<SetStateAction<string>>;
@@ -46,12 +47,12 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       const usageLimit = await usageLimitReached();
       if (usageLimit === true) {
         throw new Error(
-          "Usage limit reached!, please contact @node_srojas1 on twitter with the hashtag #gptube"
+          "Usage limit reached!, please contact @node_srojas1 on X with the hashtag #gptube"
         );
       }
 
       let response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/youtube/pre-analysis`,
+        `${GO_API_ENDPOINT}/api/youtube/pre-analysis`,
         {
           method: "POST",
           headers: {
@@ -63,7 +64,9 @@ const PreAnalysisForm: React.FC<PreAnalysisFormProps> = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(`${data?.error || "Failed to send data"}. Please try again later.`);
+        throw new Error(
+          `${data?.error || "Failed to send data"}. Please try again later.`
+        );
       }
       setVideoID(data.video_id);
       setVideoTitle(data.snippet.title);

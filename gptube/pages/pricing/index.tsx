@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MyPage } from "@/components/Common/Types";
 import PricingPlan from "@/components/Pricing/PricingPlan";
 import { useAuth } from "@/context/AuthContext";

@@ -16,7 +16,7 @@ const Invoice: React.FC<InvoiceProps> = ({ invoice }) => {
         <span className="badge badge-outline">{invoice.billingReason}</span>
       </td>
       <td>{dayjs.utc(invoice.createdAt).format("YYYY-MM-DD HH:mm:ss")} UTC</td>
-      <td>{`${invoice.total} ${invoice.currency}`}</td>
+      <td>{invoice.totalFormatted}</td>
       <td>
         <span className="badge badge-outline">{invoice.statusFormatted}</span>
       </td>

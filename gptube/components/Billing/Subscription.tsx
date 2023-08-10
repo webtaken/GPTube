@@ -1,9 +1,9 @@
 import { GO_API_ENDPOINT } from "@/services";
 import { SubscriptionData, SubscriptionInvoiceData } from "@/types/billing";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import Loading from "../UI/Loading";
-import Invoices from "./InvoicesTable";
+import InvoicesTable from "./InvoicesTable";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -19,7 +19,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
   const [loadedInvoices, setLoadedInvoices] = useState(false);
   const [invoices, setInvoices] = useState<SubscriptionInvoiceData[]>([]);
   const [totalInvoices, setTotalInvoices] = useState(0);
-
+  const [lastInvoicePage, setLastInvoicePage] = useState(0);
   const pageSize = 10;
 
   const updatePaymentMethodHandler = async () => {
@@ -59,6 +59,12 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
 
       const invoices = await response.json();
       console.log(invoices);
+
+      if (totalInvoices <= 0)
+        setTotalInvoices(invoices["meta"]["page"]["total"]);
+      if (lastInvoicePage <= 0)
+        setLastInvoicePage(invoices["meta"]["page"]["lastPage"]);
+
       const formattedInvoices: SubscriptionInvoiceData[] = invoices.data.map(
         (invoiceObject: { [x: string]: any }) => {
           const invoiceAttributes = invoiceObject["attributes"];
@@ -66,6 +72,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
             id: invoiceObject["id"],
             billingReason: invoiceAttributes["billing_reason"],
             total: invoiceAttributes["total"],
+            totalFormatted: invoiceAttributes["total_formatted"],
             currency: invoiceAttributes["currency"],
             status: invoiceAttributes["status"],
             statusFormatted: invoiceAttributes["status_formatted"],
@@ -85,11 +92,15 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
   };
 
   useEffect(() => {
-    if (showInvoices) {
-      console.log("retrieving invoices...");
-      showInvoicesHandler(pageInvoices);
-    }
-  }, [showInvoices]);
+    return () => {
+      setShowInvoices(false);
+      setPageInvoices(1);
+      setLoadedInvoices(false);
+      setInvoices([]);
+      setTotalInvoices(0);
+      setLastInvoicePage(0);
+    };
+  }, [subscription]);
 
   return (
     <>
@@ -118,7 +129,10 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
         <div className="card-actions justify-end">
           <button
             className="btn"
-            onClick={() => setShowInvoices((prev) => !prev)}
+            onClick={() => {
+              if (!showInvoices) showInvoicesHandler(pageInvoices);
+              setShowInvoices((prev) => !prev);
+            }}
           >
             {showInvoices ? "Hide Invoices" : "Show invoices"}
           </button>
@@ -127,7 +141,14 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
           </button>
         </div>
       </div>
-      {showInvoices && loadedInvoices && <Invoices invoices={invoices} />}
+      {showInvoices && loadedInvoices && (
+        <InvoicesTable
+          invoices={invoices}
+          currentPage={pageInvoices}
+          totalInvoices={totalInvoices}
+          lastPage={lastInvoicePage}
+        />
+      )}
       {showInvoices && !loadedInvoices && <Loading className="my-4" />}
     </>
   );

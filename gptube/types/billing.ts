@@ -34,6 +34,7 @@ export interface SubscriptionInvoiceData {
   billingReason: string;
   total: number;
   currency: string;
+  totalFormatted: string;
   status: string;
   statusFormatted: string;
   invoiceURL: string;

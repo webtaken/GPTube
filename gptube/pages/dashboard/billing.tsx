@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { SubscriptionsResponse } from "../api/subscriptions";
 import Subscription from "@/components/Billing/Subscription";
+import Loading from "@/components/UI/Loading";
 
 const Billing: MyPage = () => {
   const [activeSubscription, setActiveSubscription] =
@@ -61,25 +62,33 @@ const Billing: MyPage = () => {
   return (
     <div className="mx-8">
       <h2 className="text-2xl text-typo">Billing</h2>
-      <div className="mt-2 tabs">
-        {subscriptions.map((sub) => {
-          return (
-            <a
-              className={`text-typo tab tab-bordered ${
-                sub.subscriptionId === activeSubscription.subscriptionId &&
-                "tab-active"
-              }`}
-              key={sub.subscriptionId}
-              onClick={() => setActiveSubscription({ ...sub })}
-            >
-              {sub.productName} subscription
-            </a>
-          );
-        })}
-      </div>
-      <div className="py-4">
-        <Subscription subscription={activeSubscription} />
-      </div>
+      {loadedSubscriptions ? (
+        <>
+          <div className="mt-2 tabs">
+            {subscriptions.map((sub) => {
+              return (
+                <a
+                  className={`text-typo tab tab-bordered ${
+                    sub.subscriptionId === activeSubscription.subscriptionId &&
+                    "tab-active"
+                  }`}
+                  key={sub.subscriptionId}
+                  onClick={() => {
+                    setActiveSubscription({ ...sub });
+                  }}
+                >
+                  {sub.productName} subscription
+                </a>
+              );
+            })}
+          </div>
+          <div className="py-4">
+            <Subscription subscription={activeSubscription} />
+          </div>
+        </>
+      ) : (
+        <Loading className="my-4" />
+      )}
     </div>
   );
 };

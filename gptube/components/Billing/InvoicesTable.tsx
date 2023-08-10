@@ -4,9 +4,17 @@ import Invoice from "./Invoice";
 
 interface InvoicesTableProps {
   invoices: SubscriptionInvoiceData[];
+  currentPage: number;
+  totalInvoices: number;
+  lastPage: number;
 }
 
-const InvoicesTable: React.FC<InvoicesTableProps> = ({ invoices }) => {
+const InvoicesTable: React.FC<InvoicesTableProps> = ({
+  invoices,
+  currentPage,
+  totalInvoices,
+  lastPage,
+}) => {
   return (
     <div>
       <div className="my-4 overflow-x-auto">
@@ -28,9 +36,16 @@ const InvoicesTable: React.FC<InvoicesTableProps> = ({ invoices }) => {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center">
-        <button className="btn">Button</button>
-        <button className="btn">Button</button>
+      <p className="text-center">You have {totalInvoices} invoices</p>
+      <div className="flex items-center justify-center gap-2">
+        <button className={`btn btn-sm ${currentPage <= 1 && "btn-disabled"}`}>
+          Prev
+        </button>
+        <button
+          className={`btn btn-sm ${currentPage >= lastPage && "btn-disabled"}`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

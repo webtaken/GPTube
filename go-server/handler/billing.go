@@ -14,8 +14,34 @@ import (
 var lemonSqueezyAuthHeader = fmt.Sprintf("Bearer %s", config.Config("LEMON_SQUEEZY_API_KEY"))
 
 func BillingCheckout(c *fiber.Ctx) error {
-	userEmail := c.Query("")
+	variantId := c.Query("variantId", "")
+	fmt.Println(variantId)
+	var checkout client.CheckoutApiResponse
+
+	agent := fiber.AcquireAgent()
+	agent.ContentType("application/json")
+	agent.Set("Authorization", lemonSqueezyAuthHeader)
+	req := agent.Request()
+	req.Header.SetMethod(fiber.MethodGet)
+	req.SetRequestURI(fmt.Sprintf("%s/checkouts", config.Config("LEMON_SQUEEZY_API_URL")))
+	// agent.QueryString(
+	// 	fmt.Sprintf("filter[variant_id]=%v", variantId),
+	// )
+
+	if err := agent.Parse(); err != nil {
+		return utils.HandleError(err, http.StatusInternalServerError, c)
+	}
+
+	statusCode, _, errs := agent.Struct(&checkout)
+	if statusCode != http.StatusOK && len(errs) > 0 {
+		return utils.HandleError(errs[0], http.StatusInternalServerError, c)
+	}
+	return c.JSON(checkout)
 }
+
+// func BillingSubscriptionInvoices(c *fiber.Ctx) error {
+
+// }
 
 func BillingSubscriptionInvoices(c *fiber.Ctx) error {
 	var body models.InvoicesRequest

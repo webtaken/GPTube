@@ -9,6 +9,7 @@ import (
 func SetupRoutes(app *fiber.App) {
 	billing := app.Group("/billing")
 	billing.Get("", handler.BillingHandler)
+	billing.Get("/checkout", handler.BillingCheckout)
 	billing.Post("/invoices", handler.BillingSubscriptionInvoices)
 
 	api := app.Group("/api")

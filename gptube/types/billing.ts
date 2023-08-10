@@ -1,6 +1,6 @@
 export interface SubscriptionRequest {
-  id: string;
-  variantId: string;
+  id: number;
+  variantId: number;
   name: string;
   description: string;
   period: "monthly" | "yearly";
@@ -11,7 +11,7 @@ export interface SubscriptionRequest {
 }
 
 export interface SubscriptionData {
-  subscriptionId: string;
+  subscriptionId: number;
   productName: string;
   cardBrand: string;
   cardLastFour: string;
@@ -27,4 +27,16 @@ export interface SubscriptionData {
   trialEndsAt: string;
   updatePaymentMethod: string;
   userEmail: string;
+}
+
+export interface SubscriptionInvoiceData {
+  id: number;
+  billingReason: string;
+  total: number;
+  currency: string;
+  status: string;
+  statusFormatted: string;
+  invoiceURL: string;
+  createdAt: string;
+  updatedAt: string;
 }

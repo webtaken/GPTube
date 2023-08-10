@@ -1,12 +1,12 @@
-import { Subscription } from "@/types/billing";
+import { SubscriptionRequest } from "@/types/billing";
 
-export const subscriptionsDev: Subscription[] = [
+export const subscriptionsDev: SubscriptionRequest[] = [
   {
-    id: "93793",
+    id: 93793,
     name: "Hobby creator",
     description:
       "Specially if you are growing and would like to know how to grow even more.",
-    variantId: "100776",
+    variantId: 100776,
     period: "monthly",
     benefits: [
       <span key="hobby-benefit-1">
@@ -21,11 +21,11 @@ export const subscriptionsDev: Subscription[] = [
     freeTrialDays: 15,
   },
   {
-    id: "93793",
+    id: 93793,
     name: "Hobby creator",
     description:
       "Specially if you are growing and would like to know how to grow even more.",
-    variantId: "107306",
+    variantId: 107306,
     period: "yearly",
     benefits: [
       <span key="hobby-benefit-1">
@@ -40,11 +40,11 @@ export const subscriptionsDev: Subscription[] = [
     freeTrialDays: 15,
   },
   {
-    id: "94367",
+    id: 94367,
     name: "Popular creator",
     description:
       "Specially for creators with a wider audience and need more feedback.",
-    variantId: "101456",
+    variantId: 101456,
     period: "monthly",
     benefits: [
       <span key="popular-benefit-1">
@@ -59,11 +59,11 @@ export const subscriptionsDev: Subscription[] = [
     freeTrialDays: 15,
   },
   {
-    id: "94367",
+    id: 94367,
     name: "Popular creator",
     description:
       "Specially for creators with a wider audience and need more feedback.",
-    variantId: "107310",
+    variantId: 107310,
     period: "yearly",
     benefits: [
       <span key="popular-benefit-1">

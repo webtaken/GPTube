@@ -11,7 +11,7 @@ require (
 	cloud.google.com/go/longrunning v0.4.1 // indirect
 	cloud.google.com/go/storage v1.28.1 // indirect
 	firebase.google.com/go v3.13.0+incompatible // indirect
-	github.com/NdoleStudio/lemonsqueezy-go v1.0.0 // indirect
+	github.com/NdoleStudio/lemonsqueezy-go v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/dlclark/regexp2 v1.8.1 // indirect
 	github.com/forPelevin/gomoji v1.1.8 // indirect

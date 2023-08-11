@@ -4,11 +4,13 @@ import React from "react";
 
 interface PricingPlanProps {
   subscription: SubscriptionRequest;
+  loadingCheckout: boolean;
   onSubscribe: () => void;
 }
 
 const PricingPlan: React.FC<PricingPlanProps> = ({
   subscription,
+  loadingCheckout,
   onSubscribe,
 }) => {
   return (
@@ -30,6 +32,7 @@ const PricingPlan: React.FC<PricingPlanProps> = ({
         className="mt-5 mx-auto primary-button"
         onClick={() => onSubscribe()}
         size="large"
+        loading={loadingCheckout}
       >
         Subscribe
       </Button>

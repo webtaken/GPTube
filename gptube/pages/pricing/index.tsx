@@ -6,8 +6,10 @@ import { useRouter } from "next/router";
 import { SubscriptionRequest } from "@/types/billing";
 import { toast, Toaster } from "react-hot-toast";
 import { subscriptionsDev } from "@/utils/common";
+import { GO_API_ENDPOINT } from "@/services";
 
 const Subscriptions: MyPage = () => {
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
   const [monthly, setMonthly] = useState(true);
   const { user } = useAuth();
   const router = useRouter();
@@ -20,16 +22,19 @@ const Subscriptions: MyPage = () => {
       });
       return;
     }
+    setLoadingCheckout(true);
+    const baseUrl = `${GO_API_ENDPOINT}/billing/checkout`;
+    const queryParams = new URLSearchParams({
+      variantId: String(sub.variantId),
+    });
+    const url = `${baseUrl}?${queryParams}`;
 
     try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sub),
-      });
+      const response = await fetch(url);
+      if (!response.ok)
+        throw new Error(`Request failed with status: ${response.status}`);
       const checkout = await response.json();
+      setLoadingCheckout(false);
       window.open(checkout["data"]["attributes"]["url"], "_blank");
     } catch (error) {
       toast.error(`${error}`);
@@ -67,6 +72,7 @@ const Subscriptions: MyPage = () => {
               <PricingPlan
                 key={`sub-${sub.id}`}
                 subscription={sub}
+                loadingCheckout={loadingCheckout}
                 onSubscribe={() => onSubscribeHandler(sub)}
               />
             );

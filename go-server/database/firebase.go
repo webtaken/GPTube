@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -95,4 +96,33 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 		}
 	}
 	return nil
+}
+
+func RetrieveSubscriptions(email string) (*[]map[string]interface{}, error) {
+	app, err := firebase.NewApp(ctx, nil, sa)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := app.Firestore(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	defer client.Close()
+
+	subscriptionsQuery := client.Collection("subscriptions").Where("user_email", "==", email)
+	subscriptions := subscriptionsQuery.Documents(ctx)
+	results := make([]map[string]interface{}, 0)
+	for {
+		doc, err := subscriptions.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, doc.Data())
+	}
+	return &results, nil
 }

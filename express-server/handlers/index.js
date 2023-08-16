@@ -20,10 +20,6 @@ initializeApp({
 
 const db = getFirestore();
 
-const getObjectFromPayload = (payload) => {
-  return payload["data"];
-};
-
 const getSubscriptionSchema = (subscription) => {
   return {
     user_email: subscription["attributes"]["user_email"],
@@ -56,8 +52,8 @@ const subscriptionCreatedHandler = async (payload) => {
       .set(data);
     console.log(`subscription created: \n${JSON.stringify(newSub, null, 2)}`);
   } catch (error) {
-    console.error(error);
-    console.log("error on subscription created handler");
+    console.error(String(error));
+    console.error("error on subscription created handler");
   }
 };
 
@@ -65,16 +61,14 @@ const subscriptionUpdatedHandler = async (payload) => {
   const subscription = payload["data"];
   const data = getSubscriptionSchema(subscription);
   try {
-    const newSub = await db
+    const sub = await db
       .collection("subscriptions")
       .doc(`${subscription["id"]}`)
       .update(data);
-    console.log(
-      `subscription updated (ID): ${JSON.stringify(newSub, null, 2)}`
-    );
+    console.log(`subscription updated (ID): ${JSON.stringify(sub, null, 2)}`);
   } catch (error) {
-    console.error(error);
-    console.log("error on subscription updated handler");
+    console.error(String(error));
+    console.error("error on subscription updated handler");
   }
 };
 

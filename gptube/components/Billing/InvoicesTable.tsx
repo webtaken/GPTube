@@ -7,6 +7,8 @@ interface InvoicesTableProps {
   currentPage: number;
   totalInvoices: number;
   lastPage: number;
+  nextPage: () => void;
+  prevPage: () => void;
 }
 
 const InvoicesTable: React.FC<InvoicesTableProps> = ({
@@ -14,6 +16,8 @@ const InvoicesTable: React.FC<InvoicesTableProps> = ({
   currentPage,
   totalInvoices,
   lastPage,
+  nextPage,
+  prevPage,
 }) => {
   return (
     <div>
@@ -38,11 +42,15 @@ const InvoicesTable: React.FC<InvoicesTableProps> = ({
       </div>
       <p className="text-center">You have {totalInvoices} invoices</p>
       <div className="flex items-center justify-center gap-2">
-        <button className={`btn btn-sm ${currentPage <= 1 && "btn-disabled"}`}>
+        <button
+          className={`btn btn-sm ${currentPage <= 1 && "btn-disabled"}`}
+          onClick={() => prevPage()}
+        >
           Prev
         </button>
         <button
           className={`btn btn-sm ${currentPage >= lastPage && "btn-disabled"}`}
+          onClick={() => nextPage()}
         >
           Next
         </button>

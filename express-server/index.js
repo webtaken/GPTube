@@ -27,7 +27,7 @@ app.post("/subscriptions", async (req, res) => {
     handler && (await handler(body));
     res.status(200).json({ message: "webhook handled" });
   } catch (error) {
-    res.status(500).json({ error: `${error}` });
+    res.status(500).json({ error: String(error) });
   }
 });
 

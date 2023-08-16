@@ -1,6 +1,6 @@
 import { GO_API_ENDPOINT } from "@/services";
 import { SubscriptionData, SubscriptionInvoiceData } from "@/types/billing";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import Loading from "../UI/Loading";
 import InvoicesTable from "./InvoicesTable";
@@ -23,17 +23,38 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
   const pageSize = 10;
 
   const updatePaymentMethodHandler = async () => {
-    const baseUrl = "/api/update-payment-method";
+    const baseUrl = `${GO_API_ENDPOINT}/billing/update-payment-method`;
     const queryParams = new URLSearchParams({
-      subscriptionId: String(subscription.subscriptionId),
+      subscription_id: String(subscription.subscriptionId),
     });
     const url = `${baseUrl}?${queryParams}`;
     try {
       const response = await fetch(url);
-      const data = await response.json();
-      window.open(data["update_payment_method_url"], "_blank");
+      if (!response.ok)
+        throw new Error(`Failed the request with status: ${response.status}`);
+      const subscription = await response.json();
+      window.open(
+        subscription["data"]["attributes"]["urls"]["update_payment_method"],
+        "_blank"
+      );
     } catch (error) {
-      toast.error(`${error}`);
+      toast.error(String(error));
+    }
+  };
+
+  const cancelSubscriptionHandler = async () => {
+    const baseUrl = `${GO_API_ENDPOINT}/billing/cancel-subscription`;
+    const queryParams = new URLSearchParams({
+      subscription_id: String(subscription.subscriptionId),
+    });
+    const url = `${baseUrl}?${queryParams}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok)
+        throw new Error(`Failed the request with status: ${response.status}`);
+      toast.success("Your subscription has been cancelled ✅");
+    } catch (error) {
+      toast.error(String(error));
     }
   };
 
@@ -58,7 +79,6 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
         );
 
       const invoices = await response.json();
-      console.log(invoices);
 
       if (totalInvoices <= 0)
         setTotalInvoices(invoices["meta"]["page"]["total"]);
@@ -87,7 +107,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
       setInvoices(formattedInvoices);
     } catch (error) {
       setLoadedInvoices(true);
-      toast.error(`${String(error)}`);
+      toast.error(String(error));
     }
   };
 
@@ -139,6 +159,9 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
           <button className="btn" onClick={() => updatePaymentMethodHandler()}>
             Update payment method
           </button>
+          <button className="btn" onClick={() => cancelSubscriptionHandler()}>
+            Cancel Subscription
+          </button>
         </div>
       </div>
       {showInvoices && loadedInvoices && (
@@ -147,9 +170,16 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
           currentPage={pageInvoices}
           totalInvoices={totalInvoices}
           lastPage={lastInvoicePage}
+          prevPage={() => {
+            if (pageInvoices > 1) showInvoicesHandler(pageInvoices - 1);
+          }}
+          nextPage={() => {
+            if (pageInvoices < lastInvoicePage)
+              showInvoicesHandler(pageInvoices + 1);
+          }}
         />
       )}
-      {showInvoices && !loadedInvoices && <Loading className="my-4" />}
+      {showInvoices && !loadedInvoices && <Loading className="my-4 text-lg" />}
     </>
   );
 };

@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const secret = process.env.LEMON_WEBHOOK_PASS || "";
+const secret = process.env.LEMON_SQUEEZY_WEBHOOK_PASSWORD || "";
 
 const validateSignature = (req) => {
   const hmac = crypto.createHmac("sha256", secret);

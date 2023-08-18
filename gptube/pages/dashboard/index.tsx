@@ -1,3 +1,4 @@
+import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 import { useAuth } from '@/hooks/useAuth'
 
 function Dashboard() {
@@ -11,4 +12,4 @@ function Dashboard() {
 }
 
 export default Dashboard
-Dashboard.Layout = 'Admin'
+Dashboard.Layout = LayoutsAvailable.Admin

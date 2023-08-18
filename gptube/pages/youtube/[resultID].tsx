@@ -1,4 +1,3 @@
-import type { MyPage } from '@/components/Common/Types'
 import type { AnalysisResults } from '@/types/youtube'
 
 import { useRouter } from 'next/router'
@@ -15,11 +14,11 @@ import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
+import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
 const { Content } = Layout
 
-// eslint-disable-next-line react/function-component-definition
-const YoutubeResults: MyPage = () => {
+function YoutubeResults() {
   const { user } = useAuth()
   const router = useRouter()
   const resultID = paramValToString(router.query.resultID)
@@ -131,4 +130,4 @@ const YoutubeResults: MyPage = () => {
 }
 
 export default YoutubeResults
-YoutubeResults.Layout = 'Admin'
+YoutubeResults.Layout = LayoutsAvailable.Admin

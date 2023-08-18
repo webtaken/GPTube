@@ -1,23 +1,23 @@
-import React, { ReactNode } from "react";
-import Footer from "../Footer";
-import Header from "../Header/Header";
+import type { ReactNode } from 'react'
+
+import React from 'react'
+
+import Footer from '../Footer'
+import Header from '../Header/Header'
 
 interface AdminLayoutProps {
-  className?: string;
-  children?: ReactNode | ReactNode[];
+  className?: string
+  children?: ReactNode | ReactNode[]
 }
 
-const AdminLayout: React.FunctionComponent<AdminLayoutProps> = ({
-  className,
-  children,
-}) => {
+function AdminLayout({ className, children }: AdminLayoutProps) {
   return (
-    <div className={`flex flex-col min-h-screen bg-black-full ${className}`}>
+    <div className={`flex flex-col min-h-screen bg-black-full ${className ?? ''}`}>
       <Header />
       <main>{children}</main>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default AdminLayout;
+export default AdminLayout

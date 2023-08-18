@@ -22,13 +22,13 @@ import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import { openSans } from '@/components/Common/Fonts'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
+import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
 import Tooltip from '../../components/UI/Tooltip'
 
 dayjs.extend(relativeTime)
 
-// eslint-disable-next-line react/function-component-definition
-const YoutubePanel = () => {
+function YoutubePanel() {
   const { user } = useAuth()
   const [page, setPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
@@ -267,4 +267,4 @@ const YoutubePanel = () => {
 }
 
 export default YoutubePanel
-YoutubePanel.Layout = 'Admin'
+YoutubePanel.Layout = LayoutsAvailable.Admin

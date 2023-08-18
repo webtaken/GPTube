@@ -1,19 +1,18 @@
-import React, { PropsWithChildren, ReactNode } from "react";
+import type { ReactNode } from 'react'
+
+import React from 'react'
 
 interface AuthLayoutProps {
-  className?: string;
-  children?: ReactNode | ReactNode[];
+  className?: string
+  children?: ReactNode | ReactNode[]
 }
 
-const AuthLayout: React.FunctionComponent<AuthLayoutProps> = ({
-  className,
-  children,
-}) => {
+function AuthLayout({ className, children }: AuthLayoutProps) {
   return (
-    <div className={`flex flex-col min-h-screen bg-black-full ${className}`}>
+    <div className={`flex flex-col min-h-screen bg-black-full ${className ?? ''}`}>
       <main className="my-auto">{children}</main>
     </div>
-  );
-};
+  )
+}
 
-export default AuthLayout;
+export default AuthLayout

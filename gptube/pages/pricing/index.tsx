@@ -6,6 +6,7 @@ import { toast, Toaster } from 'react-hot-toast'
 
 import PricingPlan from '@/components/Pricing/PricingPlan'
 import { useAuth } from '@/hooks/useAuth'
+import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
 const subscriptions: Subscription[] = [
   {
@@ -94,4 +95,4 @@ function Subscriptions() {
 }
 
 export default Subscriptions
-Subscriptions.Layout = 'Admin'
+Subscriptions.Layout = LayoutsAvailable.Admin

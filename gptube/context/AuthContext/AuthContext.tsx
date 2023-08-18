@@ -12,7 +12,7 @@ import {
 
 import { auth, googleAuthProvider } from '@/lib/firebase/config-firebase'
 
-const AuthContext = createContext({} as AuthContextProps)
+export const AuthContext = createContext({} as AuthContextProps)
 
 export function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<CustomUser>(null)
@@ -34,11 +34,11 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
     return createUserWithEmailAndPassword(auth, props.email, props.password)
   }
 
-  const login = (props: { email: string; password: string }) => {
+  const loginWithCredentials = (props: { email: string; password: string }) => {
     return signInWithEmailAndPassword(auth, props.email, props.password)
   }
 
-  const loginGoogle = () => {
+  const loginWithGoogle = () => {
     return signInWithPopup(auth, googleAuthProvider)
   }
 
@@ -52,10 +52,10 @@ export function AuthContextProvider({ children }: { children: React.ReactNode })
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, loginGoogle, signup, resetPassword, logout }}>
+    <AuthContext.Provider
+      value={{ user, loginWithCredentials, loginWithGoogle, signup, resetPassword, logout }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   )
 }
-
-export const useAuth = () => useContext(AuthContext)

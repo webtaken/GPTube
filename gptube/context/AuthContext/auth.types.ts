@@ -9,9 +9,9 @@ export type CustomUser = {
 
 export interface AuthContextProps {
   user: CustomUser
-  loginGoogle: () => Promise<UserCredential>
+  loginWithGoogle: () => Promise<UserCredential>
   logout: () => Promise<void>
-  login: (props: { email: string; password: string }) => Promise<UserCredential>
+  loginWithCredentials: (props: { email: string; password: string }) => Promise<UserCredential>
   signup: (props: { email: string; password: string }) => Promise<UserCredential>
   resetPassword: (email: string) => Promise<void>
 }

@@ -1,11 +1,13 @@
-import { NextComponentType, NextPage, NextPageContext } from "next";
-import { AppProps } from "next/app";
-import { LayoutKeys } from "../Layouts/Layouts";
-export type MyPage<P = {}, IP = P> = NextPage<P, IP> & {
-  Layout?: LayoutKeys;
-};
+import type { NextComponentType, NextPage } from 'next'
+import type { AppProps } from 'next/app'
+import type { LayoutKeys } from '../Layouts/Layouts'
+
+export type MyPage<P = object, IP = P> = NextPage<P, IP> & {
+  Layout?: LayoutKeys
+}
+
 export type MyAppProps = AppProps & {
-  Component: NextComponentType<NextPageContext, any, any> & {
-    Layout: LayoutKeys;
-  };
-};
+  Component: NextComponentType & {
+    Layout: LayoutKeys
+  }
+}

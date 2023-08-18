@@ -18,7 +18,6 @@ import {
 import { firestore } from "@/config/firebase";
 import Comment from "./Comment";
 import { NegativeYoutubeComment } from "@/types/youtube";
-import { useAuth } from "@/context/AuthContext/AuthContext";
 
 const { Content } = Layout;
 
@@ -27,10 +26,10 @@ interface NegativeCommentsProps {
   recommendationChatGPT: string;
 }
 
-const NegativeComments: React.FC<NegativeCommentsProps> = ({
+const NegativeComments = ({
   videoID,
   recommendationChatGPT,
-}) => {
+}: NegativeCommentsProps) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<
     Map<number, NegativeYoutubeComment[]>
@@ -150,7 +149,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
   }, []);
 
   let commentsSection = (
-    <p className="text-center mt-8 text-2xl animate-bounce">🐱</p>
+    <p className="mt-8 text-2xl text-center animate-bounce">🐱</p>
   );
 
   if (loadedComments) {
@@ -246,7 +245,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
       <br />
       {recommendationChatGPT && (
         <button
-          className="primary-button p-2"
+          className="p-2 primary-button"
           onClick={() => {
             setShowComments(true);
             getPaginatedComments(page);
@@ -263,15 +262,15 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full mx-auto w-full items-center justify-center p-4 text-center">
-            <Dialog.Panel className="w-full max-w-full transform overflow-hidden rounded-2xl bg-black-medium p-6 text-left align-middle shadow-xl transition-all">
+          <div className="flex items-center justify-center w-full min-h-full p-4 mx-auto text-center">
+            <Dialog.Panel className="w-full max-w-full p-6 overflow-hidden text-left align-middle transition-all transform shadow-xl rounded-2xl bg-black-medium">
               <Dialog.Title
                 as="h3"
                 className="text-lg font-medium leading-6 text-typo"
               >
                 Negative Comments
               </Dialog.Title>
-              <p className="text-base text-justify text-typo mt-2">
+              <p className="mt-2 text-base text-justify text-typo">
                 These comments have received the highest negative scores,
                 reflecting a prevailing negative sentiment among your audience.
                 Such comments may stem from discomfort with the discussed topic,
@@ -290,7 +289,7 @@ const NegativeComments: React.FC<NegativeCommentsProps> = ({
               <div className="flow-root">
                 <button
                   type="button"
-                  className="primary-button p-2 float-right"
+                  className="float-right p-2 primary-button"
                   onClick={() => setShowComments(false)}
                 >
                   Close

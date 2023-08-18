@@ -8,7 +8,8 @@ import { AuthContext } from '@/context/AuthContext/AuthContext'
 export function useAuth() {
   const router = useRouter()
   const origin = router.query.from
-  const { loginWithCredentials, signup, loginWithGoogle } = useContext(AuthContext)
+  const { loginWithCredentials, signup, loginWithGoogle, logout, resetPassword, user } =
+    useContext(AuthContext)
 
   const redirection = () => {
     if (origin && !Array.isArray(origin)) router.push(origin)
@@ -50,8 +51,20 @@ export function useAuth() {
     }
   }
 
+  const resetPasswordHandler = async ({ email }: { email: string }) => {
+    try {
+      await resetPassword(email)
+      toast.success('Reset email sent.')
+    } catch (error) {
+      toast.error(String(error))
+    }
+  }
+
   return {
+    user,
     login,
+    logout,
     loginWithGoogleHandler,
+    resetPasswordHandler,
   }
 }

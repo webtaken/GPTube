@@ -1,31 +1,20 @@
-import { useAuth } from "@/context/AuthContext/AuthContext";
-import Link from "next/link";
-import { Form, Input } from "antd";
-import { useRouter } from "next/router";
-import { openSans } from "@/components/Common/Fonts";
-import { toast, Toaster } from "react-hot-toast";
-import { FirebaseError } from "firebase/app";
+import { Form, Input } from 'antd'
+import { Toaster } from 'react-hot-toast'
 
-const ResetPasswordForm: React.FC = () => {
-  const { resetPassword } = useAuth();
+import { openSans } from '@/components/Common/Fonts'
+import { useAuth } from '@/hooks/useAuth'
 
-  const onFinishHandler = async ({ email }: { email: string }) => {
-    try {
-      await resetPassword(email);
-      toast.success("Reset email sent.");
-    } catch (error) {
-      toast.error(String(error));
-    }
-  };
+function ResetPasswordForm() {
+  const { resetPasswordHandler } = useAuth()
 
   return (
     <Form
-      name="reset_password_form"
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
-      onFinish={onFinishHandler}
       autoComplete="off"
-      className="w-96 mx-auto"
+      className="mx-auto w-96"
+      labelCol={{ span: 24 }}
+      name="reset_password_form"
+      wrapperCol={{ span: 24 }}
+      onFinish={resetPasswordHandler}
     >
       <Toaster />
       <Form.Item
@@ -34,8 +23,8 @@ const ResetPasswordForm: React.FC = () => {
         rules={[
           {
             required: true,
-            type: "email",
-            message: "Please input your email!",
+            type: 'email',
+            message: 'Please input your email!',
           },
         ]}
       >
@@ -43,12 +32,12 @@ const ResetPasswordForm: React.FC = () => {
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-        <button className="primary-button p-2 mx-auto">
+        <button className="p-2 mx-auto primary-button" type="submit">
           <span className={`${openSans.className}`}>Send Email</span>
         </button>
       </Form.Item>
     </Form>
-  );
-};
+  )
+}
 
-export default ResetPasswordForm;
+export default ResetPasswordForm

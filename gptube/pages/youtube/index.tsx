@@ -1,4 +1,3 @@
-import type { MyPage } from '@/components/Common/Types'
 import type { YoutubeRecord } from '@/types/youtube'
 
 import { useEffect, useState } from 'react'
@@ -20,16 +19,16 @@ import {
 import Link from 'next/link'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
-import { useAuth } from '@/context/AuthContext/AuthContext'
 import { openSans } from '@/components/Common/Fonts'
 import { firestore } from '@/lib/firebase/config-firebase'
+import { useAuth } from '@/hooks/useAuth'
 
 import Tooltip from '../../components/UI/Tooltip'
 
 dayjs.extend(relativeTime)
 
 // eslint-disable-next-line react/function-component-definition
-const YoutubePanel: MyPage = () => {
+const YoutubePanel = () => {
   const { user } = useAuth()
   const [page, setPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
@@ -49,12 +48,12 @@ const YoutubePanel: MyPage = () => {
       const userYoutubeColl = collection(firestore, 'users', userEmail, 'youtube')
 
       /* Counting the total number of records */
-      const totalRecords = await getCountFromServer(userYoutubeColl)
+      const countRecords = (await getCountFromServer(userYoutubeColl)).data().count
 
-      setTotalRecords(totalRecords.data().count)
+      setTotalRecords(countRecords)
       /* ------------------------------------ */
 
-      if (totalRecords.data().count === 0) {
+      if (countRecords === 0) {
         // No records
         setLoadedRecords(true)
 
@@ -105,6 +104,7 @@ const YoutubePanel: MyPage = () => {
 
   useEffect(() => {
     getYoutubeRecords(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   let recordsGrid = (
@@ -225,7 +225,7 @@ const YoutubePanel: MyPage = () => {
             }}
             pageSize={pageSize}
             total={totalRecords}
-            onChange={(page, _) => getYoutubeRecords(page)}
+            onChange={(currentPage, _) => getYoutubeRecords(currentPage)}
           />
         </div>
       </>
@@ -246,9 +246,9 @@ const YoutubePanel: MyPage = () => {
               placeholder="Search..."
               type="text"
               onChange={e => {
-                const searchVal = e.target.value.trim().toLowerCase()
+                const value = e.target.value.trim().toLowerCase()
 
-                setSearchVal(searchVal)
+                setSearchVal(value)
               }}
             />
             <Link className="w-32 py-2 rounded-sm primary-button" href="/youtube/labs">

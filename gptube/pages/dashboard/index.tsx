@@ -1,16 +1,14 @@
-import { MyPage } from "@/components/Common/Types";
-import { useAuth } from "@/context/AuthContext/AuthContext";
+import { useAuth } from '@/hooks/useAuth'
 
-const Dashboard: MyPage = () => {
-  const { user } = useAuth();
+function Dashboard() {
+  const { user } = useAuth()
+
   return (
     <div className="mx-8">
-      <h2 className="text-2xl text-typo absolute">
-        Welcome {user?.displayName || user?.email}
-      </h2>
+      <h2 className="absolute text-2xl text-typo">Welcome {user?.displayName || user?.email}</h2>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
-Dashboard.Layout = "Admin";
+export default Dashboard
+Dashboard.Layout = 'Admin'

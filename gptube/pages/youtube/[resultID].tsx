@@ -13,8 +13,8 @@ import RobertaResultsBanner from '@/components/SocialMedia/Youtube/RobertaResult
 import { openSans } from '@/components/Common/Fonts'
 import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
-import { useAuth } from '@/context/AuthContext/AuthContext'
 import { firestore } from '@/lib/firebase/config-firebase'
+import { useAuth } from '@/hooks/useAuth'
 
 const { Content } = Layout
 

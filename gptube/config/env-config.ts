@@ -8,4 +8,7 @@ export const ENV_CONFIG = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   },
+  backend: {
+    url: process.env.NEXT_PUBLIC_BACKEND_ENDPOINT,
+  },
 }

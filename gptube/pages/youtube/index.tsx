@@ -20,7 +20,7 @@ import {
 import Link from 'next/link'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/context/AuthContext/AuthContext'
 import { openSans } from '@/components/Common/Fonts'
 import { firestore } from '@/lib/firebase/config-firebase'
 

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { extractYTVideoID } from "@/utils";
 import { openSans } from "../../Common/Fonts";
 import { toast, Toaster } from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 import { Form, Input, Button } from "antd";
 
 interface PreAnalysisFormProps {

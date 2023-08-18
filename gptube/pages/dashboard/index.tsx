@@ -1,5 +1,5 @@
 import { MyPage } from "@/components/Common/Types";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 
 const Dashboard: MyPage = () => {
   const { user } = useAuth();

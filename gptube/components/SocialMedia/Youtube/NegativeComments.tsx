@@ -18,7 +18,7 @@ import {
 import { firestore } from "@/config/firebase";
 import Comment from "./Comment";
 import { NegativeYoutubeComment } from "@/types/youtube";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 
 const { Content } = Layout;
 

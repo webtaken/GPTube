@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { MyPage } from "@/components/Common/Types";
 import PricingPlan from "@/components/Pricing/PricingPlan";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 import { useRouter } from "next/router";
 import { Subscription } from "@/types/subscription";
 import { toast, Toaster } from "react-hot-toast";

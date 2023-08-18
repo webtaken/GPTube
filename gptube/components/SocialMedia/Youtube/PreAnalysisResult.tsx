@@ -4,7 +4,7 @@ import { Layout, Tag, Image, Input, Button } from "antd";
 import { openSans } from "@/components/Common/Fonts";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 
 const { Content } = Layout;
 

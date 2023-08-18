@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 import Link from "next/link";
 import { Form, Input } from "antd";
 import { useRouter } from "next/router";

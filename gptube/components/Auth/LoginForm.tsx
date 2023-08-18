@@ -5,7 +5,7 @@ import { Form, Input, Button } from "antd";
 import { FirebaseError } from "firebase/app";
 import { toast, Toaster } from "react-hot-toast";
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 import Google from "@/assets/icons/Google";
 import { openSans } from "@/components/Common/Fonts";
 

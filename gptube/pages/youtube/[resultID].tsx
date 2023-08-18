@@ -99,11 +99,13 @@ function YoutubeResults() {
             <div className="grid grid-cols-1 md:grid-cols-2">
               <BertResultsBanner
                 errors_count={analysis.results.bert_results.errors_count}
-                score_1={analysis.results.bert_results.score_1}
-                score_2={analysis.results.bert_results.score_2}
-                score_3={analysis.results.bert_results.score_3}
-                score_4={analysis.results.bert_results.score_4}
-                score_5={analysis.results.bert_results.score_5}
+                scores={[
+                  analysis.results.bert_results.score_5,
+                  analysis.results.bert_results.score_4,
+                  analysis.results.bert_results.score_3,
+                  analysis.results.bert_results.score_2,
+                  analysis.results.bert_results.score_1,
+                ]}
                 success_count={analysis.results.bert_results.success_count}
               />
               <RobertaResultsBanner

@@ -6,6 +6,7 @@ import Loading from "../UI/Loading";
 import InvoicesTable from "./InvoicesTable";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { Chip } from "@nextui-org/react";
 
 dayjs.extend(utc);
 
@@ -42,6 +43,22 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
     }
   };
 
+  const resumeSubscriptionHandler = async () => {
+    const baseUrl = `${GO_API_ENDPOINT}/billing/resume-subscription`;
+    const queryParams = new URLSearchParams({
+      subscription_id: String(subscription.subscriptionId),
+    });
+    const url = `${baseUrl}?${queryParams}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok)
+        throw new Error(`Failed the request with status: ${response.status}`);
+      toast.success("Your subscription has been resumed 😺");
+    } catch (error) {
+      toast.error(String(error));
+    }
+  };
+
   const cancelSubscriptionHandler = async () => {
     const baseUrl = `${GO_API_ENDPOINT}/billing/cancel-subscription`;
     const queryParams = new URLSearchParams({
@@ -52,7 +69,7 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
       const response = await fetch(url);
       if (!response.ok)
         throw new Error(`Failed the request with status: ${response.status}`);
-      toast.success("Your subscription has been cancelled ✅");
+      toast.success("Your subscription has been cancelled 😿");
     } catch (error) {
       toast.error(String(error));
     }
@@ -129,7 +146,13 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
         <h2 className="card-title">{subscription.productName}</h2>
         <p>
           <span className="font-semibold">Status:</span>{" "}
-          {subscription.statusFormatted}
+          {subscription.statusFormatted}{" "}
+          {subscription.status === "cancelled" && (
+            <Chip>
+              expires at:{" "}
+              {dayjs.utc(subscription.endsAt).format("YYYY-MM-DD HH:mm:ss")} UTC
+            </Chip>
+          )}
         </p>
         <p>
           <span className="font-semibold">Started at:</span>{" "}
@@ -159,9 +182,15 @@ const Subscription: React.FC<SubscriptionProps> = ({ subscription }) => {
           <button className="btn" onClick={() => updatePaymentMethodHandler()}>
             Update payment method
           </button>
-          <button className="btn" onClick={() => cancelSubscriptionHandler()}>
-            Cancel Subscription
-          </button>
+          {subscription.status === "cancelled" ? (
+            <button className="btn" onClick={() => resumeSubscriptionHandler()}>
+              Resume Subscription
+            </button>
+          ) : (
+            <button className="btn" onClick={() => cancelSubscriptionHandler()}>
+              Cancel Subscription
+            </button>
+          )}
         </div>
       </div>
       {showInvoices && loadedInvoices && (

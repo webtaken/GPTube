@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@headlessui/react": "^1.7.14",
+    "@nextui-org/react": "^2.1.5",
     "@types/node": "18.15.5",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -19,6 +20,7 @@
     "csstype": "^3.0.10",
     "dayjs": "^1.11.8",
     "firebase": "^9.20.0",
+    "framer-motion": "^10.16.1",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",

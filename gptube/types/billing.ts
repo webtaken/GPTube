@@ -22,7 +22,14 @@ export interface SubscriptionData {
   variantId: number;
   renewsAt: string;
   createdAt: string;
-  status: string;
+  status:
+    | "on_trial"
+    | "active"
+    | "paused"
+    | "past_due"
+    | "unpaid"
+    | "cancelled"
+    | "expired";
   statusFormatted: string;
   trialEndsAt: string;
   updatePaymentMethod: string;

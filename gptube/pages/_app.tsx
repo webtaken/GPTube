@@ -3,6 +3,7 @@ import { MyAppProps } from "@/components/Common/Types";
 import { Layouts } from "@/components/Layouts/Layouts";
 import { AuthContextProvider } from "@/context/AuthContext";
 import { useRouter } from "next/router";
+import { NextUIProvider } from "@nextui-org/react";
 import ProtectedRoute from "@/components/Security/ProtectedRoute";
 
 const noAuthRequired = ["/", "/login", "/reset", "/pricing"];
@@ -13,17 +14,19 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <>
-      <AuthContextProvider>
-        <Layout>
-          {noAuthRequired.includes(router.pathname) ? (
-            <Component {...pageProps} />
-          ) : (
-            <ProtectedRoute>
+      <NextUIProvider>
+        <AuthContextProvider>
+          <Layout>
+            {noAuthRequired.includes(router.pathname) ? (
               <Component {...pageProps} />
-            </ProtectedRoute>
-          )}
-        </Layout>
-      </AuthContextProvider>
+            ) : (
+              <ProtectedRoute>
+                <Component {...pageProps} />
+              </ProtectedRoute>
+            )}
+          </Layout>
+        </AuthContextProvider>
+      </NextUIProvider>
     </>
   );
 }

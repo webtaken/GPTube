@@ -14,6 +14,7 @@ func SetupRoutes(app *fiber.App) {
 	billing.Get("/subscriptions", handlers.BillingSubscriptions)
 	billing.Get("/update-payment-method", handlers.BillingUpdatePaymentMethod)
 	billing.Get("/cancel-subscription", handlers.BillingCancelSubscription)
+	billing.Get("/resume-subscription", handlers.BillingResumeSubscription)
 	billing.Post("/webhooks", handlers.BillingSubscriptionsWebhooks)
 
 	api := app.Group("/api")

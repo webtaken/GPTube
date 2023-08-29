@@ -109,6 +109,24 @@ func BillingCancelSubscription(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
+func BillingResumeSubscription(c *fiber.Ctx) error {
+	subscriptionId := c.Query("subscription_id", "")
+	if subscriptionId == "" {
+		err := fmt.Errorf("please add the 'subscription_id' query param")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+	subscriptionParams := &lemonsqueezy.SubscriptionUpdateParams{
+		Type:      "subscriptions",
+		ID:        subscriptionId,
+		Cancelled: false,
+	}
+	_, _, err := lemonClient.Subscriptions.Update(context.Background(), subscriptionParams)
+	if err != nil {
+		return utils.HandleError(err, http.StatusInternalServerError, c)
+	}
+	return c.SendStatus(http.StatusOK)
+}
+
 func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 	headers := c.GetReqHeaders()
 	signature := headers["X-Signature"]

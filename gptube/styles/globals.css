@@ -3,60 +3,44 @@
 @tailwind utilities;
 
 .link {
-    padding: 10px 20px;
-    color: #F2F2F2;
-    transition: all 0.3s ease-in-out;
-}
-
-.card {
-    margin: 14px;
-    padding: 10px 16px;
-    height: auto;
-    width: 220px;
-    background-color: #f7f7f7;
-    border-radius: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease-in-out;
-    border: 1px solid #f7f7f7;
-}
-
-.card:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 10px 20px;
+  color: #f2f2f2;
+  transition: all 0.3s ease-in-out;
 }
 
 .primary-button {
-    display: flex;
-    background-color: #D91E1E;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    color: white;
+  display: flex;
+  background-color: #d91e1e;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  color: white;
 }
 
 .primary-button:hover {
-    background-color: #E84545;
-    cursor: pointer;
-    color: white !important;
+  background-color: #e84545;
+  cursor: pointer;
+  color: white !important;
 }
 
 .custom-pagination .ant-pagination-item-active {
-    background-color: #1A1A1A !important;
-    border-color: #EDEDED ! important;
+  background-color: #1a1a1a !important;
+  border-color: #ededed !important;
 }
 
 .custom-pagination .ant-select-selector {
-    background-color: #1A1A1A !important;
-    color: #EDEDED !important;
-    border-color: #EDEDED ! important;
+  background-color: #1a1a1a !important;
+  color: #ededed !important;
+  border-color: #ededed !important;
 }
 
 .custom-pagination .ant-select-selection-item {
-    color: #EDEDED !important;
-    background-color: #1A1A1A !important;
+  color: #ededed !important;
+  background-color: #1a1a1a !important;
 }
 
 .custom-pagination .ant-select-arrow {
-    color: #EDEDED !important;
+  color: #ededed !important;
 }

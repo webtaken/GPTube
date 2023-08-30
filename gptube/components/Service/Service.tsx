@@ -1,9 +1,11 @@
-import AnalysisReport from "@/assets/icons/analysis_report.svg";
-import SentimentAnalysis from "@/assets/icons/sentiment_analysis.svg";
-import ProudSelf from "@/assets/icons/proud_self.svg";
-import ServiceCard from "./ServiceCard";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import AnalysisReport from '@/assets/icons/analysis_report.svg'
+import SentimentAnalysis from '@/assets/icons/sentiment_analysis.svg'
+import ProudSelf from '@/assets/icons/proud_self.svg'
 
-const Service: React.FC = () => {
+import ServiceCard from './ServiceCard'
+
+function Service() {
   return (
     <div className="grid grid-cols-1 m-10">
       <ServiceCard
@@ -24,7 +26,7 @@ const Service: React.FC = () => {
         image={ProudSelf}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Service;
+export default Service

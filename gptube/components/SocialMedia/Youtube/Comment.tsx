@@ -1,14 +1,14 @@
-import { Menu } from "@headlessui/react";
-import Image from "next/image";
-import { AiFillLike, AiOutlineEllipsis } from "react-icons/ai";
+import { Menu } from '@headlessui/react'
+import Image from 'next/image'
+import { AiFillLike, AiOutlineEllipsis } from 'react-icons/ai'
 
 interface CommentProps {
-  key?: React.Key;
-  url: string;
-  authorName: string;
-  authorProfileImageURL: string;
-  text: string;
-  likes: number;
+  key?: React.Key
+  url: string
+  authorName: string
+  authorProfileImageURL: string
+  text: string
+  likes?: number
   // ModerationStatus: The comment's moderation status. Will not be set if
   // the comments were requested through the id filter.
   //
@@ -17,41 +17,36 @@ interface CommentProps {
   //   "heldForReview" - The comment is awaiting review by a moderator.
   //   "likelySpam"
   //   "rejected" - The comment is unfit for display.
-  moderationStatus?: string;
+  moderationStatus?: string
 }
 
-const Comment: React.FC<CommentProps> = ({
-  authorName,
-  authorProfileImageURL,
-  text,
-  url,
-  likes,
-}) => {
+function Comment({ authorName, authorProfileImageURL, text, url, likes }: CommentProps) {
   return (
-    <div className="border rounded-md p-3 my-3">
-      <div className="flow-root space-x-2 items-center">
+    <div className="p-3 my-3 border rounded-md">
+      <div className="items-center flow-root space-x-2">
         <Image
-          src={authorProfileImageURL}
           alt="profile image"
-          width={32}
+          className="float-left object-cover w-8 h-8 rounded-full"
           height={32}
-          className="float-left object-cover rounded-full h-8 w-8"
+          src={authorProfileImageURL}
+          width={32}
         />
-        <a href={url} target="_blank" className="font-bold text-typo">
+        <a className="font-bold text-typo" href={url} rel="noopener" target="_blank">
           {authorName}
         </a>
         <div className="float-right">
-          <Menu as="div" className="inline-block relative">
+          <Menu as="div" className="relative inline-block">
             <Menu.Button className="text-typo primary-button">
               <AiOutlineEllipsis className="w-5 h-5" />
             </Menu.Button>
-            <Menu.Items className="text-typo text-center bg-primary hover:bg-white hover:text-black-low rounded absolute right-0 w-36 origin-top-right">
+            <Menu.Items className="absolute right-0 text-center origin-top-right rounded text-typo bg-primary hover:bg-white hover:text-black-low w-36">
               <Menu.Item>
                 {({ active }) => (
                   <a
-                    className={`w-full ${active && "text-primary"}`}
-                    target="_blank"
+                    className={`w-full ${active ? 'text-primary' : ''}`}
                     href={url}
+                    rel="noopener"
+                    target="_blank"
                   >
                     Link to comment
                   </a>
@@ -61,12 +56,12 @@ const Comment: React.FC<CommentProps> = ({
           </Menu>
         </div>
       </div>
-      <p className="text-typo mt-2">{text}</p>
+      <p className="mt-2 text-typo">{text}</p>
       <div className="flex items-center gap-2 text-typo">
         <AiFillLike /> {likes ?? 0}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Comment;
+export default Comment

@@ -1,81 +1,32 @@
-import { Fragment } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Form, Input, Button } from "antd";
-import { FirebaseError } from "firebase/app";
-import { toast, Toaster } from "react-hot-toast";
+import Link from 'next/link'
+import { Form, Input, Button } from 'antd'
+import { Toaster } from 'react-hot-toast'
 
-import { useAuth } from "@/context/AuthContext";
-import Google from "@/assets/icons/Google";
-import { openSans } from "@/components/Common/Fonts";
+import Google from '@/assets/icons/Google'
+import { openSans } from '@/components/Common/Fonts'
+import { useAuth } from '@/hooks/useAuth'
 
-const LoginForm: React.FC = () => {
-  const { login, signup, loginGoogle } = useAuth();
-  const router = useRouter();
-  const { from } = router.query;
-
-  const redirection = () => {
-    if (from && !Array.isArray(from)) router.push(from);
-    else router.push("/");
-  };
-
-  const onFinishHandler = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    try {
-      await login(email, password);
-      toast.success("logged in 😸");
-      redirection();
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        if (error.code === "auth/user-not-found") {
-          try {
-            await signup(email, password);
-            redirection();
-          } catch (error) {
-            toast.error(String(error));
-          }
-          return;
-        }
-        toast.error(String(error.message));
-      } else {
-        toast.error(String(error));
-      }
-    }
-  };
-
-  const loginWithGoogleHandler = async () => {
-    try {
-      await loginGoogle();
-      toast.success("logged in 😸");
-      redirection();
-    } catch (error) {
-      toast.error(String(error));
-    }
-  };
+function LoginForm() {
+  const { login, loginWithGoogleHandler } = useAuth()
 
   return (
-    <Fragment>
+    <>
       <div className="flex items-center">
         <Button
+          className="gap-2 mx-auto bg-white primary-button"
           icon={<Google className="w-4 h-4 mx-auto" />}
-          className="primary-button bg-white mx-auto gap-2"
           onClick={loginWithGoogleHandler}
         >
           Google
         </Button>
       </div>
       <Form
-        name="login_form"
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        onFinish={onFinishHandler}
         autoComplete="off"
-        className="w-96 mx-auto"
+        className="mx-auto w-96"
+        labelCol={{ span: 24 }}
+        name="login_form"
+        wrapperCol={{ span: 24 }}
+        onFinish={login}
       >
         <Toaster />
         <Form.Item
@@ -84,8 +35,8 @@ const LoginForm: React.FC = () => {
           rules={[
             {
               required: true,
-              type: "email",
-              message: "Please input your email!",
+              type: 'email',
+              message: 'Please input your email!',
             },
           ]}
         >
@@ -95,27 +46,25 @@ const LoginForm: React.FC = () => {
         <Form.Item
           label={<p className={`text-typo ${openSans.className}`}>Password</p>}
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[{ required: true, message: 'Please input your password!' }]}
         >
           <Input.Password />
         </Form.Item>
         <Form.Item wrapperCol={{ span: 24 }}>
           <Link href="/reset">
-            <span
-              className={`text-primary hover:text-white underline ${openSans.className}`}
-            >
+            <span className={`text-primary hover:text-white underline ${openSans.className}`}>
               Forgot your password?
             </span>
           </Link>
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <button className="primary-button py-2 px-4 mx-auto">
+          <button className="px-4 py-2 mx-auto primary-button" type="submit">
             <span className={`${openSans.className}`}>Login</span>
           </button>
         </Form.Item>
       </Form>
-    </Fragment>
-  );
-};
+    </>
+  )
+}
 
-export default LoginForm;
+export default LoginForm

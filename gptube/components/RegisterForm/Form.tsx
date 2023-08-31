@@ -59,7 +59,7 @@ function RegisterForm() {
         </Form.Item>
         <Form.Item>
           <Button className="flex" htmlType="submit" size="large">
-            <SendOutlined className="my-auto " />
+            <SendOutlined className="my-auto " rev="icon" />
             Contact us
           </Button>
         </Form.Item>

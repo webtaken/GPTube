@@ -67,10 +67,13 @@ function Subscriptions() {
           subscriptionType: sub.subType,
         }),
       })
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const checkout = await response.json()
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       window.open(checkout.data.attributes.url, '_blank')
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       toast.error(`${error}`)
     }
   }

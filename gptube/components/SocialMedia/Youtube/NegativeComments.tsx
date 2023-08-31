@@ -108,30 +108,39 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
         return
       }
 
-      const tmpNegativeComments: NegativeYoutubeComment[] = snapshot.docs.map(doc => {
-        const docData = doc.data()
+      const tmpNegativeComments: NegativeYoutubeComment[] = snapshot.docs.map(
+        negativeCommentDoc => {
+          const docData = negativeCommentDoc.data()
 
-        return {
-          comment: {
-            commentID: docData.comment.commentID,
-            authorDisplayName: docData.comment.authorDisplayName,
-            authorProfileImageUrl: docData.comment.authorProfileImageUrl,
-            textDisplay: docData.comment.textDisplay,
-            textOriginal: docData.comment.textOriginal,
-            likeCount: docData.comment.likeCount,
-          },
-          priority: docData.priority,
-        }
-      })
+          return {
+            comment: {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              commentID: docData.comment.commentID,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              authorDisplayName: docData.comment.authorDisplayName,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              authorProfileImageUrl: docData.comment.authorProfileImageUrl,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              textDisplay: docData.comment.textDisplay,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              textOriginal: docData.comment.textOriginal,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+              likeCount: docData.comment.likeCount,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            priority: docData.priority,
+          }
+        },
+      )
 
       setLoadedComments(true)
       setComments(prevComments => {
         const newComments = new Map<number, NegativeYoutubeComment[]>()
 
-        for (const [page, comments] of prevComments.entries()) {
-          const commentsCopy = [...comments]
+        for (const [pageComments, negativeComments] of prevComments.entries()) {
+          const commentsCopy = [...negativeComments]
 
-          newComments.set(page, commentsCopy)
+          newComments.set(pageComments, commentsCopy)
         }
         newComments.set(newPage, tmpNegativeComments)
 
@@ -160,12 +169,12 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
           ) : (
             <div className="bg-black-medium">
               <div className="flex flex-col pb-4">
-                {commentsPage.map((data, index) => {
+                {commentsPage.map(data => {
                   const comment = data.comment
 
                   return (
                     <Comment
-                      key={index}
+                      key={`comment-${new Date().getTime()}`}
                       authorName={comment.authorDisplayName}
                       authorProfileImageURL={comment.authorProfileImageUrl}
                       likes={comment.likeCount}
@@ -187,6 +196,7 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
                         page > 1 ? 'hover:bg-gray-900' : 'cursor-not-allowed'
                       } inline-flex items-center px-4 py-2 text-sm font-medium text-typo bg-gray-800 rounded-l`}
                       disabled={page <= 1}
+                      type="button"
                       onClick={() => {
                         if (page > 1) {
                           getPaginatedComments(page - 1)
@@ -207,6 +217,7 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
                         page >=
                         Math.floor(numComments / pageSize) + Number(numComments % pageSize > 0)
                       }
+                      type="button"
                       onClick={() => {
                         const lastPage =
                           Math.floor(numComments / pageSize) + Number(numComments % pageSize > 0)
@@ -240,6 +251,7 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
       {recommendationChatGPT ? (
         <button
           className="p-2 primary-button"
+          type="button"
           onClick={() => {
             setShowComments(true)
             getPaginatedComments(page)

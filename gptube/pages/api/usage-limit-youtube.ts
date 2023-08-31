@@ -9,6 +9,10 @@ interface UsageLimitQueryParams {
   ownerEmail: string
 }
 
+export interface ResponseBody {
+  usage_limit_reached: boolean
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { ownerEmail } = req.query as unknown as UsageLimitQueryParams
@@ -25,12 +29,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const userData = docSnap.data()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const currentUsageLimit = userData.usageLimitYoutube
     const usageLimit = parseInt(process.env.USAGE_LIMIT_YOUTUBE || '20')
 
-    res.status(200).json({
+    const bodyResponse: ResponseBody = {
       usage_limit_reached: currentUsageLimit >= usageLimit,
-    })
+    }
+
+    res.status(200).json(bodyResponse)
   } catch (error) {
     res.status(500).json({ error })
   }

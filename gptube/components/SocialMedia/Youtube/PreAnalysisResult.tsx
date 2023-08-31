@@ -60,9 +60,11 @@ function PreAnalysisResult({
         throw new Error('Failed to send data.')
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = await response.json()
 
       toast.dismiss(toastLoading)
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
       router.push(`/youtube/${data.results_id}`)
     } catch (error) {
       toast.dismiss(toastLoading)
@@ -95,7 +97,7 @@ function PreAnalysisResult({
                 if (index < 10) {
                   return (
                     <Tag
-                      key={index}
+                      key={tag}
                       className="mt-1 font-light text-white border-white border-1 bg-black-low"
                     >
                       #{tag}

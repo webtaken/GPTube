@@ -45,9 +45,13 @@ function YoutubeResults() {
         const docData = docSnap.data()
         const analysisYoutube = {
           _id: docSnap.id,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           video_id: docData.video_id || null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           video_title: docData.video_title || null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           results: docData.results || null,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           error: docData.error || null,
         }
 

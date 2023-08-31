@@ -87,9 +87,13 @@ function YoutubePanel() {
         const docData = doc.data()
 
         return {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           video_id: docData.video_id,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           video_title: docData.video_title,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           created_at: new Date(docData.created_at.seconds * 1000),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           last_update: new Date(docData.last_update.seconds * 1000),
         }
       })
@@ -129,10 +133,10 @@ function YoutubePanel() {
             .filter(
               record => searchVal === '' || record.video_title.toLowerCase().includes(searchVal),
             )
-            .map((record, index) => {
+            .map(record => {
               return (
                 <div
-                  key={index}
+                  key={record.video_id}
                   className="grid content-between grid-cols-1 px-3 py-4 border rounded-lg gap-y-2 bg-black-full border-white-low hover:border-white-full"
                 >
                   <div>
@@ -168,10 +172,11 @@ function YoutubePanel() {
           <Pagination
             className="mx-auto custom-pagination"
             defaultCurrent={page}
-            itemRender={(current, type, originalElement) => {
+            // eslint-disable-next-line react/no-unstable-nested-components
+            itemRender={(current, type) => {
               if (type === 'jump-next') {
                 return (
-                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full">
+                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronRight
                       aria-hidden="true"
                       className="w-5 h-5 text-white-low hover:text-primary"
@@ -181,7 +186,7 @@ function YoutubePanel() {
               }
               if (type === 'jump-prev') {
                 return (
-                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full">
+                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronLeft
                       aria-hidden="true"
                       className="w-5 h-5 text-white-low hover:text-primary"
@@ -191,7 +196,7 @@ function YoutubePanel() {
               }
               if (type === 'prev') {
                 return (
-                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full">
+                  <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronLeft
                       aria-hidden="true"
                       className={`h-5 w-5 text-white-low ${
@@ -203,7 +208,10 @@ function YoutubePanel() {
               }
               if (type === 'next') {
                 return (
-                  <button className="px-2 py-2 bg-black-full rounded-r-md text-white-full">
+                  <button
+                    className="px-2 py-2 bg-black-full rounded-r-md text-white-full"
+                    type="button"
+                  >
                     <BsChevronRight
                       aria-hidden="true"
                       className={`h-5 w-5 text-white-low ${
@@ -213,15 +221,15 @@ function YoutubePanel() {
                   </button>
                 )
               }
-              if (type === 'page') {
-                return (
-                  <button className="w-full border rounded-md text-typo border-white-low text">
-                    {current}
-                  </button>
-                )
-              }
 
-              return originalElement
+              return (
+                <button
+                  className="w-full border rounded-md text-typo border-white-low text"
+                  type="button"
+                >
+                  {current}
+                </button>
+              )
             }}
             pageSize={pageSize}
             total={totalRecords}

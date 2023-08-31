@@ -22,14 +22,14 @@ function Footer() {
           className="flex items-center gap-1"
           href="mailto:gptube.team@gmail.com?subject=Hi, I want to know more about GPTube"
         >
-          <GoogleOutlined rev={undefined} style={iconSize} />
+          <GoogleOutlined style={iconSize} />
         </a>
         <a
           href="https://www.linkedin.com/posts/saul-rojas-6885b1188_buildinpublic-vercel-activity-7071255622289117184-lyh8?utm_source=share&utm_medium=member_desktop"
           rel="noopener"
           target="_blank"
         >
-          <LinkedinOutlined rev={undefined} style={iconSize} />
+          <LinkedinOutlined style={iconSize} />
         </a>
       </div>
       <p className="mt-2 text-center text-white">Copyright © 2023 GPTube, 2023</p>

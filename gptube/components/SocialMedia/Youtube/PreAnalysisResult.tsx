@@ -97,7 +97,7 @@ function PreAnalysisResult({
                 if (index < 10) {
                   return (
                     <Tag
-                      key={tag}
+                      key={`tag-${tag}`}
                       className="mt-1 font-light text-white border-white border-1 bg-black-low"
                     >
                       #{tag}

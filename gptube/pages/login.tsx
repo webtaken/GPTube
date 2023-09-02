@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { openSans } from '@/components/Common/Fonts'
 import LoginForm from '@/components/Auth/LoginForm'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Login() {
   return (

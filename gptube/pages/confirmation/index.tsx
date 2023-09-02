@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Confirmation() {
   return (

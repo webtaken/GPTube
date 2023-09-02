@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Service from '@/components/Service/Service'
 import { openSans } from '@/components/Common/Fonts'
 import YoutubeEmbed from '@/components/UI/YoutubeEmbed'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Home() {
   return (

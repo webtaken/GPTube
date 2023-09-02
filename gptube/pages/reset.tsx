@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { openSans } from '@/components/Common/Fonts'
 import ResetPasswordForm from '@/components/Auth/ResetPasswordForm'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Reset() {
   return (

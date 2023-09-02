@@ -1,4 +1,4 @@
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 import { useAuth } from '@/hooks/useAuth'
 
 function Dashboard() {

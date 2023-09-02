@@ -14,7 +14,7 @@ import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 const { Content } = Layout
 

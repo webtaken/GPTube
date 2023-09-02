@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import Service from '@/components/Service/Service'
 import { openSans } from '@/components/Common/Fonts'
 import YoutubeEmbed from '@/components/UI/YoutubeEmbed'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 import { apiClient } from '../gptube-api'
 

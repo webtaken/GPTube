@@ -1,6 +1,6 @@
 import { openSans } from '@/components/Common/Fonts'
 import PreAnalysis from '@/components/SocialMedia/Youtube/PreAnalysis'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function YoutubePanel() {
   return (

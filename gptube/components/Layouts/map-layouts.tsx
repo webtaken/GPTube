@@ -1,4 +1,4 @@
-import AdminLayout from './AdminLayout'
+import { MainLayout } from './main-layout'
 import AuthLayout from './AuthLayout'
 
 export const enum LayoutsAvailable {
@@ -6,9 +6,7 @@ export const enum LayoutsAvailable {
   Admin = 'Admin',
 }
 
-export const Layouts = {
+export const MapLayouts = {
   [LayoutsAvailable.Auth]: AuthLayout,
-  [LayoutsAvailable.Admin]: AdminLayout,
+  [LayoutsAvailable.Admin]: MainLayout,
 }
-
-export type LayoutKeys = keyof typeof Layouts

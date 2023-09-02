@@ -17,6 +17,10 @@ cloud.google.com/go/storage v1.28.1/go.mod h1:Qnisd4CqDdo6BGs2AD5LLnEsmSQ80wQ5og
 firebase.google.com/go v3.13.0+incompatible h1:3TdYC3DDi6aHn20qoRkxwGqNgdjtblwVAyRLQwGn/+4=
 firebase.google.com/go v3.13.0+incompatible/go.mod h1:xlah6XbEyW6tbfSklcfe5FHJIwjt8toICdV5Wh9ptHs=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.0 h1:iKh8jUd7ymKu4KhcL5vg8Ksxyk6WPBQDFxU27K7XjOE=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.0/go.mod h1:yRYTtU1RyapMDPTFKypIEKLEjPAbWq9a5PGqqvIn6/Y=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.1 h1:Apc3AOnLjRNVBzUSQJ7xnKxDrR2qYrx8lpJhBzAKeHw=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.1/go.mod h1:yRYTtU1RyapMDPTFKypIEKLEjPAbWq9a5PGqqvIn6/Y=
 github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
 github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=

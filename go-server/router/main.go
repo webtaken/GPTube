@@ -1,16 +1,25 @@
 package router
 
 import (
-	"gptube/handler"
+	"gptube/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
-	api.Get("", handler.HomeHandler)
+	billing := app.Group("/billing")
+	billing.Get("", handlers.BillingHandler)
+	billing.Get("/checkout", handlers.BillingCheckout)
+	billing.Post("/invoices", handlers.BillingSubscriptionInvoices)
+	billing.Get("/subscriptions", handlers.BillingSubscriptions)
+	billing.Get("/update-payment-method", handlers.BillingUpdatePaymentMethod)
+	billing.Get("/cancel-subscription", handlers.BillingCancelSubscription)
+	billing.Get("/resume-subscription", handlers.BillingResumeSubscription)
+	billing.Post("/webhooks", handlers.BillingSubscriptionsWebhooks)
 
+	api := app.Group("/api")
+	api.Get("", handlers.ApiHandler)
 	youtubeRoutes := api.Group("/youtube")
-	youtubeRoutes.Post("/pre-analysis", handler.YoutubePreAnalysisHandler)
-	youtubeRoutes.Post("/analysis", handler.YoutubeAnalysisHandler)
+	youtubeRoutes.Post("/pre-analysis", handlers.YoutubePreAnalysisHandler)
+	youtubeRoutes.Post("/analysis", handlers.YoutubeAnalysisHandler)
 }

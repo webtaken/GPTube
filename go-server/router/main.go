@@ -9,12 +9,14 @@ import (
 func SetupRoutes(app *fiber.App) {
 	billing := app.Group("/billing")
 	billing.Get("", handlers.BillingHandler)
+	billing.Get("/products", handlers.BillingProducts)
 	billing.Get("/checkout", handlers.BillingCheckout)
 	billing.Post("/invoices", handlers.BillingSubscriptionInvoices)
 	billing.Get("/subscriptions", handlers.BillingSubscriptions)
 	billing.Get("/update-payment-method", handlers.BillingUpdatePaymentMethod)
 	billing.Get("/cancel-subscription", handlers.BillingCancelSubscription)
 	billing.Get("/resume-subscription", handlers.BillingResumeSubscription)
+	// This is a special endpoint for receiving subscriptions webhooks on LemonSqueezy
 	billing.Post("/webhooks", handlers.BillingSubscriptionsWebhooks)
 
 	api := app.Group("/api")

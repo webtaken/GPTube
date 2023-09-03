@@ -10,13 +10,23 @@ import (
 	"net/http"
 	"time"
 
+	firebase "firebase.google.com/go"
 	"github.com/NdoleStudio/lemonsqueezy-go"
 	"github.com/gofiber/fiber/v2"
+	"google.golang.org/api/iterator"
 )
 
 var lemonSqueezyAuthHeader = fmt.Sprintf("Bearer %s", config.Config("LEMON_SQUEEZY_API_KEY"))
 var lemonClient = lemonsqueezy.New(lemonsqueezy.WithAPIKey(config.Config("LEMON_SQUEEZY_API_KEY")))
 var lemonWebhookClient = lemonsqueezy.New(lemonsqueezy.WithSigningSecret(config.Config("LEMON_SQUEEZY_WEBHOOK_PASSWORD")))
+
+func BillingProducts(c *fiber.Ctx) error {
+	allVariants, _, err := lemonClient.Variants.List(context.Background())
+	if err != nil {
+		return utils.HandleError(err, http.StatusInternalServerError, c)
+	}
+	return c.JSON(allVariants)
+}
 
 func BillingCheckout(c *fiber.Ctx) error {
 	variantId := c.Query("variantId", "")
@@ -116,15 +126,45 @@ func BillingResumeSubscription(c *fiber.Ctx) error {
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 	subscriptionParams := &lemonsqueezy.SubscriptionUpdateParams{
-		Type:      "subscriptions",
-		ID:        subscriptionId,
-		Cancelled: false,
+		ID: subscriptionId,
+		Attributes: lemonsqueezy.SubscriptionUpdateParamsAttributes{
+			Cancelled: false,
+		},
 	}
 	_, _, err := lemonClient.Subscriptions.Update(context.Background(), subscriptionParams)
 	if err != nil {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 	return c.SendStatus(http.StatusOK)
+}
+
+func billingUpdateSubscription() error {
+	app, err := firebase.NewApp(database.Ctx, nil, database.Sa)
+	if err != nil {
+		return err
+	}
+
+	client, err := app.Firestore(database.Ctx)
+	if err != nil {
+		return err
+	}
+
+	defer client.Close()
+
+	subscriptionsQuery := client.Collection("subscriptions").Where("user_email", "==", email)
+	subscriptions := subscriptionsQuery.Documents(Ctx)
+	results := make([]map[string]interface{}, 0)
+	for {
+		doc, err := subscriptions.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, doc.Data())
+	}
+	return &results, nil
 }
 
 func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {

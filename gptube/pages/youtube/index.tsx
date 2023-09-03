@@ -19,7 +19,6 @@ import {
 import Link from 'next/link'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
-import { openSans } from '@/components/Common/Fonts'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
 import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
@@ -241,7 +240,7 @@ function YoutubePanel() {
   }
 
   return (
-    <div className={`${openSans.className} w-full`}>
+    <div className={` w-full`}>
       <Toaster />
       {loadedRecords ? (
         <div className="px-8">

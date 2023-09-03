@@ -1,12 +1,11 @@
 import Link from 'next/link'
 
-import { openSans } from '@/components/Common/Fonts'
 import ResetPasswordForm from '@/components/Auth/ResetPasswordForm'
 import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Reset() {
   return (
-    <div className={`${openSans.className}`}>
+    <div className="">
       <h1 className="text-4xl text-center text-typo">
         <Link className="font-bold hover:text-primary" href="/">
           GPTube

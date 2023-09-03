@@ -6,7 +6,6 @@ import { Divider } from 'antd'
 
 import { useAuth } from '@/hooks/useAuth'
 
-import { openSans } from '../Common/Fonts'
 import DefaultUserImage from '../../assets/img/default_user_image.jpg'
 
 function Header({ className }: { className?: string }) {
@@ -15,7 +14,7 @@ function Header({ className }: { className?: string }) {
 
   return (
     <>
-      <header className={`${className ?? ''} ${openSans.className} flex justify-between mx-4 mt-4`}>
+      <header className={`${className ?? ''}  flex justify-between mx-4 mt-4`}>
         <div className="flex items-center gap-4 mx-8 my-auto">
           <Link
             className="text-xl font-semibold rounded-lg md:text-4xl text-typo hover:text-primary"

@@ -1,13 +1,20 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
+import Link from 'next/link'
+
+import { Button } from './common/button'
 
 export function Header() {
   return (
-    <Navbar>
+    <Navbar isBordered>
       <NavbarBrand>
-        <p>GPTube</p>
+        <p className="text-2xl font-bold">GPTube</p>
       </NavbarBrand>
-      <NavbarContent>
-        <NavbarItem>sadsad</NavbarItem>
+      <NavbarContent justify="end">
+        <NavbarItem>
+          <Button as={Link} href="#">
+            Sign in
+          </Button>
+        </NavbarItem>
       </NavbarContent>
     </Navbar>
   )

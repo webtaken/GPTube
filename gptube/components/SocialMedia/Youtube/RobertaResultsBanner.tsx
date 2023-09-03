@@ -1,7 +1,5 @@
 import { Layout } from 'antd'
 
-import { openSans } from '@/components/Common/Fonts'
-
 const { Content } = Layout
 
 interface RobertaResultsBannerProps {
@@ -49,9 +47,7 @@ function RobertaResultsBanner({
   }
 
   return (
-    <Content
-      className={`${openSans.className} max-w-full bg-black-medium mx-20 rounded-md text-typo`}
-    >
+    <Content className={` max-w-full bg-black-medium mx-20 rounded-md text-typo`}>
       <p className="pt-4 text-lg font-semibold text-center">
         Sentiment Analysis <span className="font-bold">(RoBERTa)</span> 🤗
       </p>

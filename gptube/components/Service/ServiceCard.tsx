@@ -1,8 +1,6 @@
 import Image from 'next/image'
 import { Layout } from 'antd'
 
-import { openSans } from '../Common/Fonts'
-
 const { Content } = Layout
 
 interface ServiceCardProps {
@@ -24,7 +22,7 @@ function ServiceCard({ left, content, image }: ServiceCardProps) {
         </div>
         <div className="grid gap-2 mx-4 lg:gap-6">
           <div className="flex gap-2">
-            <p className={`${openSans.className} text-typo text-lg text-justify mx-5`}>{content}</p>
+            <p className={` text-typo text-lg text-justify mx-5`}>{content}</p>
           </div>
         </div>
       </Content>
@@ -35,7 +33,7 @@ function ServiceCard({ left, content, image }: ServiceCardProps) {
     <Content className="grid items-center w-full px-4 py-2 mx-auto opacity-1 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 rounded-2xl md:p-6 sm:py-4">
       <div className="grid gap-2 mx-4 lg:gap-6">
         <div className="flex gap-2">
-          <p className={`${openSans.className} text-typo text-lg text-justify mx-5`}>{content}</p>
+          <p className={` text-typo text-lg text-justify mx-5`}>{content}</p>
         </div>
       </div>
       <div className="grid justify-center mx-auto w-fit">

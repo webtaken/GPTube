@@ -9,7 +9,6 @@ import { Layout } from 'antd'
 
 import BertResultsBanner from '@/components/SocialMedia/Youtube/BertResultsBanner'
 import RobertaResultsBanner from '@/components/SocialMedia/Youtube/RobertaResultsBanner'
-import { openSans } from '@/components/Common/Fonts'
 import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
@@ -75,7 +74,7 @@ function YoutubeResults() {
       {analysis ? (
         <>
           <Content
-            className={`${openSans.className} bg-black-medium border-gray-500 border my-6 pb-6 mx-20 rounded-md text-typo`}
+            className={` bg-black-medium border-gray-500 border my-6 pb-6 mx-20 rounded-md text-typo`}
           >
             <p className="px-6 pt-6 text-2xl font-black text-typo">
               Here is the analysis of your video 🤗!
@@ -97,7 +96,7 @@ function YoutubeResults() {
             />
           </Content>
           <Content
-            className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
+            className={` bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
           >
             <p className="px-6 pt-6 text-2xl font-black text-typo">AI models results 🧠</p>
             <div className="grid grid-cols-1 md:grid-cols-2">
@@ -124,7 +123,7 @@ function YoutubeResults() {
         </>
       ) : (
         <Content
-          className={`${openSans.className} bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
+          className={` bg-black-medium border-gray-500 border my-6 mx-20 rounded-md text-typo`}
         >
           <p className="p-10 m-auto text-4xl text-center text-typo">
             We couldn&apos;t find your result 🙀 (404)!.

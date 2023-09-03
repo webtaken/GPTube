@@ -1,7 +1,5 @@
 import { Layout } from 'antd'
 
-import { openSans } from '@/components/Common/Fonts'
-
 const { Content } = Layout
 
 interface BertResultsBannerProps {
@@ -18,9 +16,7 @@ function BertResultsBanner({ scores, success_count, errors_count }: BertResultsB
   }
 
   return (
-    <Content
-      className={`${openSans.className} max-w-full bg-black-medium mx-20 rounded-md text-typo`}
-    >
+    <Content className={` max-w-full bg-black-medium mx-20 rounded-md text-typo`}>
       <p className="pt-4 text-lg font-semibold text-center">
         Satisfaction by Rates <span className="font-bold">(BERT)</span> ⭐
       </p>

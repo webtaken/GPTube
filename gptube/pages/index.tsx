@@ -1,13 +1,12 @@
 import Link from 'next/link'
 
 import Service from '@/components/Service/Service'
-import { openSans } from '@/components/Common/Fonts'
 import YoutubeEmbed from '@/components/UI/YoutubeEmbed'
 import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Home() {
   return (
-    <div className={`gap-2 my-20 ${openSans.className}`}>
+    <div className={`gap-2 my-20 `}>
       <section className="grid grid-cols-1 gap-4 px-6 md:grid-cols-2 opacity-1">
         <div className="grid grid-cols-1 gap-8 mx-16 my-auto">
           <p className="text-2xl text-center md:text-4xl text-typo">

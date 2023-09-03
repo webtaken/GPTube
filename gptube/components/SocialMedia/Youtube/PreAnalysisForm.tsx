@@ -7,8 +7,6 @@ import { Form, Input, Button } from 'antd'
 import { extractYTVideoID } from '@/utils'
 import { useAuth } from '@/hooks/useAuth'
 
-import { openSans } from '../../Common/Fonts'
-
 const NEXT_PUBLIC_BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ''
 
 interface PreAnalysisFormProps {
@@ -102,7 +100,7 @@ function PreAnalysisForm({
     >
       <Toaster />
       <Form.Item
-        label={<p className={`text-typo ${openSans.className}`}>URL Youtube video:</p>}
+        label={<p className={`text-typo `}>URL Youtube video:</p>}
         name="url"
         rules={[
           {
@@ -117,7 +115,7 @@ function PreAnalysisForm({
 
       <Form.Item wrapperCol={{ offset: 10, span: 4 }}>
         <Button className="w-full primary-button" htmlType="submit">
-          <span className={`${openSans.className}`}>Start</span>
+          <span className="">Start</span>
         </Button>
       </Form.Item>
     </Form>

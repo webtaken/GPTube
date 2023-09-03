@@ -13,7 +13,6 @@ import (
 	firebase "firebase.google.com/go"
 	"github.com/NdoleStudio/lemonsqueezy-go"
 	"github.com/gofiber/fiber/v2"
-	"google.golang.org/api/iterator"
 )
 
 var lemonSqueezyAuthHeader = fmt.Sprintf("Bearer %s", config.Config("LEMON_SQUEEZY_API_KEY"))
@@ -138,7 +137,9 @@ func BillingResumeSubscription(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-func billingUpdateSubscription() error {
+func billingCreateSubscriptionWebhookHandler(
+	subscription *lemonsqueezy.WebhookRequest[lemonsqueezy.Subscription,
+		lemonsqueezy.ApiResponseRelationshipsSubscription]) error {
 	app, err := firebase.NewApp(database.Ctx, nil, database.Sa)
 	if err != nil {
 		return err
@@ -151,20 +152,53 @@ func billingUpdateSubscription() error {
 
 	defer client.Close()
 
-	subscriptionsQuery := client.Collection("subscriptions").Where("user_email", "==", email)
-	subscriptions := subscriptionsQuery.Documents(Ctx)
-	results := make([]map[string]interface{}, 0)
-	for {
-		doc, err := subscriptions.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, doc.Data())
+	newSubscriptionFirestore := models.SubscriptionFirestore{
+		UserEmail:           subscription.Data.Attributes.UserEmail,
+		SubscriptionId:      subscription.Data.ID,
+		OrderId:             subscription.Data.Attributes.OrderID,
+		ProductId:           subscription.Data.Attributes.ProductID,
+		VariantId:           subscription.Data.Attributes.VariantID,
+		CustomerId:          0,
+		ProductName:         subscription.Data.Attributes.ProductName,
+		Status:              subscription.Data.Attributes.Status,
+		StatusFormatted:     subscription.Data.Attributes.StatusFormatted,
+		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt.String(),
+		RenewsAt:            subscription.Data.Attributes.RenewsAt.String(),
+		EndsAt:              subscription.Data.Attributes.EndsAt.String(),
+		CreatedAt:           subscription.Data.Attributes.CreatedAt.String(),
+		CardBrand:           "",
+		CardLastFour:        "",
+		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
-	return &results, nil
+
+	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
+		Set(database.Ctx, newSubscriptionFirestore)
+	if err != nil {
+		return fmt.Errorf("An error has occurred: %s", err)
+	}
+
+	return nil
+}
+
+func billingUpdateSubscriptionWebhookHandler(
+	subscription *lemonsqueezy.WebhookRequest[
+		lemonsqueezy.Subscription,
+		lemonsqueezy.ApiResponseRelationshipsSubscription]) error {
+	app, err := firebase.NewApp(database.Ctx, nil, database.Sa)
+	if err != nil {
+		return err
+	}
+
+	client, err := app.Firestore(database.Ctx)
+	if err != nil {
+		return err
+	}
+
+	defer client.Close()
+
+	fmt.Println("updating subscription")
+
+	return nil
 }
 
 func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
@@ -184,7 +218,21 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 			return c.SendStatus(http.StatusInternalServerError)
 		}
 
-		fmt.Println(webhookBody.Meta.EventName)
+		eventHandlers := make(map[string]func(
+			subscription *lemonsqueezy.WebhookRequest[
+				lemonsqueezy.Subscription,
+				lemonsqueezy.ApiResponseRelationshipsSubscription]) error)
+		eventHandlers["subscription_created"] = billingCreateSubscriptionWebhookHandler
+		eventHandlers["subscription_updated"] = billingUpdateSubscriptionWebhookHandler
+
+		handler, ok := eventHandlers[webhookBody.Meta.EventName]
+		if !ok {
+			utils.HandleError(
+				fmt.Errorf("event not registered on the webhook"),
+				http.StatusInternalServerError, c)
+		}
+
+		handler(&webhookBody)
 
 		return c.JSON(fiber.Map{
 			"message": "webhook received correctly",

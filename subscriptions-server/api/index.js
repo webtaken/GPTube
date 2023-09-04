@@ -1,7 +1,7 @@
 require("dotenv").config({ path: ".env.development" });
 const express = require("express");
-const webhook_events = require("./handlers/index.js");
-const { validateSignature } = require("./utils.js");
+const webhook_events = require("../handlers/index");
+const { validateSignature } = require("../utils");
 const app = express();
 
 const port = process.env.PORT || 8001;

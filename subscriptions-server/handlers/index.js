@@ -43,6 +43,8 @@ const getSubscriptionSchema = (subscription) => {
 };
 
 const subscriptionCreatedHandler = async (payload) => {
+  const event_type = payload["meta"]["event_name"];
+  console.log(`Entry event: ${event_type}`);
   const subscription = payload["data"];
   const data = getSubscriptionSchema(subscription);
   try {
@@ -59,6 +61,8 @@ const subscriptionCreatedHandler = async (payload) => {
 };
 
 const subscriptionUpdatedHandler = async (payload) => {
+  const event_type = payload["meta"]["event_name"];
+  console.log(`Entry event: ${event_type}`);
   const subscription = payload["data"];
   const data = getSubscriptionSchema(subscription);
   try {

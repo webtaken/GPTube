@@ -174,7 +174,7 @@ func billingCreateSubscriptionWebhookHandler(
 	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
 		Set(database.Ctx, newSubscriptionFirestore)
 	if err != nil {
-		return fmt.Errorf("An error has occurred: %s", err)
+		return fmt.Errorf("an error has occurred: %s", err)
 	}
 
 	return nil

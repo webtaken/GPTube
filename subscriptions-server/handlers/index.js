@@ -50,7 +50,8 @@ const subscriptionCreatedHandler = async (payload) => {
       .collection("subscriptions")
       .doc(`${subscription["id"]}`)
       .set(data);
-    console.log(`subscription created: \n${JSON.stringify(newSub, null, 2)}`);
+    console.log(`Subscription ID: ${subscription["id"]}`);
+    console.log(`Subscription created: \n${JSON.stringify(newSub, null, 2)}`);
   } catch (error) {
     console.error(String(error));
     console.error("error on subscription created handler");
@@ -65,7 +66,8 @@ const subscriptionUpdatedHandler = async (payload) => {
       .collection("subscriptions")
       .doc(`${subscription["id"]}`)
       .update(data);
-    console.log(`subscription updated (ID): ${JSON.stringify(sub, null, 2)}`);
+    console.log(`Subscription ID: ${subscription["id"]}`);
+    console.log(`Subscription updated: ${JSON.stringify(sub, null, 2)}`);
   } catch (error) {
     console.error(String(error));
     console.error("error on subscription updated handler");

@@ -4,7 +4,7 @@ const webhook_events = require("./handlers/index.js");
 const { validateSignature } = require("./utils.js");
 const app = express();
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8001;
 
 // Custom middleware to store the raw body in the request object
 app.use(express.raw({ type: "application/json" }));
@@ -17,12 +17,12 @@ app.get("/", (_req, res) => {
   return res.status(200).send("GPTUBE-subscriptions server");
 });
 
-app.post("/subscriptions", async (req, res) => {
+app.post("/billing/webhooks", async (req, res) => {
   try {
     validateSignature(req);
     const body = JSON.parse(req.body);
-    console.log(JSON.stringify(body, null, 2));
     const event_type = body["meta"]["event_name"];
+    console.log(`Entry event: ${event_type}`);
     const handler = webhook_events[`${event_type}`];
     handler && (await handler(body));
     res.status(200).json({ message: "webhook handled" });

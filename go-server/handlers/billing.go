@@ -158,19 +158,21 @@ func billingCreateSubscriptionWebhookHandler(
 		OrderId:             subscription.Data.Attributes.OrderID,
 		ProductId:           subscription.Data.Attributes.ProductID,
 		VariantId:           subscription.Data.Attributes.VariantID,
-		CustomerId:          0,
+		CustomerId:          subscription.Data.Attributes.CustomerID,
 		ProductName:         subscription.Data.Attributes.ProductName,
 		Status:              subscription.Data.Attributes.Status,
 		StatusFormatted:     subscription.Data.Attributes.StatusFormatted,
-		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt.String(),
-		RenewsAt:            subscription.Data.Attributes.RenewsAt.String(),
-		EndsAt:              subscription.Data.Attributes.EndsAt.String(),
-		CreatedAt:           subscription.Data.Attributes.CreatedAt.String(),
-		CardBrand:           "",
-		CardLastFour:        "",
+		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt,
+		RenewsAt:            subscription.Data.Attributes.RenewsAt,
+		EndsAt:              subscription.Data.Attributes.EndsAt,
+		CreatedAt:           subscription.Data.Attributes.CreatedAt,
+		UpdatedAt:           subscription.Data.Attributes.UpdatedAt,
+		CardBrand:           subscription.Data.Attributes.CardBrand,
+		CardLastFour:        subscription.Data.Attributes.CardLastFour,
 		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
+	fmt.Printf("creating subscription ID: %s\n", subscription.Data.ID)
 	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
 		Set(database.Ctx, newSubscriptionFirestore)
 	if err != nil {
@@ -194,9 +196,34 @@ func billingUpdateSubscriptionWebhookHandler(
 		return err
 	}
 
+	updatedSubscriptionFirestore := models.SubscriptionFirestore{
+		UserEmail:           subscription.Data.Attributes.UserEmail,
+		SubscriptionId:      subscription.Data.ID,
+		OrderId:             subscription.Data.Attributes.OrderID,
+		ProductId:           subscription.Data.Attributes.ProductID,
+		VariantId:           subscription.Data.Attributes.VariantID,
+		CustomerId:          subscription.Data.Attributes.CustomerID,
+		ProductName:         subscription.Data.Attributes.ProductName,
+		Status:              subscription.Data.Attributes.Status,
+		StatusFormatted:     subscription.Data.Attributes.StatusFormatted,
+		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt,
+		RenewsAt:            subscription.Data.Attributes.RenewsAt,
+		EndsAt:              subscription.Data.Attributes.EndsAt,
+		CreatedAt:           subscription.Data.Attributes.CreatedAt,
+		UpdatedAt:           subscription.Data.Attributes.UpdatedAt,
+		CardBrand:           subscription.Data.Attributes.CardBrand,
+		CardLastFour:        subscription.Data.Attributes.CardLastFour,
+		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
+	}
+
 	defer client.Close()
 
-	fmt.Println("updating subscription")
+	fmt.Printf("updating subscription ID: %s\n", subscription.Data.ID)
+	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
+		Set(database.Ctx, updatedSubscriptionFirestore)
+	if err != nil {
+		return fmt.Errorf("an error has occurred: %s", err)
+	}
 
 	return nil
 }
@@ -232,8 +259,11 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 				http.StatusInternalServerError, c)
 		}
 
-		handler(&webhookBody)
-
+		err := handler(&webhookBody)
+		if err != nil {
+			utils.HandleError(err, http.StatusInternalServerError, c)
+		}
+		fmt.Printf("event %s handled correctly\n", webhookBody.Meta.EventName)
 		return c.JSON(fiber.Map{
 			"message": "webhook received correctly",
 		})

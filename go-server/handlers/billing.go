@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"gptube/config"
 	"gptube/database"
@@ -28,7 +29,16 @@ func BillingProducts(c *fiber.Ctx) error {
 }
 
 func BillingCheckout(c *fiber.Ctx) error {
-	variantId := c.Query("variantId", "")
+	variantId := c.Query("variant_id", "")
+	userEmail := c.Query("user_email", "")
+
+	if variantId == "" || userEmail == "" {
+		return utils.HandleError(
+			fmt.Errorf("please provide a variant ID and a user email"),
+			http.StatusBadRequest, c,
+		)
+	}
+
 	checkoutParams := &lemonsqueezy.CheckoutCreateParams{
 		StoreID:         config.Config("LEMON_SQUEEZY_STORE_ID"),
 		VariantID:       variantId,
@@ -36,7 +46,7 @@ func BillingCheckout(c *fiber.Ctx) error {
 		EnabledVariants: make([]int, 0),
 		ButtonColor:     "#D91E1E",
 		CustomData: map[string]string{
-			"message": "creating checkout",
+			"gptube_user_email": userEmail,
 		},
 	}
 	checkout, _, err := lemonClient.Checkouts.Create(context.Background(), checkoutParams)
@@ -152,6 +162,7 @@ func billingCreateSubscriptionWebhookHandler(
 
 	defer client.Close()
 
+	gptubeUserEmail := fmt.Sprintf("%s", subscription.Meta.CustomData["gptube_user_email"])
 	newSubscriptionFirestore := models.SubscriptionFirestore{
 		UserEmail:           subscription.Data.Attributes.UserEmail,
 		SubscriptionId:      subscription.Data.ID,
@@ -172,8 +183,9 @@ func billingCreateSubscriptionWebhookHandler(
 		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
-	fmt.Printf("creating subscription ID: %s\n", subscription.Data.ID)
-	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
+	fmt.Printf("creating subscription %s for user %s\n", subscription.Data.ID, gptubeUserEmail)
+	userDoc := client.Collection("users").Doc(gptubeUserEmail)
+	_, err = userDoc.Collection("subscriptions").Doc(subscription.Data.ID).
 		Set(database.Ctx, newSubscriptionFirestore)
 	if err != nil {
 		return fmt.Errorf("an error has occurred: %s", err)
@@ -196,6 +208,7 @@ func billingUpdateSubscriptionWebhookHandler(
 		return err
 	}
 
+	gptubeUserEmail := fmt.Sprintf("%s", subscription.Meta.CustomData["gptube_user_email"])
 	updatedSubscriptionFirestore := models.SubscriptionFirestore{
 		UserEmail:           subscription.Data.Attributes.UserEmail,
 		SubscriptionId:      subscription.Data.ID,
@@ -218,8 +231,9 @@ func billingUpdateSubscriptionWebhookHandler(
 
 	defer client.Close()
 
-	fmt.Printf("updating subscription ID: %s\n", subscription.Data.ID)
-	_, err = client.Collection("subscriptions").Doc(subscription.Data.ID).
+	fmt.Printf("updating subscription %s for user %s\n", subscription.Data.ID, gptubeUserEmail)
+	userDoc := client.Collection("users").Doc(gptubeUserEmail)
+	_, err = userDoc.Collection("subscriptions").Doc(subscription.Data.ID).
 		Set(database.Ctx, updatedSubscriptionFirestore)
 	if err != nil {
 		return fmt.Errorf("an error has occurred: %s", err)
@@ -245,6 +259,13 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 			return c.SendStatus(http.StatusInternalServerError)
 		}
 
+		prettyJSON, err := json.MarshalIndent(webhookBody, "", "  ")
+		if err != nil {
+			return utils.HandleError(err, http.StatusInternalServerError, c)
+		}
+
+		fmt.Println(string(prettyJSON))
+
 		eventHandlers := make(map[string]func(
 			subscription *lemonsqueezy.WebhookRequest[
 				lemonsqueezy.Subscription,
@@ -254,12 +275,12 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 
 		handler, ok := eventHandlers[webhookBody.Meta.EventName]
 		if !ok {
-			utils.HandleError(
+			return utils.HandleError(
 				fmt.Errorf("event not registered on the webhook"),
 				http.StatusInternalServerError, c)
 		}
-
-		err := handler(&webhookBody)
+		fmt.Printf("%s\n", webhookBody.Meta.EventName)
+		err = handler(&webhookBody)
 		if err != nil {
 			utils.HandleError(err, http.StatusInternalServerError, c)
 		}
@@ -269,8 +290,7 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Status(http.StatusInternalServerError)
-	return c.JSON(fiber.Map{
-		"message": "error while validating the signature",
-	})
+	return utils.HandleError(
+		fmt.Errorf("error while validating the signature"),
+		http.StatusInternalServerError, c)
 }

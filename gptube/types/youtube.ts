@@ -7,8 +7,7 @@ export interface YoutubeComment {
   likeCount: number
 }
 
-export interface NegativeYoutubeComment {
-  comment: YoutubeComment
+export interface NegativeYoutubeComment extends YoutubeComment {
   priority: number
 }
 

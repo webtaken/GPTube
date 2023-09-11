@@ -1,7 +1,6 @@
 package database
 
 import (
-	"container/heap"
 	"context"
 	"fmt"
 	"gptube/config"
@@ -89,9 +88,8 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	}
 
 	negativeCommentsColl := youtubeDoc.Collection("NegativeComments")
-	for results.Results.NegativeComments.Len() > 0 {
-		comment := heap.Pop(results.Results.NegativeComments).(*models.NegativeComment)
-		_, err = negativeCommentsColl.Doc(comment.Comment.CommentID).Set(Ctx, comment)
+	for _, comment := range results.Results.NegativeComments {
+		_, err = negativeCommentsColl.Doc(comment.CommentID).Set(Ctx, comment)
 		if err != nil {
 			log.Printf("Failed to add negative comment: %v", err)
 		}

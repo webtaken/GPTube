@@ -4,7 +4,6 @@ import type { AppProps } from 'next/app'
 import type { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
 import { useRouter } from 'next/router'
-import Script from 'next/script'
 
 import { Layouts } from '@/components/Layouts/Layouts'
 import { AuthContextProvider } from '@/context/AuthContext/AuthContext'
@@ -23,19 +22,16 @@ export default function App({ Component, pageProps }: CustomAppProps) {
   const Layout = Layouts[Component.Layout]
 
   return (
-    <>
-      <AuthContextProvider>
-        <Layout>
-          {noAuthRequired.includes(router.pathname) ? (
+    <AuthContextProvider>
+      <Layout>
+        {noAuthRequired.includes(router.pathname) ? (
+          <Component {...pageProps} />
+        ) : (
+          <ProtectedRoute>
             <Component {...pageProps} />
-          ) : (
-            <ProtectedRoute>
-              <Component {...pageProps} />
-            </ProtectedRoute>
-          )}
-        </Layout>
-      </AuthContextProvider>
-      <Script defer src="https://assets.lemonsqueezy.com/lemon.js" />
-    </>
+          </ProtectedRoute>
+        )}
+      </Layout>
+    </AuthContextProvider>
   )
 }

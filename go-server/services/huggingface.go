@@ -62,6 +62,7 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 		log.Println("[MakeAICall] error making the request: ", err)
 		return err
 	}
+
 	code, _, errs := agent.Struct(resBody)
 	if code != http.StatusOK && len(errs) > 0 {
 		log.Println("[MakeAICall] error in response: ", errs[0])

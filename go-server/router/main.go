@@ -3,6 +3,8 @@ package router
 import (
 	"gptube/handlers"
 
+	"github.com/gofiber/swagger"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,4 +26,6 @@ func SetupRoutes(app *fiber.App) {
 	youtubeRoutes := api.Group("/youtube")
 	youtubeRoutes.Post("/pre-analysis", handlers.YoutubePreAnalysisHandler)
 	youtubeRoutes.Post("/analysis", handlers.YoutubeAnalysisHandler)
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
 }

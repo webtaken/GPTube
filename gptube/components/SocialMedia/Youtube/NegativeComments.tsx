@@ -20,6 +20,7 @@ import PrevPage from '@/assets/icons/PrevPage'
 import NextPage from '@/assets/icons/NextIcon'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
+import { getUniqueID } from '@/utils'
 
 import Comment from './Comment'
 
@@ -113,20 +114,18 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
           const docData = negativeCommentDoc.data()
 
           return {
-            comment: {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              commentID: docData.comment.commentID,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              authorDisplayName: docData.comment.authorDisplayName,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              authorProfileImageUrl: docData.comment.authorProfileImageUrl,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              textDisplay: docData.comment.textDisplay,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              textOriginal: docData.comment.textOriginal,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-              likeCount: docData.comment.likeCount,
-            },
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            commentID: docData.comment.commentID,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            authorDisplayName: docData.comment.authorDisplayName,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            authorProfileImageUrl: docData.comment.authorProfileImageUrl,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            textDisplay: docData.comment.textDisplay,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            textOriginal: docData.comment.textOriginal,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            likeCount: docData.comment.likeCount,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             priority: docData.priority,
           }
@@ -169,12 +168,10 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
           ) : (
             <div className="bg-black-medium">
               <div className="flex flex-col pb-4">
-                {commentsPage.map(data => {
-                  const comment = data.comment
-
+                {commentsPage.map(comment => {
                   return (
                     <Comment
-                      key={`comment-${new Date().getTime()}`}
+                      key={`comment-${getUniqueID()}`}
                       authorName={comment.authorDisplayName}
                       authorProfileImageURL={comment.authorProfileImageUrl}
                       likes={comment.likeCount}

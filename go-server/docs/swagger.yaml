@@ -1,15 +1,21 @@
-basePath: /
-host: localhost:8000
+definitions:
+  handlers.helloApiMessage:
+    properties:
+      message:
+        type: string
+    type: object
 info:
-  contact:
-    email: fiber@swagger.io
-    name: API Support
-  description: This is the swagger documentation for API
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Fiber Example API
-  version: "1.0"
-paths: {}
+  contact: {}
+paths:
+  /api/:
+    get:
+      description: get base api welcome response
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.helloApiMessage'
+      summary: Hello from the api
 swagger: "2.0"

@@ -7,9 +7,9 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/:
+  /api:
     get:
-      description: get base api welcome response
+      description: An endpoint used to test the api stability
       produces:
       - application/json
       responses:
@@ -17,5 +17,16 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.helloApiMessage'
-      summary: Hello from the api
+      summary: Hello message from the api
+  /billing:
+    get:
+      description: An endpoint used to test the billing api stability
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.helloApiMessage'
+      summary: Hello message from the billing api
 swagger: "2.0"

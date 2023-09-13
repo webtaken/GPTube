@@ -23,13 +23,6 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
-	// app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-	// 	URL:         "swagger.json",
-	// 	DeepLinking: false,
-	// 	// Expand ("list") or Collapse ("none") tag groups by default
-	// 	DocExpansion: "none",
-	// }))
-
 	billing := app.Group("/billing")
 	billing.Get("", handlers.BillingHandler)
 	billing.Get("/products", handlers.BillingProducts)
@@ -46,6 +39,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("", handlers.ApiHandler)
 	youtubeRoutes := api.Group("/youtube")
 	youtubeRoutes.Post("/pre-analysis", handlers.YoutubePreAnalysisHandler)
+	youtubeRoutes.Post("/analysis-landing", handlers.YoutubeAnalysisLandingHandler)
 	youtubeRoutes.Post("/analysis", handlers.YoutubeAnalysisHandler)
 
 }

@@ -272,6 +272,98 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 	return results, nil
 }
 
+func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisLandingResults, error) {
+	results := &models.YoutubeAnalysisLandingResults{
+		BertResults: &models.BertAIResults{},
+	}
+
+	var part = []string{"id", "snippet"}
+	nextPageToken := ""
+
+	// Check if AI services are running before calling Youtube API
+	err := CheckAIModelsWork("BERT")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var wg sync.WaitGroup
+	// Youtube calling
+	call := Service.CommentThreads.List(part)
+	pageSize := 20
+	call.VideoId(body.VideoID)
+	call.MaxResults(int64(pageSize))
+	for {
+		if nextPageToken != "" {
+			call.PageToken(nextPageToken)
+		}
+		response, err := call.Do()
+		if err != nil {
+			return results, err
+		}
+
+		// Launching AI models to work in parallel
+		wg.Add(1)
+		go func(comments []*youtube.CommentThread) {
+			defer wg.Done()
+			cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
+			var wgAI sync.WaitGroup
+			var errBERT error
+			var resBERT = &models.ResBertAI{}
+			var BERTResults = &models.BertAIResults{}
+
+			wgAI.Add(1)
+			go func() {
+				defer wgAI.Done()
+				resBERT, BERTResults, errBERT = BertAnalysis(comments, cleanedComments, cleanedInputs)
+				if errBERT != nil {
+					log.Printf("bert_analysis_error %v\n", err)
+				}
+			}()
+			wgAI.Wait()
+
+			if errBERT != nil {
+				return
+			}
+
+			for i := 0; i < len(*resBERT); i++ {
+				tmpBertScore := models.ResAISchema{{
+					Label: "1 star",
+					Score: math.Inf(-1),
+				}}[0]
+				resultsBERT := []models.ResAISchema(*resBERT)
+				for _, result := range resultsBERT[i] {
+					if result.Score > tmpBertScore.Score {
+						tmpBertScore.Label = result.Label
+						tmpBertScore.Score = result.Score
+					}
+				}
+			}
+
+			// Writing response to the global result
+			Mutex.Lock()
+			// BERT
+			results.BertResults.Score1 += BERTResults.Score1
+			results.BertResults.Score2 += BERTResults.Score2
+			results.BertResults.Score3 += BERTResults.Score3
+			results.BertResults.Score4 += BERTResults.Score4
+			results.BertResults.Score5 += BERTResults.Score5
+			results.BertResults.ErrorsCount += BERTResults.ErrorsCount
+			results.BertResults.SuccessCount += BERTResults.SuccessCount
+			Mutex.Unlock()
+		}(response.Items)
+		//////////////////////////////////////////////
+
+		nextPageToken = response.NextPageToken
+		if nextPageToken == "" {
+			break
+		}
+	}
+	wg.Wait()
+
+	return results, nil
+}
+
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}

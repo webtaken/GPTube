@@ -15,13 +15,30 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/": {
+        "/api": {
             "get": {
-                "description": "get base api welcome response",
+                "description": "An endpoint used to test the api stability",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Hello from the api",
+                "summary": "Hello message from the api",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.helloApiMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing": {
+            "get": {
+                "description": "An endpoint used to test the billing api stability",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Hello message from the billing api",
                 "responses": {
                     "200": {
                         "description": "OK",

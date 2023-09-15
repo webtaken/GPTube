@@ -40,8 +40,7 @@ type YoutubeAnalyzerLandingRespBody struct {
 	VideoTitle string                         `json:"video_title,omitempty" firestore:"video_title,omitempty"`
 	Email      string                         `json:"email" firestore:"-"`
 	CreatedAt  time.Time                      `json:"created_at" firestore:"created_at"`
-	Results    *YoutubeAnalysisLandingResults `json:"-" firestore:"results,omitempty"`
-	ResultsID  string                         `json:"results_id,omitempty" firestore:"-"` // firestore results id
+	Results    *YoutubeAnalysisLandingResults `json:"results" firestore:"results,omitempty"`
 }
 
 type YoutubeAnalysisResults struct {

@@ -24,8 +24,11 @@ func RoundFloat(val float64, precision uint) float64 {
 }
 
 func HandleError(err error, statusCode int, c *fiber.Ctx) error {
-	c.JSON(fiber.Map{
-		"error": fmt.Errorf("%v", err).Error(),
+	type errorResponse struct {
+		Error string `json:"error" example:"an error ocurred"`
+	}
+	c.JSON(errorResponse{
+		Error: fmt.Errorf("%v", err).Error(),
 	})
 	return c.SendStatus(statusCode)
 }

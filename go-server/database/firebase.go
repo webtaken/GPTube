@@ -29,13 +29,45 @@ func init() {
 	}
 }
 
-func getYoutubeResult(client *firestore.Client, emailUser string, videoID string) (*models.YoutubeAnalyzerRespBody, error) {
+func GetClient() (*firestore.Client, error) {
+	app, err := firebase.NewApp(Ctx, nil, Sa)
+	if err != nil {
+		return nil, err
+	}
+	client, err := app.Firestore(Ctx)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+func GetYoutubeResult(emailUser string, videoID string) (*models.YoutubeAnalyzerRespBody, error) {
+	client, err := GetClient()
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
 	snap, err := client.Collection("users").
 		Doc(emailUser).Collection("youtube").Doc(videoID).Get(Ctx)
 	if err != nil {
 		return nil, err
 	}
 	var result models.YoutubeAnalyzerRespBody
+	snap.DataTo(&result)
+	return &result, nil
+}
+
+func GetYoutubeLandingResult(videoID string) (*models.YoutubeAnalyzerLandingRespBody, error) {
+	client, err := GetClient()
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
+	snap, err := client.Collection("landing").Doc(videoID).Get(Ctx)
+	if err != nil {
+		return nil, err
+	}
+	var result models.YoutubeAnalyzerLandingRespBody
 	snap.DataTo(&result)
 	return &result, nil
 }
@@ -54,7 +86,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	defer client.Close()
 
 	currentTime := time.Now().UTC()
-	existingResult, err := getYoutubeResult(client, results.OwnerEmail, results.VideoID)
+	existingResult, err := GetYoutubeResult(results.OwnerEmail, results.VideoID)
 	if err != nil {
 		results.CreatedAt = currentTime
 	} else {
@@ -111,46 +143,18 @@ func AddYoutubeLandingResult(results *models.YoutubeAnalyzerLandingRespBody) err
 	defer client.Close()
 
 	currentTime := time.Now().UTC()
-	existingResult, err := getYoutubeResult(client, results.OwnerEmail, results.VideoID)
+	_, err = GetYoutubeLandingResult(results.VideoID)
 	if err != nil {
+		// It means the object does not exist on the database
 		results.CreatedAt = currentTime
-	} else {
-		results.CreatedAt = existingResult.CreatedAt
-	}
-	results.LastUpdate = currentTime
-
-	userDoc := client.Collection("users").Doc(results.OwnerEmail)
-	if existingResult != nil {
-		_, err = userDoc.Update(Ctx, []firestore.Update{
-			{
-				Path:  "usageLimitYoutube",
-				Value: firestore.Increment(1),
-			},
-		})
-	} else {
-		_, err = userDoc.Set(Ctx, map[string]interface{}{
-			"email":             results.OwnerEmail,
-			"usageLimitYoutube": 1,
-		})
-	}
-
-	if err != nil {
-		return err
-	}
-
-	youtubeDoc := userDoc.Collection("youtube").Doc(results.VideoID)
-	_, err = youtubeDoc.Set(Ctx, results)
-	if err != nil {
-		return err
-	}
-
-	negativeCommentsColl := youtubeDoc.Collection("NegativeComments")
-	for _, comment := range results.Results.NegativeComments {
-		_, err = negativeCommentsColl.Doc(comment.CommentID).Set(Ctx, comment)
+		landingDoc := client.Collection("landing").Doc(results.VideoID)
+		_, err = landingDoc.Set(Ctx, results)
 		if err != nil {
-			log.Printf("Failed to add negative comment: %v", err)
+			return err
 		}
+		return nil
 	}
+
 	return nil
 }
 

@@ -1,4 +1,4 @@
-FROM golang:1.20.4-alpine as builder
+FROM golang:1.21.1-alpine as builder
 
 # BUILD PROCESS
 # Working directory

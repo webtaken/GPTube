@@ -27,8 +27,32 @@ var AIEndpoints = map[string]string{
 	),
 }
 
-func CheckAIModelsWork() error {
+func CheckAIModelsWork(modelsKeys ...string) error {
 	payload := []byte(`{"inputs":"i love you"}`)
+	if len(modelsKeys) > 0 {
+		for _, model := range modelsKeys {
+			if modelEndpoint, ok := AIEndpoints[model]; ok {
+				agent := fiber.AcquireAgent()
+				req := agent.Request()
+				req.Header.Set("Authorization", huggingFaceAuthHeader)
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.SetMethod(fiber.MethodPost)
+				req.SetRequestURI(modelEndpoint)
+				agent.Body(payload)
+				if err := agent.Parse(); err != nil {
+					log.Println("[CheckAIModelsWork] error making the request: ", err)
+					return err
+				}
+				code, _, errs := agent.String()
+				if code != http.StatusOK && len(errs) > 0 {
+					log.Println("[CheckAIModelsWork] error in response: ", errs[0])
+					return errs[0]
+				}
+			}
+		}
+		return nil
+	}
+
 	for _, endpoint := range AIEndpoints {
 		agent := fiber.AcquireAgent()
 		req := agent.Request()
@@ -62,6 +86,7 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 		log.Println("[MakeAICall] error making the request: ", err)
 		return err
 	}
+
 	code, _, errs := agent.Struct(resBody)
 	if code != http.StatusOK && len(errs) > 0 {
 		log.Println("[MakeAICall] error in response: ", errs[0])

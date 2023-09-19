@@ -5,7 +5,7 @@ import { Button } from './common/button'
 
 export function Header() {
   return (
-    <Navbar isBordered>
+    <Navbar isBordered maxWidth="lg">
       <NavbarBrand>
         <p className="text-2xl font-bold">GPTube</p>
       </NavbarBrand>

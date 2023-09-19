@@ -1,14 +1,9 @@
-import { Rubik } from 'next/font/google'
-
+import { rubikFont } from '../common/fonts'
 import { Header } from '../header'
-
-const rubik = Rubik({
-  subsets: ['latin'],
-})
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className={rubik.className}>
+    <main className={rubikFont.className}>
       <Header />
       {children}
     </main>

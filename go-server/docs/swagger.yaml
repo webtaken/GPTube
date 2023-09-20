@@ -1,0 +1,108 @@
+definitions:
+  handlers.helloApiMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  models.BertAIResults:
+    properties:
+      errors_count:
+        type: integer
+      score_1:
+        type: integer
+      score_2:
+        type: integer
+      score_3:
+        type: integer
+      score_4:
+        type: integer
+      score_5:
+        type: integer
+      success_count:
+        type: integer
+    type: object
+  models.YoutubeAnalysisLandingResults:
+    properties:
+      bert_results:
+        $ref: '#/definitions/models.BertAIResults'
+      video_id:
+        type: string
+      video_title:
+        type: string
+    type: object
+  models.YoutubeAnalyzerLandingRespBody:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      results:
+        $ref: '#/definitions/models.YoutubeAnalysisLandingResults'
+      video_id:
+        type: string
+      video_title:
+        type: string
+    type: object
+  utils.HandleError.errorResponse:
+    properties:
+      error:
+        example: an error ocurred
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api:
+    get:
+      description: An endpoint used to test the api stability
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.helloApiMessage'
+      summary: Hello message from the api
+  /api/youtube/analysis-landing:
+    post:
+      description: An endpoint used to do a simple analysis with the BERT model to
+        show a result in the landing
+      parameters:
+      - description: Youtube video id
+        example: '"K9q66cRLJuf"'
+        in: body
+        name: video_id
+        required: true
+        schema:
+          type: string
+      - description: Youtube video title
+        example: '"Some video title"'
+        in: body
+        name: video_title
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubeAnalyzerLandingRespBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+      summary: Simple analysis with BERT model for the landing page
+  /billing:
+    get:
+      description: An endpoint used to test the billing api stability
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.helloApiMessage'
+      summary: Hello message from the billing api
+swagger: "2.0"

@@ -6,26 +6,6 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-type Comment struct {
-	CommentID             string `json:"commentID,omitempty" firestore:"commentID,omitempty"`
-	TextDisplay           string `json:"textDisplay,omitempty" firestore:"textDisplay,omitempty"`
-	TextOriginal          string `json:"textOriginal,omitempty" firestore:"textOriginal,omitempty"`
-	TextCleaned           string `json:"textCleaned,omitempty" firestore:"textCleaned,omitempty"`
-	AuthorDisplayName     string `json:"authorDisplayName,omitempty" firestore:"authorDisplayName,omitempty"`
-	AuthorProfileImageUrl string `json:"authorProfileImageUrl,omitempty" firestore:"authorProfileImageUrl,omitempty"`
-	ParentID              string `json:"parentID,omitempty" firestore:"parentID,omitempty"`
-	LikeCount             int64  `json:"likeCount,omitempty" firestore:"likeCount,omitempty"`
-	// ModerationStatus: The comment's moderation status. Will not be set if
-	// the comments were requested through the id filter.
-	//
-	// Possible values:
-	//   "published" - The comment is available for public display.
-	//   "heldForReview" - The comment is awaiting review by a moderator.
-	//   "likelySpam"
-	//   "rejected" - The comment is unfit for display.
-	ModerationStatus string `json:"moderationStatus,omitempty" firestore:"moderationStatus,omitempty"`
-}
-
 type YoutubePreAnalyzerReqBody struct {
 	VideoID string `json:"video_id"`
 }
@@ -52,16 +32,30 @@ type YoutubeAnalyzerRespBody struct {
 	CreatedAt  time.Time               `json:"created_at" firestore:"created_at"`
 	LastUpdate time.Time               `json:"last_update" firestore:"last_update"`
 	Results    *YoutubeAnalysisResults `json:"-" firestore:"results,omitempty"`
-	ResultsID  string                  `json:"results_id,omitempty" firestore:"-"` // fireStore results id
+	ResultsID  string                  `json:"results_id,omitempty" firestore:"-"` // firestore results id
+}
+
+type YoutubeAnalyzerLandingRespBody struct {
+	VideoID    string                         `json:"video_id" firestore:"video_id"`
+	VideoTitle string                         `json:"video_title,omitempty" firestore:"video_title,omitempty"`
+	Email      string                         `json:"email" firestore:"-"`
+	CreatedAt  time.Time                      `json:"created_at" firestore:"created_at"`
+	Results    *YoutubeAnalysisLandingResults `json:"results" firestore:"results,omitempty"`
 }
 
 type YoutubeAnalysisResults struct {
-	VideoID               string                `json:"video_id,omitempty" firestore:"video_id,omitempty"`
-	VideoTitle            string                `json:"video_title,omitempty" firestore:"video_title,omitempty"`
-	BertResults           *BertAIResults        `json:"bert_results,omitempty" firestore:"bert_results,omitempty"`
-	RobertaResults        *RobertaAIResults     `json:"roberta_results,omitempty" firestore:"roberta_results,omitempty"`
-	NegativeComments      *HeapNegativeComments `json:"-" firestore:"-"`
-	NegativeCommentsLimit int                   `json:"-" firestore:"-"`
+	VideoID               string             `json:"video_id,omitempty" firestore:"video_id,omitempty"`
+	VideoTitle            string             `json:"video_title,omitempty" firestore:"video_title,omitempty"`
+	BertResults           *BertAIResults     `json:"bert_results,omitempty" firestore:"bert_results,omitempty"`
+	RobertaResults        *RobertaAIResults  `json:"roberta_results,omitempty" firestore:"roberta_results,omitempty"`
+	NegativeComments      []*NegativeComment `json:"-" firestore:"-"`
+	NegativeCommentsLimit int                `json:"-" firestore:"-"`
 	// Recommendation given by ChatGPT based on all the comments retrieved
 	RecommendationChatGPT string `json:"recommendation_chat_gpt,omitempty" firestore:"recommendation_chat_gpt,omitempty"`
+}
+
+type YoutubeAnalysisLandingResults struct {
+	VideoID     string         `json:"video_id,omitempty" firestore:"video_id,omitempty"`
+	VideoTitle  string         `json:"video_title,omitempty" firestore:"video_title,omitempty"`
+	BertResults *BertAIResults `json:"bert_results,omitempty" firestore:"bert_results,omitempty"`
 }

@@ -2,7 +2,6 @@ package services
 
 import (
 	"bytes"
-	"container/heap"
 	"context"
 	"fmt"
 	"gptube/config"
@@ -108,13 +107,11 @@ func CanProcessVideo(youtubeRequestBody *models.YoutubePreAnalyzerReqBody) (*you
 }
 
 func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults, error) {
-	negativeComments := models.HeapNegativeComments([]*models.NegativeComment{})
 	negCommentsLimit, _ := strconv.Atoi(config.Config("YOUTUBE_NEGATIVE_COMMENTS_LIMIT"))
-	heap.Init(&negativeComments)
 	results := &models.YoutubeAnalysisResults{
 		BertResults:           &models.BertAIResults{},
 		RobertaResults:        &models.RobertaAIResults{},
-		NegativeComments:      &negativeComments,
+		NegativeComments:      make([]*models.NegativeComment, 0),
 		NegativeCommentsLimit: negCommentsLimit,
 	}
 
@@ -131,7 +128,9 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 	var wg sync.WaitGroup
 	// Youtube calling
 	call := Service.CommentThreads.List(part)
+	pageSize := 20
 	call.VideoId(body.VideoID)
+	call.MaxResults(int64(pageSize))
 	for {
 		if nextPageToken != "" {
 			call.PageToken(nextPageToken)
@@ -141,20 +140,11 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 			return results, err
 		}
 
-		tmpComments := make([]*youtube.CommentThread, len(response.Items))
-		for i, p := range response.Items {
-			if p == nil {
-				continue
-			}
-			v := *p
-			tmpComments[i] = &v
-		}
-
 		// Launching AI models to work in parallel
 		wg.Add(1)
-		go func() {
+		go func(comments []*youtube.CommentThread) {
 			defer wg.Done()
-			cleanedComments, cleanedInputs := CleanCommentsForAIModels(tmpComments)
+			cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
 			var wgAI sync.WaitGroup
 			var errBERT, errRoBERTa error
 			var resBERT = &models.ResBertAI{}
@@ -165,7 +155,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 			wgAI.Add(1)
 			go func() {
 				defer wgAI.Done()
-				resBERT, BERTResults, errBERT = BertAnalysis(tmpComments, cleanedComments, cleanedInputs)
+				resBERT, BERTResults, errBERT = BertAnalysis(comments, cleanedComments, cleanedInputs)
 				if errBERT != nil {
 					log.Printf("bert_analysis_error %v\n", err)
 				}
@@ -173,7 +163,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 			wgAI.Add(1)
 			go func() {
 				defer wgAI.Done()
-				resRoBERTa, RoBERTaResults, errRoBERTa = RobertaAnalysis(tmpComments, cleanedComments, cleanedInputs)
+				resRoBERTa, RoBERTaResults, errRoBERTa = RobertaAnalysis(comments, cleanedComments, cleanedInputs)
 				if errRoBERTa != nil {
 					log.Printf("roberta_analysis_error %v\n", err)
 				}
@@ -184,8 +174,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 				return
 			}
 
-			negativeComments := make(models.HeapNegativeComments, 0)
-			heap.Init(&negativeComments)
+			tmpNegativeComments := make([]*models.NegativeComment, 0)
 			for i := 0; i < len(*resBERT); i++ {
 				tmpBertScore := models.ResAISchema{{
 					Label: "1 star",
@@ -213,7 +202,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 
 				if (tmpBertScore.Label == "1 star" || tmpBertScore.Label == "2 stars") &&
 					(tmpRobertaScore.Label == "Negative" || tmpRobertaScore.Label == "negative") {
-					badComment := models.Comment{
+					badComment := models.NegativeComment{
 						CommentID:             cleanedComments[i].Id,
 						TextDisplay:           cleanedComments[i].Snippet.TextDisplay,
 						TextOriginal:          cleanedComments[i].Snippet.TextOriginal,
@@ -223,12 +212,10 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 						ParentID:              cleanedComments[i].Snippet.ParentId,
 						LikeCount:             cleanedComments[i].Snippet.LikeCount,
 						ModerationStatus:      cleanedComments[i].Snippet.ModerationStatus,
+						// We set the score as the average of the two scores
+						Priority: (tmpRobertaScore.Score + tmpBertScore.Score) / 2,
 					}
-					item := &models.NegativeComment{
-						Comment:  &badComment,
-						Priority: tmpRobertaScore.Score,
-					}
-					heap.Push(&negativeComments, item)
+					tmpNegativeComments = append(tmpNegativeComments, &badComment)
 				}
 			}
 
@@ -250,12 +237,9 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 			results.RobertaResults.SuccessCount += RoBERTaResults.SuccessCount
 
 			// Adding most negative comments
-			for negativeComments.Len() > 0 {
-				item := heap.Pop(&negativeComments).(*models.NegativeComment)
-				heap.Push(results.NegativeComments, item)
-			}
+			results.NegativeComments = append(results.NegativeComments, tmpNegativeComments...)
 			Mutex.Unlock()
-		}()
+		}(response.Items)
 		//////////////////////////////////////////////
 
 		nextPageToken = response.NextPageToken
@@ -268,20 +252,15 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 	// Averaging results for RoBERTa model
 	results.RobertaResults.AverageResults()
 
-	tmpHeap := models.HeapNegativeComments(make([]*models.NegativeComment, 0))
-	tmpLimit := int(math.Ceil(float64(results.NegativeComments.Len()) * 0.2))
+	tmpLimit := int(math.Ceil(float64(len(results.NegativeComments)) * 0.2))
+	tmpNegativeComments := make([]*models.NegativeComment, 0)
 	if tmpLimit < results.NegativeCommentsLimit {
 		results.NegativeCommentsLimit = tmpLimit
 	}
-	for results.NegativeComments.Len() > 0 {
-		item := heap.Pop(results.NegativeComments).(*models.NegativeComment)
-		if tmpHeap.Len() <= results.NegativeCommentsLimit {
-			heap.Push(&tmpHeap, item)
-		} else {
-			break
-		}
+	for i := 0; i < results.NegativeCommentsLimit; i++ {
+		tmpNegativeComments = append(tmpNegativeComments, results.NegativeComments[i])
 	}
-	results.NegativeComments = &tmpHeap
+	results.NegativeComments = tmpNegativeComments
 	if results.NegativeCommentsLimit > 0 {
 		recommendation, err := GetRecommendation(results)
 		if err != nil {
@@ -293,15 +272,108 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 	return results, nil
 }
 
+func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisLandingResults, error) {
+	results := &models.YoutubeAnalysisLandingResults{
+		BertResults: &models.BertAIResults{},
+	}
+
+	var part = []string{"id", "snippet"}
+	nextPageToken := ""
+
+	// Check if AI services are running before calling Youtube API
+	err := CheckAIModelsWork("BERT")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var wg sync.WaitGroup
+	// Youtube calling
+	call := Service.CommentThreads.List(part)
+	pageSize := 20
+	call.VideoId(body.VideoID)
+	call.MaxResults(int64(pageSize))
+	for {
+		if nextPageToken != "" {
+			call.PageToken(nextPageToken)
+		}
+		response, err := call.Do()
+		if err != nil {
+			return results, err
+		}
+
+		// Launching AI models to work in parallel
+		wg.Add(1)
+		go func(comments []*youtube.CommentThread) {
+			defer wg.Done()
+			cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
+			var wgAI sync.WaitGroup
+			var errBERT error
+			var resBERT = &models.ResBertAI{}
+			var BERTResults = &models.BertAIResults{}
+
+			wgAI.Add(1)
+			go func() {
+				defer wgAI.Done()
+				resBERT, BERTResults, errBERT = BertAnalysis(comments, cleanedComments, cleanedInputs)
+				if errBERT != nil {
+					log.Printf("bert_analysis_error %v\n", err)
+				}
+			}()
+			wgAI.Wait()
+
+			if errBERT != nil {
+				return
+			}
+
+			for i := 0; i < len(*resBERT); i++ {
+				tmpBertScore := models.ResAISchema{{
+					Label: "1 star",
+					Score: math.Inf(-1),
+				}}[0]
+				resultsBERT := []models.ResAISchema(*resBERT)
+				for _, result := range resultsBERT[i] {
+					if result.Score > tmpBertScore.Score {
+						tmpBertScore.Label = result.Label
+						tmpBertScore.Score = result.Score
+					}
+				}
+			}
+
+			// Writing response to the global result
+			Mutex.Lock()
+			// BERT
+			results.BertResults.Score1 += BERTResults.Score1
+			results.BertResults.Score2 += BERTResults.Score2
+			results.BertResults.Score3 += BERTResults.Score3
+			results.BertResults.Score4 += BERTResults.Score4
+			results.BertResults.Score5 += BERTResults.Score5
+			results.BertResults.ErrorsCount += BERTResults.ErrorsCount
+			results.BertResults.SuccessCount += BERTResults.SuccessCount
+			Mutex.Unlock()
+		}(response.Items)
+		//////////////////////////////////////////////
+
+		nextPageToken = response.NextPageToken
+		if nextPageToken == "" {
+			break
+		}
+	}
+	wg.Wait()
+
+	return results, nil
+}
+
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
-	message.WriteString(
-		"You're a world class social media content advisor, summarize this comments and give me a recommendation in one paragraph to improve my content based on these comments:\n",
-	)
-	for _, negative := range []*models.NegativeComment(*results.NegativeComments) {
-		tmpMessage := fmt.Sprintf("-%s\n", negative.Comment.TextCleaned)
+	for _, negative := range results.NegativeComments {
+		tmpMessage := fmt.Sprintf("-%s\n", negative.TextCleaned)
 		tmpChatPrompt := []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: "You're a professional social media content advisor. I'll give you a list of comments summarize this comments and give me a recommendation in one paragraph to improve my content",
+			},
 			{
 				Role:    openai.ChatMessageRoleUser,
 				Content: message.String() + tmpMessage,

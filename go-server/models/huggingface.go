@@ -3,37 +3,25 @@ package models
 import "gptube/utils"
 
 type NegativeComment struct {
-	Comment *Comment `json:"comment,omitempty" firestore:"comment"`
-	// Priority is how bad this comment is considered by AI model
+	CommentID             string `json:"commentID,omitempty" firestore:"commentID,omitempty"`
+	TextDisplay           string `json:"textDisplay,omitempty" firestore:"textDisplay,omitempty"`
+	TextOriginal          string `json:"textOriginal,omitempty" firestore:"textOriginal,omitempty"`
+	TextCleaned           string `json:"textCleaned,omitempty" firestore:"textCleaned,omitempty"`
+	AuthorDisplayName     string `json:"authorDisplayName,omitempty" firestore:"authorDisplayName,omitempty"`
+	AuthorProfileImageUrl string `json:"authorProfileImageUrl,omitempty" firestore:"authorProfileImageUrl,omitempty"`
+	ParentID              string `json:"parentID,omitempty" firestore:"parentID,omitempty"`
+	LikeCount             int64  `json:"likeCount,omitempty" firestore:"likeCount,omitempty"`
+	// ModerationStatus: The comment's moderation status. Will not be set if
+	// the comments were requested through the id filter.
+	//
+	// Possible values:
+	//   "published" - The comment is available for public display.
+	//   "heldForReview" - The comment is awaiting review by a moderator.
+	//   "likelySpam"
+	//   "rejected" - The comment is unfit for display.
+	ModerationStatus string `json:"moderationStatus,omitempty" firestore:"moderationStatus,omitempty"`
+	// Score given to the comment
 	Priority float64 `json:"priority,omitempty" firestore:"priority"`
-	Index    int     `json:"-" firestore:"-"`
-}
-
-type HeapNegativeComments []*NegativeComment
-
-func (pq HeapNegativeComments) Len() int { return len(pq) }
-func (pq HeapNegativeComments) Less(i, j int) bool {
-	return pq[i].Priority > pq[j].Priority // we sort by the highest value of bad comment
-}
-func (pq HeapNegativeComments) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-	pq[i].Index = i
-	pq[j].Index = j
-}
-func (pq *HeapNegativeComments) Push(x any) {
-	n := len(*pq)
-	item := x.(*NegativeComment)
-	item.Index = n
-	*pq = append(*pq, item)
-}
-func (pq *HeapNegativeComments) Pop() any {
-	old := *pq
-	n := len(old)
-	item := old[n-1]
-	old[n-1] = nil  // avoid memory leak
-	item.Index = -1 // for safety
-	*pq = old[0 : n-1]
-	return item
 }
 
 type BertAIResults struct {

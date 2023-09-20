@@ -1,6 +1,6 @@
 import type { AuthContextProps, CustomUser } from './auth.types'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
@@ -11,6 +11,8 @@ import {
 } from 'firebase/auth'
 
 import { auth, googleAuthProvider } from '@/lib/firebase/config-firebase'
+
+export const localStoreAuthVar = 'GPTubeAuthenticated'
 
 export const AuthContext = createContext({} as AuthContextProps)
 

@@ -1,4 +1,4 @@
-import type { ModelsYoutubeAnalyzerLandingReqBody } from '../api'
+import type { ModelsYoutubeAnalyzerLandingReqBody } from '../gptube-api'
 
 import Link from 'next/link'
 import { useEffect } from 'react'
@@ -8,7 +8,7 @@ import { openSans } from '@/components/Common/Fonts'
 import YoutubeEmbed from '@/components/UI/YoutubeEmbed'
 import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
-import { apiClient } from '../api'
+import { apiClient } from '../gptube-api'
 
 function Home() {
   async function performLandingAnalysis() {
@@ -24,8 +24,8 @@ function Home() {
       const video_id = response.videoId
       const video_title = response.videoTitle
 
-      console.log('video_id: ', video_id)
-      console.log('video_title: ', video_title)
+      // Check the response only for example purpose
+      // erase this on your PR
       console.log('response: ', response)
     } catch (error) {
       console.log(error)

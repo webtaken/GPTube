@@ -6,7 +6,7 @@
     "generators": {
       "apiGenerator": {
         "generatorName": "typescript-fetch",
-        "output": "#{cwd}/api/generated-api",
+        "output": "#{cwd}/gptube-api/generated-api",
         "inputSpec": "#{cwd}/swagger.yaml",
         "additionalProperties": {
           "typescriptThreePlus": true

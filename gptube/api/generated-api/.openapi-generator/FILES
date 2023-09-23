@@ -1,0 +1,12 @@
+.openapi-generator-ignore
+apis/DefaultApi.ts
+apis/index.ts
+index.ts
+models/HandlersHelloApiMessage.ts
+models/ModelsBertAIResults.ts
+models/ModelsYoutubeAnalysisLandingResults.ts
+models/ModelsYoutubeAnalyzerLandingReqBody.ts
+models/ModelsYoutubeAnalyzerLandingRespBody.ts
+models/UtilsHandleErrorErrorResponse.ts
+models/index.ts
+runtime.ts

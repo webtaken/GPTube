@@ -1,8 +1,21 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is the API documentation of GPTube",
+        "title": "GPTube API swagger docs",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "saul rojas coila",
+            "email": "luckly083@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
+    "host": "localhost:8000",
+    "basePath": "/api",
     "paths": {
         "/api": {
             "get": {
@@ -30,23 +43,12 @@
                 "summary": "Simple analysis with BERT model for the landing page",
                 "parameters": [
                     {
-                        "example": "\"K9q66cRLJuf\"",
                         "description": "Youtube video id",
-                        "name": "video_id",
+                        "name": "video",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "example": "\"Some video title\"",
-                        "description": "Youtube video title",
-                        "name": "video_title",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.YoutubeAnalyzerLandingReqBody"
                         }
                     }
                 ],
@@ -130,6 +132,19 @@
                 },
                 "video_title": {
                     "type": "string"
+                }
+            }
+        },
+        "models.YoutubeAnalyzerLandingReqBody": {
+            "type": "object",
+            "properties": {
+                "video_id": {
+                    "type": "string",
+                    "example": "1xoy8Q5o8ws"
+                },
+                "video_title": {
+                    "type": "string",
+                    "example": "The Truth About Bun"
                 }
             }
         },

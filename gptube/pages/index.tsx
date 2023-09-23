@@ -1,11 +1,41 @@
+import type { ModelsYoutubeAnalyzerLandingReqBody } from '../api'
+
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 import Service from '@/components/Service/Service'
 import { openSans } from '@/components/Common/Fonts'
 import YoutubeEmbed from '@/components/UI/YoutubeEmbed'
 import { LayoutsAvailable } from '@/components/Layouts/Layouts'
 
+import { apiClient } from '../api'
+
 function Home() {
+  async function performLandingAnalysis() {
+    const videoData: ModelsYoutubeAnalyzerLandingReqBody = {
+      videoId: '1xoy8Q5o8ws',
+      videoTitle: 'The Truth About Bun',
+    }
+
+    try {
+      const response = await apiClient.apiYoutubeAnalysisLandingPost({
+        video: videoData,
+      })
+      const video_id = response.videoId
+      const video_title = response.videoTitle
+
+      console.log('video_id: ', video_id)
+      console.log('video_title: ', video_title)
+      console.log('response: ', response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    performLandingAnalysis()
+  }, [])
+
   return (
     <div className={`gap-2 my-20 ${openSans.className}`}>
       <section className="grid grid-cols-1 gap-4 px-6 md:grid-cols-2 opacity-1">

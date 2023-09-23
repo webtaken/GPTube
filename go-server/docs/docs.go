@@ -9,7 +9,15 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "saul rojas coila",
+            "email": "luckly083@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -41,23 +49,12 @@ const docTemplate = `{
                 "summary": "Simple analysis with BERT model for the landing page",
                 "parameters": [
                     {
-                        "example": "\"K9q66cRLJuf\"",
                         "description": "Youtube video id",
-                        "name": "video_id",
+                        "name": "video",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "example": "\"Some video title\"",
-                        "description": "Youtube video title",
-                        "name": "video_title",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.YoutubeAnalyzerLandingReqBody"
                         }
                     }
                 ],
@@ -144,6 +141,19 @@ const docTemplate = `{
                 }
             }
         },
+        "models.YoutubeAnalyzerLandingReqBody": {
+            "type": "object",
+            "properties": {
+                "video_id": {
+                    "type": "string",
+                    "example": "1xoy8Q5o8ws"
+                },
+                "video_title": {
+                    "type": "string",
+                    "example": "The Truth About Bun"
+                }
+            }
+        },
         "models.YoutubeAnalyzerLandingRespBody": {
             "type": "object",
             "properties": {
@@ -178,12 +188,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:8000",
+	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "GPTube API swagger docs",
+	Description:      "This is the API documentation of GPTube",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

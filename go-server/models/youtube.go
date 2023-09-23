@@ -17,6 +17,11 @@ type YoutubePreAnalyzerRespBody struct {
 	Snippet       *youtube.VideoSnippet `json:"snippet,omitempty"`
 }
 
+type YoutubeAnalyzerLandingReqBody struct {
+	VideoID    string `json:"video_id,omitempty" example:"1xoy8Q5o8ws"`
+	VideoTitle string `json:"video_title,omitempty" example:"The Truth About Bun"`
+}
+
 type YoutubeAnalyzerReqBody struct {
 	VideoID    string `json:"video_id,omitempty"`
 	VideoTitle string `json:"video_title,omitempty"`

@@ -156,14 +156,13 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-// @Summary		Simple analysis with BERT model for the landing page
-// @Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
-// @Produce		json
-// @Param 		video_id body string true "Youtube video id" example("K9q66cRLJuf")
-// @Param 		video_title body string true "Youtube video title" example("Some video title")
-// @Success		200	{object}	models.YoutubeAnalyzerLandingRespBody
-// @Failure     500 {object}	utils.HandleError.errorResponse
-// @Router		/api/youtube/analysis-landing [post]
+//	@Summary		Simple analysis with BERT model for the landing page
+//	@Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
+//	@Produce		json
+//	@Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
+//	@Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
+//	@Failure		500		{object}	utils.HandleError.errorResponse
+//	@Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerReqBody
 

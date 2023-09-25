@@ -11,7 +11,7 @@ export function Header() {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button as={Link} href="#">
+          <Button variant="flat" radius='md' color='success' as={Link} href="#">
             Sign in
           </Button>
         </NavbarItem>

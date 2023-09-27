@@ -1,7 +1,7 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
 import Link from 'next/link'
 
-import { Button } from './common/button'
+import { Button } from './Common/button'
 
 export function Header() {
   return (

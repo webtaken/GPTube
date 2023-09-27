@@ -3,8 +3,8 @@ import { type FormEvent } from "react";
 import { CornerDownLeft, Plus } from "lucide-react";
 import { Link as LinkIcon } from "lucide-react";
 import { LayoutsAvailable } from "@/components/Layouts/map-layouts";
-import { Input } from "@/components/common/input";
-import { Button } from "@/components/common/button";
+import { Input } from "@/components/Common/input";
+import { Button } from "@/components/Common/button";
 import {
   Card,
   CardHeader,
@@ -27,7 +27,7 @@ import youtube_logo from "@/assets/icons/youtube.svg";
 import huggingface_logo from "@/assets/icons/hf-logo-with-title.svg";
 
 import NextImage from "next/image";
-import { rubikFont } from "@/components/common/fonts";
+import { rubikFont } from "@/components/Common/fonts";
 
 const data = [
   {

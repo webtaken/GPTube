@@ -1,0 +1,25 @@
+# a basic github action to build and deploy a docker image located in the directory go-server to my private repository
+# this action will be triggered on every push to the main branch
+# and will be executed on a ubuntu-latest runner
+name: docker-build-and-push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build the Docker image
+        run: docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/go-server
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Push image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/go-server

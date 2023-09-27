@@ -21,6 +21,13 @@ import (
 
 var Service *youtube.Service
 
+var commentsPerSubscription = map[string]int{
+	"landing": 250,
+	"free":    500,
+	"hobby":   1000,
+	"popular": 5000,
+}
+
 func init() {
 	ctx := context.Background()
 	service, err := youtube.NewService(ctx, option.WithAPIKey(config.Config("YOUTUBE_API_KEY")))
@@ -272,10 +279,11 @@ func Analyze(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisResults
 	return results, nil
 }
 
-func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnalysisLandingResults, error) {
+func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.YoutubeAnalysisLandingResults, error) {
 	results := &models.YoutubeAnalysisLandingResults{
 		BertResults: &models.BertAIResults{},
 	}
+	maxNumComments := commentsPerSubscription["landing"]
 
 	var part = []string{"id", "snippet"}
 	nextPageToken := ""
@@ -288,12 +296,14 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnaly
 	}
 
 	var wg sync.WaitGroup
+
 	// Youtube calling
 	call := Service.CommentThreads.List(part)
 	pageSize := 20
 	call.VideoId(body.VideoID)
 	call.MaxResults(int64(pageSize))
-	for {
+	commentsRetrieved := 0
+	for commentsRetrieved < maxNumComments {
 		if nextPageToken != "" {
 			call.PageToken(nextPageToken)
 		}
@@ -302,27 +312,20 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnaly
 			return results, err
 		}
 
-		// Launching AI models to work in parallel
+		commentsToAnalyze := len(response.Items)
+		if commentsRetrieved+commentsToAnalyze >= maxNumComments {
+			commentsToAnalyze = maxNumComments - commentsRetrieved
+		}
+		commentsRetrieved += commentsToAnalyze
+
 		wg.Add(1)
+		// Launching AI models to work in parallel
 		go func(comments []*youtube.CommentThread) {
 			defer wg.Done()
 			cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
-			var wgAI sync.WaitGroup
-			var errBERT error
-			var resBERT = &models.ResBertAI{}
-			var BERTResults = &models.BertAIResults{}
-
-			wgAI.Add(1)
-			go func() {
-				defer wgAI.Done()
-				resBERT, BERTResults, errBERT = BertAnalysis(comments, cleanedComments, cleanedInputs)
-				if errBERT != nil {
-					log.Printf("bert_analysis_error %v\n", err)
-				}
-			}()
-			wgAI.Wait()
-
+			resBERT, BERTResults, errBERT := BertAnalysis(comments, cleanedComments, cleanedInputs)
 			if errBERT != nil {
+				log.Printf("bert_analysis_error %v\n", err)
 				return
 			}
 
@@ -351,7 +354,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerReqBody) (*models.YoutubeAnaly
 			results.BertResults.ErrorsCount += BERTResults.ErrorsCount
 			results.BertResults.SuccessCount += BERTResults.SuccessCount
 			Mutex.Unlock()
-		}(response.Items)
+		}(response.Items[:commentsToAnalyze])
 		//////////////////////////////////////////////
 
 		nextPageToken = response.NextPageToken
@@ -368,23 +371,21 @@ func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
 	for _, negative := range results.NegativeComments {
-		tmpMessage := fmt.Sprintf("-%s\n", negative.TextCleaned)
-		tmpChatPrompt := []openai.ChatCompletionMessage{
+		message.WriteString(fmt.Sprintf("-%s\n", negative.TextCleaned))
+		if NumTokensFromMessages([]openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
 				Content: "You're a professional social media content advisor. I'll give you a list of comments summarize this comments and give me a recommendation in one paragraph to improve my content",
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,
-				Content: message.String() + tmpMessage,
+				Content: message.String() + message.String(),
 			},
-		}
-		if NumTokensFromMessages(tmpChatPrompt, "gpt-3.5-turbo") > maxNumOfTokens {
+		}, "gpt-3.5-turbo") > maxNumOfTokens {
 			log.Printf("[GetRecommendation] max number of tokens (%d) reached!\nStarting analysis...",
 				maxNumOfTokens)
 			break
 		}
-		message.WriteString(tmpMessage)
 	}
 	resp, err := Chat(message.String())
 	if err != nil {

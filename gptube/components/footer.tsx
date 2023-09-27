@@ -1,12 +1,28 @@
-import { Card } from "@nextui-org/react"
+import { Card } from '@nextui-org/react'
 
-export const Footer = () => {
+export function Footer() {
   return (
     <footer className="relative">
-      <Card fullWidth radius="none" className="flex items-center justify-center h-40">
+      <Card fullWidth className="flex items-center justify-center h-40" radius="none">
         <div className="flex items-center justify-center gap-1 font-medium">
           <span className="flex"> Contact us </span>
-          <a className="text-green-700" href="https://github.com/webtaken" target="_blank">@webtaken</a> and <a className="text-green-700" href="https://github.com/webtaken" target="_blank">@CamiloEMP</a>
+          <a
+            className="text-green-700"
+            href="https://github.com/webtaken"
+            rel="noopener"
+            target="_blank"
+          >
+            @webtaken
+          </a>{' '}
+          and{' '}
+          <a
+            className="text-green-700"
+            href="https://github.com/webtaken"
+            rel="noopener"
+            target="_blank"
+          >
+            @CamiloEMP
+          </a>
         </div>
       </Card>
     </footer>

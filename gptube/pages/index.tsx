@@ -1,3 +1,5 @@
+import type { ModelsYoutubeAnalyzerLandingReqBody } from '@/gptube-api'
+
 import { type FormEvent } from 'react'
 import { CornerDownLeft, Plus } from 'lucide-react'
 import { Link as LinkIcon } from 'lucide-react'
@@ -26,6 +28,7 @@ import huggingface_logo from '@/assets/icons/hf-logo-with-title.svg'
 import { Button } from '@/components/Common/button'
 import { Input } from '@/components/Common/input'
 import { rubikFont } from '@/components/Common/fonts'
+import { apiClient } from '@/gptube-api'
 
 const data = [
   {
@@ -55,6 +58,25 @@ export default function Home() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+  }
+
+  async function performLandingAnalysis() {
+    const videoData: ModelsYoutubeAnalyzerLandingReqBody = {
+      videoId: '1xoy8Q5o8ws',
+      videoTitle: 'The Truth About Bun',
+    }
+
+    try {
+      const response = await apiClient.apiYoutubeAnalysisLandingPost({
+        video: videoData,
+      })
+
+      // Check the response only for example purpose
+      // erase this on your PR
+      console.log('response: ', response)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (

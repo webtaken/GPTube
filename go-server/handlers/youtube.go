@@ -161,7 +161,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 // @Produce		json
 // @Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
 // @Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
-// @Failure		204		{object}	models.YoutubeAnalyzerLandingRespBody
+// @Failure		204		{object}	utils.HandleError.errorResponse
 // @Failure		500		{object}	utils.HandleError.errorResponse
 // @Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
@@ -193,7 +193,8 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	fmt.Printf("Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
 	c.JSON(successResp)
 	if results.BertResults.SuccessCount == 0 {
-		return c.SendStatus(http.StatusNoContent)
+		noContentError := fmt.Errorf("couldn't analyze any comment")
+		return utils.HandleError(noContentError, http.StatusNoContent, c)
 	}
 	return c.SendStatus(http.StatusOK)
 }

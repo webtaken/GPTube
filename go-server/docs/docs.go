@@ -68,7 +68,7 @@ const docTemplate = `{
                     "204": {
                         "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/models.YoutubeAnalyzerLandingRespBody"
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
                         }
                     },
                     "500": {

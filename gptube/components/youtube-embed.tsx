@@ -1,16 +1,15 @@
 import React from 'react'
 
-import styles from './YoutubeEmbed.module.css'
-
 interface YoutubeEmbedProps {
   title: string
   embedId: string
 }
 
-function YoutubeEmbed({ title, embedId }: YoutubeEmbedProps) {
+export function YoutubeEmbed({ title, embedId }: YoutubeEmbedProps) {
   return (
-    <div className={styles['video-responsive']}>
+    <div className="overflow-hidden pb-[56.25%] relative h-0 rounded-2xl">
       <iframe
+      className='absolute top-0 left-0 w-full h-full'
         allowFullScreen
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         src={`https://www.youtube.com/embed/${embedId}`}
@@ -19,5 +18,3 @@ function YoutubeEmbed({ title, embedId }: YoutubeEmbedProps) {
     </div>
   )
 }
-
-export default YoutubeEmbed

@@ -1,11 +1,10 @@
-import { openSans } from '@/components/Common/Fonts'
 import PreAnalysis from '@/components/SocialMedia/Youtube/PreAnalysis'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function YoutubePanel() {
   return (
     <div className="pt-20">
-      <h2 className={`${openSans.className} text-xl text-center text-typo`}>
+      <h2 className={` text-xl text-center text-typo`}>
         Let&apos;s check what your subscriber think about your video
       </h2>
       <p className="text-sm text-center text-typo">

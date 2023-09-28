@@ -3,7 +3,6 @@ import { Form, Input, Button } from 'antd'
 import { Toaster } from 'react-hot-toast'
 
 import Google from '@/assets/icons/Google'
-import { openSans } from '@/components/Common/Fonts'
 import { useAuth } from '@/hooks/useAuth'
 
 function LoginForm() {
@@ -30,7 +29,7 @@ function LoginForm() {
       >
         <Toaster />
         <Form.Item
-          label={<p className={`text-typo ${openSans.className}`}>E-mail</p>}
+          label={<p className={`text-typo `}>E-mail</p>}
           name="email"
           rules={[
             {
@@ -44,7 +43,7 @@ function LoginForm() {
         </Form.Item>
 
         <Form.Item
-          label={<p className={`text-typo ${openSans.className}`}>Password</p>}
+          label={<p className={`text-typo `}>Password</p>}
           name="password"
           rules={[{ required: true, message: 'Please input your password!' }]}
         >
@@ -52,14 +51,14 @@ function LoginForm() {
         </Form.Item>
         <Form.Item wrapperCol={{ span: 24 }}>
           <Link href="/reset">
-            <span className={`text-primary hover:text-white underline ${openSans.className}`}>
+            <span className={`text-primary hover:text-white underline `}>
               Forgot your password?
             </span>
           </Link>
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
           <button className="px-4 py-2 mx-auto primary-button" type="submit">
-            <span className={`${openSans.className}`}>Login</span>
+            Login
           </button>
         </Form.Item>
       </Form>

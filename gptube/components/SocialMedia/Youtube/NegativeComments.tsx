@@ -15,7 +15,6 @@ import {
   getCountFromServer,
 } from 'firebase/firestore'
 
-import { openSans } from '@/components/Common/Fonts'
 import PrevPage from '@/assets/icons/PrevPage'
 import NextPage from '@/assets/icons/NextIcon'
 import { firestore } from '@/lib/firebase/config-firebase'
@@ -238,7 +237,7 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
   }
 
   return (
-    <Content className={`${openSans.className} bg-black-medium px-6 rounded-md text-typo`}>
+    <Content className={` bg-black-medium px-6 rounded-md text-typo`}>
       <Toaster />
       <p className="text-lg font-bold">OUR OBSERVATION ABOUT YOUR CONTENT 🐱</p>
       <p className="text-base text-justify">

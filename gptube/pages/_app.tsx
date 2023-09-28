@@ -1,11 +1,13 @@
 import '@/styles/globals.css'
 import type { NextComponentType } from 'next'
 import type { AppProps } from 'next/app'
-import type { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import type { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 import { useRouter } from 'next/router'
+import Script from 'next/script'
+import { NextUIProvider } from '@nextui-org/react'
 
-import { Layouts } from '@/components/Layouts/Layouts'
+import { MapLayouts } from '@/components/Layouts/map-layouts'
 import { AuthContextProvider } from '@/context/AuthContext/AuthContext'
 import ProtectedRoute from '@/components/Security/ProtectedRoute'
 
@@ -19,19 +21,22 @@ type CustomAppProps = AppProps & {
 
 export default function App({ Component, pageProps }: CustomAppProps) {
   const router = useRouter()
-  const Layout = Layouts[Component.Layout]
+  const Layout = MapLayouts[Component.Layout]
 
   return (
-    <AuthContextProvider>
-      <Layout>
-        {noAuthRequired.includes(router.pathname) ? (
-          <Component {...pageProps} />
-        ) : (
-          <ProtectedRoute>
+    <NextUIProvider>
+      <AuthContextProvider>
+        <Layout>
+          {noAuthRequired.includes(router.pathname) ? (
             <Component {...pageProps} />
-          </ProtectedRoute>
-        )}
-      </Layout>
-    </AuthContextProvider>
+          ) : (
+            <ProtectedRoute>
+              <Component {...pageProps} />
+            </ProtectedRoute>
+          )}
+        </Layout>
+      </AuthContextProvider>
+      <Script defer src="https://assets.lemonsqueezy.com/lemon.js" />
+    </NextUIProvider>
   )
 }

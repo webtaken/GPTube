@@ -1,7 +1,6 @@
 import { Form, Input } from 'antd'
 import { Toaster } from 'react-hot-toast'
 
-import { openSans } from '@/components/Common/Fonts'
 import { useAuth } from '@/hooks/useAuth'
 
 function ResetPasswordForm() {
@@ -18,7 +17,7 @@ function ResetPasswordForm() {
     >
       <Toaster />
       <Form.Item
-        label={<p className={`text-typo ${openSans.className}`}>E-mail</p>}
+        label={<p className={`text-typo `}>E-mail</p>}
         name="email"
         rules={[
           {
@@ -33,7 +32,7 @@ function ResetPasswordForm() {
 
       <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
         <button className="p-2 mx-auto primary-button" type="submit">
-          <span className={`${openSans.className}`}>Send Email</span>
+          <span className="">Send Email</span>
         </button>
       </Form.Item>
     </Form>

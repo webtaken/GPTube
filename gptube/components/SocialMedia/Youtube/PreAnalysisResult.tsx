@@ -3,7 +3,6 @@ import { Layout, Tag, Image, Input, Button } from 'antd'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 
-import { openSans } from '@/components/Common/Fonts'
 import { useAuth } from '@/hooks/useAuth'
 import { ENV_CONFIG } from '@/config/env-config'
 
@@ -81,7 +80,7 @@ function PreAnalysisResult({
   }, 1000)
 
   return (
-    <div className={`${openSans.className} grid gap-6 lg:mx-48 sm:mx-10 px-4 mb-6`}>
+    <div className={` grid gap-6 lg:mx-48 sm:mx-10 px-4 mb-6`}>
       <Content className="grid items-center w-full grid-cols-1 px-4 py-2 mx-auto shadow-lg md:grid-cols-2 bg-black-medium rounded-2xl md:p-6 sm:py-4">
         <div className="grid gap-2 mx-4 lg:gap-6">
           <div className="flex gap-2">
@@ -115,9 +114,7 @@ function PreAnalysisResult({
         </div>
         {requiresEmail ? (
           <div className="col-span-2 mx-4 mt-4">
-            <p className={`text-typo mb-2 ${openSans.className}`}>
-              We&apos;ll sent your results later
-            </p>
+            <p className={`text-typo mb-2 `}>We&apos;ll sent your results later</p>
             <div className="flex items-center space-x-4">
               <Input
                 className="h-8 focus:border-none hover:border-none"
@@ -129,14 +126,14 @@ function PreAnalysisResult({
                 }}
               />
               <Button className="primary-button" onClick={startAnalysisHandler}>
-                <span className={`${openSans.className}`}>Analyze</span>{' '}
+                <span className="">Analyze</span>{' '}
               </Button>
             </div>
           </div>
         ) : (
           <div className="col-span-2 mx-auto mt-4">
             <Button className="primary-button" onClick={startAnalysisHandler}>
-              <span className={`${openSans.className}`}>Analyze</span>{' '}
+              <span className="">Analyze</span>{' '}
             </Button>
           </div>
         )}

@@ -1,13 +1,12 @@
 import Link from 'next/link'
 
-import { openSans } from '@/components/Common/Fonts'
 import LoginForm from '@/components/Auth/LoginForm'
-import { LayoutsAvailable } from '@/components/Layouts/Layouts'
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Login() {
   return (
-    <div className={`${openSans.className}`}>
-      <h1 className={`${openSans.className} text-typo text-center text-4xl`}>
+    <div className="">
+      <h1 className={` text-typo text-center text-4xl`}>
         <Link className="font-bold hover:text-primary" href="/">
           GPTube
         </Link>{' '}

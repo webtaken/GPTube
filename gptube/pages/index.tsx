@@ -1,6 +1,6 @@
 import type { ModelsYoutubeAnalyzerLandingReqBody } from '@/gptube-api'
 
-import { type FormEvent } from 'react'
+import { useEffect, type FormEvent } from 'react'
 import { CornerDownLeft, Plus } from 'lucide-react'
 import { Link as LinkIcon } from 'lucide-react'
 import {
@@ -78,6 +78,10 @@ export default function Home() {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    performLandingAnalysis()
+  }, [])
 
   return (
     <>

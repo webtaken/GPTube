@@ -65,6 +65,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.YoutubeAnalyzerLandingRespBody"
                         }
                     },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {

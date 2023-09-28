@@ -156,25 +156,19 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-//	@Summary		Simple analysis with BERT model for the landing page
-//	@Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
-//	@Produce		json
-//	@Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
-//	@Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
-//	@Failure		500		{object}	utils.HandleError.errorResponse
-//	@Router			/api/youtube/analysis-landing [post]
+// @Summary		Simple analysis with BERT model for the landing page
+// @Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
+// @Produce		json
+// @Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
+// @Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
+// @Failure		204		{object}	utils.HandleError.errorResponse
+// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
-	var body models.YoutubeAnalyzerReqBody
+	var body models.YoutubeAnalyzerLandingReqBody
 
 	if err := c.BodyParser(&body); err != nil {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
-	}
-
-	result, err := database.GetYoutubeLandingResult(body.VideoID)
-	if err == nil {
-		// It means the object already exist on the database
-		c.JSON(result)
-		return c.SendStatus(http.StatusOK)
 	}
 
 	// This means we haven´t received email hence is a short video so we do
@@ -198,5 +192,9 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	////////////////////////////////////////////////
 	fmt.Printf("Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
 	c.JSON(successResp)
+	if results.BertResults.SuccessCount == 0 {
+		noContentError := fmt.Errorf("couldn't analyze any comment")
+		return utils.HandleError(noContentError, http.StatusNoContent, c)
+	}
 	return c.SendStatus(http.StatusOK)
 }

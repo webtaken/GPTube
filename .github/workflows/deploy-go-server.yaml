@@ -1,0 +1,30 @@
+# 1. build the image
+# 2. tag the image
+# 3. push the image to private repository
+# 4. deploy the image to kubernetes cluster
+# 5. update the deployment in kubernetes cluster
+# 6. update the service in kubernetes cluster
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build & tag
+        run: |
+          cd go-server
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/go-server:v1 .
+      - name: login
+        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: push
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/go-server:v1

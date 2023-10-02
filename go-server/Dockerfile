@@ -26,7 +26,7 @@ WORKDIR /home
 COPY --from=builder /gptube_build /gptube_build
 COPY .env ./
 COPY templates/ ./templates
-COPY gptube-firebase-sdk-prod.json ./
+# COPY gptube-firebase-sdk-prod.json ./
 
 EXPOSE 8000
 

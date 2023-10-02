@@ -5,11 +5,9 @@
 # 5. update the deployment in kubernetes cluster
 # 6. update the service in kubernetes cluster
 
-name: deploy
+name: deploy-test
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

@@ -24,7 +24,7 @@ FROM alpine:latest
 WORKDIR /home
 
 COPY --from=builder /gptube_build /gptube_build
-# COPY .env ./
+COPY .env.example ./.env
 COPY templates/ ./templates
 # COPY gptube-firebase-sdk-prod.json ./
 

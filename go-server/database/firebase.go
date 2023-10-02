@@ -19,13 +19,11 @@ var Sa option.ClientOption
 
 func init() {
 	Ctx = context.Background()
-	fmt.Printf("In %s mode.\n", config.Config("ENV_MODE"))
+	fmt.Printf("Firebase setup in %s mode.\n", config.Config("ENV_MODE"))
 	if config.Config("ENV_MODE") == "development" {
-		fmt.Printf("Starting the firebase sdk: %s\n", config.Config("DB_KEYS_DEVELOPMENT"))
-		Sa = option.WithCredentialsFile(config.Config("DB_KEYS_DEVELOPMENT"))
+		Sa = option.WithCredentialsJSON([]byte(config.Config("DB_KEYS_DEVELOPMENT")))
 	} else {
-		fmt.Printf("Starting the firebase sdk: %s\n", config.Config("DB_KEYS_PRODUCTION"))
-		Sa = option.WithCredentialsFile(config.Config("DB_KEYS_PRODUCTION"))
+		Sa = option.WithCredentialsJSON([]byte(config.Config("DB_KEYS_PRODUCTION")))
 	}
 }
 

@@ -13,6 +13,7 @@ import ProtectedRoute from "@/components/Security/ProtectedRoute";
 import { useState } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
 
 const noAuthRequired = ["/", "/login", "/reset", "/pricing"];
 
@@ -23,8 +24,20 @@ type CustomAppProps = AppProps & {
 };
 
 export default function App({ Component, pageProps }: CustomAppProps) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 60,  // 1 hour
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        retry: false,
+
+      },
+    },
+  }));
   const router = useRouter();
-  const [queryClient] = useState(() => new QueryClient());
+
   const Layout = MapLayouts[Component.Layout];
 
   return (
@@ -40,6 +53,7 @@ export default function App({ Component, pageProps }: CustomAppProps) {
                   <Component {...pageProps} />
                 </ProtectedRoute>
               )}
+              <Toaster />
             </Layout>
           </Hydrate>
           <ReactQueryDevtools initialIsOpen={false} />

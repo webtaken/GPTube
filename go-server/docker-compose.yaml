@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  gptube-go:
+    container_name: gptube-go
+    image: gptube-go:latest
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env

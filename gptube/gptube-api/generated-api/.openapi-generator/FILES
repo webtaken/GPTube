@@ -8,5 +8,9 @@ models/ModelsYoutubeAnalysisLandingResults.ts
 models/ModelsYoutubeAnalyzerLandingReqBody.ts
 models/ModelsYoutubeAnalyzerLandingRespBody.ts
 models/UtilsHandleErrorErrorResponse.ts
+models/YoutubeThumbnail.ts
+models/YoutubeThumbnailDetails.ts
+models/YoutubeVideoLocalization.ts
+models/YoutubeVideoSnippet.ts
 models/index.ts
 runtime.ts

@@ -26,6 +26,7 @@ tmp/
 
 # env variables
 .env
+env.json
 
 # Local
 crt.txt

@@ -19,13 +19,11 @@ var Sa option.ClientOption
 
 func init() {
 	Ctx = context.Background()
-	fmt.Printf("In %s mode.\n", config.Config("ENV_MODE"))
+	fmt.Printf("Firebase setup in %s mode.\n", config.Config("ENV_MODE"))
 	if config.Config("ENV_MODE") == "development" {
-		fmt.Printf("Starting the firebase sdk: %s\n", config.Config("DB_KEYS_DEVELOPMENT"))
-		Sa = option.WithCredentialsFile(config.Config("DB_KEYS_DEVELOPMENT"))
+		Sa = option.WithCredentialsJSON([]byte(config.Config("DB_KEYS_DEVELOPMENT")))
 	} else {
-		fmt.Printf("Starting the firebase sdk: %s\n", config.Config("DB_KEYS_PRODUCTION"))
-		Sa = option.WithCredentialsFile(config.Config("DB_KEYS_PRODUCTION"))
+		Sa = option.WithCredentialsJSON([]byte(config.Config("DB_KEYS_PRODUCTION")))
 	}
 }
 
@@ -126,35 +124,6 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 			log.Printf("Failed to add negative comment: %v", err)
 		}
 	}
-	return nil
-}
-
-func AddYoutubeLandingResult(results *models.YoutubeAnalyzerLandingRespBody) error {
-	app, err := firebase.NewApp(Ctx, nil, Sa)
-	if err != nil {
-		return err
-	}
-
-	client, err := app.Firestore(Ctx)
-	if err != nil {
-		return err
-	}
-
-	defer client.Close()
-
-	currentTime := time.Now().UTC()
-	_, err = GetYoutubeLandingResult(results.VideoID)
-	if err != nil {
-		// It means the object does not exist on the database
-		results.CreatedAt = currentTime
-		landingDoc := client.Collection("landing").Doc(results.VideoID)
-		_, err = landingDoc.Set(Ctx, results)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
 	return nil
 }
 

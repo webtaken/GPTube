@@ -6,3 +6,7 @@ export * from './ModelsYoutubeAnalysisLandingResults';
 export * from './ModelsYoutubeAnalyzerLandingReqBody';
 export * from './ModelsYoutubeAnalyzerLandingRespBody';
 export * from './UtilsHandleErrorErrorResponse';
+export * from './YoutubeThumbnail';
+export * from './YoutubeThumbnailDetails';
+export * from './YoutubeVideoLocalization';
+export * from './YoutubeVideoSnippet';

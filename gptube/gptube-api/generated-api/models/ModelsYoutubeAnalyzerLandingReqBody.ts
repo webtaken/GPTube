@@ -25,12 +25,6 @@ export interface ModelsYoutubeAnalyzerLandingReqBody {
      * @memberof ModelsYoutubeAnalyzerLandingReqBody
      */
     videoId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelsYoutubeAnalyzerLandingReqBody
-     */
-    videoTitle?: string;
 }
 
 /**
@@ -53,7 +47,6 @@ export function ModelsYoutubeAnalyzerLandingReqBodyFromJSONTyped(json: any, igno
     return {
         
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
-        'videoTitle': !exists(json, 'video_title') ? undefined : json['video_title'],
     };
 }
 
@@ -67,7 +60,6 @@ export function ModelsYoutubeAnalyzerLandingReqBodyToJSON(value?: ModelsYoutubeA
     return {
         
         'video_id': value.videoId,
-        'video_title': value.videoTitle,
     };
 }
 

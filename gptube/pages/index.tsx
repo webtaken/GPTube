@@ -63,7 +63,6 @@ export default function Home() {
   async function performLandingAnalysis() {
     const videoData: ModelsYoutubeAnalyzerLandingReqBody = {
       videoId: '1xoy8Q5o8ws',
-      videoTitle: 'The Truth About Bun',
     }
 
     try {

@@ -1,45 +1,44 @@
-import { useState, type FormEvent } from "react";
-import { CornerDownLeft, Plus } from "lucide-react";
-import { Link as LinkIcon } from "lucide-react";
-import {
-  Card,
-} from "@nextui-org/react";
-import NextImage from "next/image";
+import { useState, type FormEvent } from 'react'
+import { CornerDownLeft, Plus } from 'lucide-react'
+import { Link as LinkIcon } from 'lucide-react'
+import { Card } from '@nextui-org/react'
+import NextImage from 'next/image'
+import toast from 'react-hot-toast'
 
-import { LayoutsAvailable } from "@/components/Layouts/map-layouts";
-import { Footer } from "@/components/footer";
-import openai_logo from "@/assets/icons/openai.svg";
-import youtube_logo from "@/assets/icons/youtube.svg";
-import huggingface_logo from "@/assets/icons/hf-logo-with-title.svg";
-import { Button } from "@/components/Common/button";
-import { Input } from "@/components/Common/input";
-import { useLandingAnalysis } from "@/hooks/use-landing-analysis";
-import { extractYTVideoID } from "@/utils";
-import { AnalysisLanding } from "@/components/landing/analysis-landing";
-import toast from "react-hot-toast";
+import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
+import { Footer } from '@/components/footer'
+import openai_logo from '@/assets/icons/openai.svg'
+import youtube_logo from '@/assets/icons/youtube.svg'
+import huggingface_logo from '@/assets/icons/hf-logo-with-title.svg'
+import { Button } from '@/components/Common/button'
+import { Input } from '@/components/Common/input'
+import { useLandingAnalysis } from '@/hooks/use-landing-analysis'
+import { extractYTVideoID } from '@/utils'
+import { AnalysisLanding } from '@/components/landing/analysis-landing'
+
 export default function Home() {
-  const [videoId, setVideoId] = useState<string>();
+  const [videoId, setVideoId] = useState<string>()
 
   const analysisQuery = useLandingAnalysis({
     videoId: videoId,
-    videoTitle: "test",
-  });
+  })
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
 
-    const videoLink = formData.get("videoLink")?.toString();
+    const videoLink = formData.get('videoLink')?.toString()
 
     if (!videoLink) {
-      toast.error("Please enter a valid YouTube video link");
+      toast.error('Please enter a valid YouTube video link')
 
       return
-    };
+    }
 
-    const videoId = extractYTVideoID(videoLink);
-    setVideoId(videoId);
-  };
+    const extractedVideoId = extractYTVideoID(videoLink)
+
+    setVideoId(extractedVideoId)
+  }
 
   return (
     <>
@@ -49,12 +48,12 @@ export default function Home() {
           <br />
           <span
             style={{
-              position: "relative",
-              whiteSpace: "nowrap",
-              backgroundImage: "linear-gradient(120deg,rgba(129,247,172,.425),#81f7ac)",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "100% .15em",
-              backgroundPosition: "0 95%",
+              position: 'relative',
+              whiteSpace: 'nowrap',
+              backgroundImage: 'linear-gradient(120deg,rgba(129,247,172,.425),#81f7ac)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '100% .15em',
+              backgroundPosition: '0 95%',
             }}
           >
             your content
@@ -69,8 +68,8 @@ export default function Home() {
             disabled={analysisQuery.isFetching}
             endContent={
               <Button
-                isLoading={analysisQuery.isFetching}
                 className="!outline-none"
+                isLoading={analysisQuery.isFetching}
                 size="sm"
                 type="submit"
                 variant="faded"
@@ -136,7 +135,7 @@ export default function Home() {
       </section>
       <Footer />
     </>
-  );
+  )
 }
 
-Home.Layout = LayoutsAvailable.Admin;
+Home.Layout = LayoutsAvailable.Admin

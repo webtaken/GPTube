@@ -19,6 +19,12 @@ import {
     ModelsYoutubeAnalysisLandingResultsFromJSONTyped,
     ModelsYoutubeAnalysisLandingResultsToJSON,
 } from './ModelsYoutubeAnalysisLandingResults';
+import type { YoutubeVideoSnippet } from './YoutubeVideoSnippet';
+import {
+    YoutubeVideoSnippetFromJSON,
+    YoutubeVideoSnippetFromJSONTyped,
+    YoutubeVideoSnippetToJSON,
+} from './YoutubeVideoSnippet';
 
 /**
  * 
@@ -46,16 +52,16 @@ export interface ModelsYoutubeAnalyzerLandingRespBody {
     results?: ModelsYoutubeAnalysisLandingResults;
     /**
      * 
-     * @type {string}
+     * @type {YoutubeVideoSnippet}
      * @memberof ModelsYoutubeAnalyzerLandingRespBody
      */
-    videoId?: string;
+    snippet?: YoutubeVideoSnippet;
     /**
      * 
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerLandingRespBody
      */
-    videoTitle?: string;
+    videoId?: string;
 }
 
 /**
@@ -80,8 +86,8 @@ export function ModelsYoutubeAnalyzerLandingRespBodyFromJSONTyped(json: any, ign
         'createdAt': !exists(json, 'created_at') ? undefined : json['created_at'],
         'email': !exists(json, 'email') ? undefined : json['email'],
         'results': !exists(json, 'results') ? undefined : ModelsYoutubeAnalysisLandingResultsFromJSON(json['results']),
+        'snippet': !exists(json, 'snippet') ? undefined : YoutubeVideoSnippetFromJSON(json['snippet']),
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
-        'videoTitle': !exists(json, 'video_title') ? undefined : json['video_title'],
     };
 }
 
@@ -97,8 +103,8 @@ export function ModelsYoutubeAnalyzerLandingRespBodyToJSON(value?: ModelsYoutube
         'created_at': value.createdAt,
         'email': value.email,
         'results': ModelsYoutubeAnalysisLandingResultsToJSON(value.results),
+        'snippet': YoutubeVideoSnippetToJSON(value.snippet),
         'video_id': value.videoId,
-        'video_title': value.videoTitle,
     };
 }
 

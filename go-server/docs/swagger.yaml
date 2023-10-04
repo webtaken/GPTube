@@ -36,9 +36,6 @@ definitions:
       video_id:
         example: 1xoy8Q5o8ws
         type: string
-      video_title:
-        example: The Truth About Bun
-        type: string
     type: object
   models.YoutubeAnalyzerLandingRespBody:
     properties:
@@ -48,15 +45,130 @@ definitions:
         type: string
       results:
         $ref: '#/definitions/models.YoutubeAnalysisLandingResults'
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
       video_id:
-        type: string
-      video_title:
         type: string
     type: object
   utils.HandleError.errorResponse:
     properties:
       error:
         example: an error ocurred
+        type: string
+    type: object
+  youtube.Thumbnail:
+    properties:
+      height:
+        description: 'Height: (Optional) Height of the thumbnail image.'
+        type: integer
+      url:
+        description: 'Url: The thumbnail image''s URL.'
+        type: string
+      width:
+        description: 'Width: (Optional) Width of the thumbnail image.'
+        type: integer
+    type: object
+  youtube.ThumbnailDetails:
+    properties:
+      default:
+        allOf:
+        - $ref: '#/definitions/youtube.Thumbnail'
+        description: 'Default: The default image for this resource.'
+      high:
+        allOf:
+        - $ref: '#/definitions/youtube.Thumbnail'
+        description: 'High: The high quality image for this resource.'
+      maxres:
+        allOf:
+        - $ref: '#/definitions/youtube.Thumbnail'
+        description: 'Maxres: The maximum resolution quality image for this resource.'
+      medium:
+        allOf:
+        - $ref: '#/definitions/youtube.Thumbnail'
+        description: 'Medium: The medium quality image for this resource.'
+      standard:
+        allOf:
+        - $ref: '#/definitions/youtube.Thumbnail'
+        description: 'Standard: The standard quality image for this resource.'
+    type: object
+  youtube.VideoLocalization:
+    properties:
+      description:
+        description: 'Description: Localized version of the video''s description.'
+        type: string
+      title:
+        description: 'Title: Localized version of the video''s title.'
+        type: string
+    type: object
+  youtube.VideoSnippet:
+    properties:
+      categoryId:
+        description: 'CategoryId: The YouTube video category associated with the video.'
+        type: string
+      channelId:
+        description: |-
+          ChannelId: The ID that YouTube uses to uniquely identify the channel
+          that the video was uploaded to.
+        type: string
+      channelTitle:
+        description: |-
+          ChannelTitle: Channel title for the channel that the video belongs
+          to.
+        type: string
+      defaultAudioLanguage:
+        description: |-
+          DefaultAudioLanguage: The default_audio_language property specifies
+          the language spoken in the video's default audio track.
+        type: string
+      defaultLanguage:
+        description: 'DefaultLanguage: The language of the videos''s default snippet.'
+        type: string
+      description:
+        description: |-
+          Description: The video's description. @mutable youtube.videos.insert
+          youtube.videos.update
+        type: string
+      liveBroadcastContent:
+        description: |-
+          LiveBroadcastContent: Indicates if the video is an upcoming/active
+          live broadcast. Or it's "none" if the video is not an upcoming/active
+          live broadcast.
+
+          Possible values:
+            "none"
+            "upcoming" - The live broadcast is upcoming.
+            "live" - The live broadcast is active.
+            "completed" - The live broadcast has been completed.
+        type: string
+      localized:
+        allOf:
+        - $ref: '#/definitions/youtube.VideoLocalization'
+        description: |-
+          Localized: Localized snippet selected with the hl parameter. If no
+          such localization exists, this field is populated with the default
+          snippet. (Read-only)
+      publishedAt:
+        description: 'PublishedAt: The date and time when the video was uploaded.'
+        type: string
+      tags:
+        description: |-
+          Tags: A list of keyword tags associated with the video. Tags may
+          contain spaces.
+        items:
+          type: string
+        type: array
+      thumbnails:
+        allOf:
+        - $ref: '#/definitions/youtube.ThumbnailDetails'
+        description: |-
+          Thumbnails: A map of thumbnail images associated with the video. For
+          each object in the map, the key is the name of the thumbnail image,
+          and the value is an object that contains other information about the
+          thumbnail.
+      title:
+        description: |-
+          Title: The video's title. @mutable youtube.videos.insert
+          youtube.videos.update
         type: string
     type: object
 host: localhost:8000
@@ -103,6 +215,10 @@ paths:
             $ref: '#/definitions/models.YoutubeAnalyzerLandingRespBody'
         "204":
           description: No Content
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/utils.HandleError.errorResponse'
         "500":

@@ -162,6 +162,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 // @Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
 // @Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
 // @Failure		204		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	utils.HandleError.errorResponse
 // @Failure		500		{object}	utils.HandleError.errorResponse
 // @Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
@@ -171,6 +172,16 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 
+	if body.VideoID == "" {
+		err := fmt.Errorf("please provide a videoID")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	videoData, err := services.GetVideoData(body.VideoID)
+	if err != nil {
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
 	// This means we haven´t received email hence is a short video so we do
 	// all the logic here and send the response instantly to the client
 	results, err := services.AnalyzeForLanding(body)
@@ -178,23 +189,20 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 
-	// sending the results to the user
-	successResp := models.YoutubeAnalyzerLandingRespBody{
-		VideoID:    body.VideoID,
-		VideoTitle: body.VideoTitle,
-		Results:    results,
-	}
-	// Here we must save the results to FireStore //
-	err = database.AddYoutubeLandingResult(&successResp)
-	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
-	}
-	////////////////////////////////////////////////
-	fmt.Printf("Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
-	c.JSON(successResp)
 	if results.BertResults.SuccessCount == 0 {
 		noContentError := fmt.Errorf("couldn't analyze any comment")
 		return utils.HandleError(noContentError, http.StatusNoContent, c)
 	}
+
+	// sending the results to the user
+	successResp := models.YoutubeAnalyzerLandingRespBody{
+		VideoID: body.VideoID,
+		Snippet: videoData.Items[0].Snippet,
+		Results: results,
+	}
+
+	fmt.Printf("Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
+	c.JSON(successResp)
+
 	return c.SendStatus(http.StatusOK)
 }

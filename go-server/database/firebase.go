@@ -127,35 +127,6 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	return nil
 }
 
-func AddYoutubeLandingResult(results *models.YoutubeAnalyzerLandingRespBody) error {
-	app, err := firebase.NewApp(Ctx, nil, Sa)
-	if err != nil {
-		return err
-	}
-
-	client, err := app.Firestore(Ctx)
-	if err != nil {
-		return err
-	}
-
-	defer client.Close()
-
-	currentTime := time.Now().UTC()
-	_, err = GetYoutubeLandingResult(results.VideoID)
-	if err != nil {
-		// It means the object does not exist on the database
-		results.CreatedAt = currentTime
-		landingDoc := client.Collection("landing").Doc(results.VideoID)
-		_, err = landingDoc.Set(Ctx, results)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	return nil
-}
-
 func RetrieveSubscriptions(email string) (*[]map[string]interface{}, error) {
 	app, err := firebase.NewApp(Ctx, nil, Sa)
 	if err != nil {

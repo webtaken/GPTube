@@ -7,7 +7,6 @@ import {
   Divider,
   useDisclosure,
   Skeleton,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -17,6 +16,7 @@ import { YoutubeEmbed } from "../youtube-embed";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ModelsYoutubeAnalyzerLandingRespBody } from "@/gptube-api";
 import { rubikFont } from "../Common/fonts";
+import GPtubeLogo from "../../assets/icons/gptube-logo.svg";
 
 export const AnalysisLanding = ({
   analysis,
@@ -56,6 +56,7 @@ export const AnalysisLanding = ({
   ];
 
   const videoIdRender = analysis.data?.videoId ?? videoId ?? "ucX2zXAZ1I0";
+  const videoSnippet = analysis.data?.snippet;
 
   return (
     <>
@@ -75,17 +76,18 @@ export const AnalysisLanding = ({
         ) : (
           <>
             <CardHeader className="flex gap-3">
-              <Image
-                alt="nextui logo"
-                height={40}
-                radius="sm"
-                src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-                width={40}
-              />
-              <div className="flex flex-col">
-                <p className="text-md">GPTube</p>
-                <p className="text-small text-default-500">GPTube.com</p>
-              </div>
+              {!analysis.data?.snippet && (
+                <div className="flex flex-col">
+                  <p className="text-md">GPTube</p>
+                  <p className="text-small text-default-500">GPTube.com</p>
+                </div>
+              )}
+              {analysis.data?.snippet && (
+                <div className="flex flex-col">
+                  <p className="text-md">{videoSnippet?.title}</p>
+                  <p className="text-small text-default-500">{videoSnippet?.description}</p>
+                </div>
+              )}
             </CardHeader>
             <Divider />
             <CardBody>

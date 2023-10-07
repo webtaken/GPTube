@@ -152,6 +152,7 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
 
   useEffect(() => {
     countComments()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   let commentsSection = <p className="mt-8 text-2xl text-center animate-bounce">🐱</p>
@@ -260,7 +261,9 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
         as="div"
         className="relative z-10"
         open={showComments}
-        onClose={() => setShowComments(false)}
+        onClose={() => {
+          setShowComments(false)
+        }}
       >
         <div aria-hidden="true" className="fixed inset-0 bg-black/30" />
         <div className="fixed inset-0 overflow-y-auto">
@@ -287,7 +290,9 @@ function NegativeComments({ videoID, recommendationChatGPT }: NegativeCommentsPr
                 <button
                   className="float-right p-2 primary-button"
                   type="button"
-                  onClick={() => setShowComments(false)}
+                  onClick={() => {
+                    setShowComments(false)
+                  }}
                 >
                   Close
                 </button>

@@ -1,86 +1,42 @@
-import type { ModelsYoutubeAnalyzerLandingReqBody } from '@/gptube-api'
-
-import { useEffect, type FormEvent } from 'react'
+import { type FormEvent } from 'react'
 import { CornerDownLeft, Plus } from 'lucide-react'
 import { Link as LinkIcon } from 'lucide-react'
-import {
-  Card,
-  CardHeader,
-  useDisclosure,
-  Image,
-  CardBody,
-  Divider,
-  CardFooter,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-} from '@nextui-org/react'
-import { ResponsiveContainer, BarChart, XAxis, YAxis, Bar } from 'recharts'
+import { Card } from '@nextui-org/react'
 import NextImage from 'next/image'
+import toast from 'react-hot-toast'
 
 import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
-import { YoutubeEmbed } from '@/components/youtube-embed'
 import { Footer } from '@/components/footer'
 import openai_logo from '@/assets/icons/openai.svg'
 import youtube_logo from '@/assets/icons/youtube.svg'
 import huggingface_logo from '@/assets/icons/hf-logo-with-title.svg'
 import { Button } from '@/components/Common/button'
 import { Input } from '@/components/Common/input'
-import { rubikFont } from '@/components/Common/fonts'
-import { apiClient } from '@/gptube-api'
-
-const data = [
-  {
-    name: 'Poor',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Fair',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Good',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Very good',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Excellent',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-]
+import { useHandleLandingAnalysis } from '@/hooks/use-landing-analysis'
+import { extractYTVideoID } from '@/utils'
+import { AnalysisLanding } from '@/components/landing/analysis-landing'
 
 export default function Home() {
-  const { isOpen, onOpenChange } = useDisclosure()
+  const { handleLandingAnalysis, isLoading, dataAnalysis } = useHandleLandingAnalysis()
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-  }
+    const formData = new FormData(e.currentTarget)
 
-  async function performLandingAnalysis() {
-    const videoData: ModelsYoutubeAnalyzerLandingReqBody = {
-      videoId: '1xoy8Q5o8ws',
+    const videoLink = formData.get('videoLink')?.toString()
+
+    if (!videoLink) {
+      toast.error('Please enter a valid YouTube video link')
+
+      return
     }
 
-    try {
-      const response = await apiClient.apiYoutubeAnalysisLandingPost({
-        video: videoData,
-      })
+    const videoId = extractYTVideoID(videoLink)
 
-      // Check the response only for example purpose
-      // erase this on your PR
-      console.log('response: ', response)
-    } catch (error) {
-      console.log(error)
-    }
+    handleLandingAnalysis({
+      videoId,
+    })
   }
-
-  useEffect(() => {
-    performLandingAnalysis()
-  }, [])
 
   return (
     <>
@@ -107,9 +63,16 @@ export default function Home() {
         </p>
         <form className="w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
           <Input
+            disabled={isLoading}
             endContent={
-              <Button className="!outline-none" size="sm" type="submit" variant="faded">
-                <CornerDownLeft className="text-gray-500" size={14} />
+              <Button
+                className="!outline-none"
+                isLoading={isLoading}
+                size="sm"
+                type="submit"
+                variant="faded"
+              >
+                {!isLoading && <CornerDownLeft className="text-gray-500" size={14} />}
               </Button>
             }
             name="videoLink"
@@ -118,62 +81,12 @@ export default function Home() {
             variant="faded"
           />
         </form>
-        <Card fullWidth className="p-4 h-[40rem] bg-gray-100">
-          <>
-            <CardHeader className="flex gap-3">
-              <Image
-                alt="nextui logo"
-                height={40}
-                radius="sm"
-                src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-                width={40}
-              />
-              <div className="flex flex-col">
-                <p className="text-md">NextUI</p>
-                <p className="text-small text-default-500">nextui.org</p>
-              </div>
-            </CardHeader>
-            <Divider />
-            <CardBody>
-              <section className="flex flex-col gap-6">
-                <p>
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Accusantium nobis
-                  mollitia a velit, dicta illo vero rerum voluptatem similique deleniti nisi aut
-                  sequi consequuntur quidem hic dolores consectetur sapiente amet.
-                </p>
-                <section className="grid items-center grid-cols-1 gap-10 md:grid-cols-2">
-                  <YoutubeEmbed embedId="-PFT1hEgxGY" title="GPTube demo" />
-                  <ResponsiveContainer height={350} width="100%">
-                    <BarChart data={data}>
-                      <XAxis
-                        axisLine={false}
-                        dataKey="name"
-                        fontSize={12}
-                        stroke="#000a0a"
-                        tickLine={false}
-                      />
-                      <YAxis axisLine={false} fontSize={12} stroke="#000a0a" tickLine={false} />
-                      <Bar dataKey="total" fill="rgba(129,247,172,.425)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </section>
-              </section>
-            </CardBody>
-            <CardFooter>
-              <div className="flex justify-center w-full">
-                <Button
-                  className="px-10 font-medium text-white"
-                  color="success"
-                  radius="sm"
-                  variant="shadow"
-                  onClick={onOpenChange}
-                >
-                  See full analysis
-                </Button>
-              </div>
-            </CardFooter>
-          </>
-        </Card>
+        <AnalysisLanding
+          analysis={{
+            data: dataAnalysis,
+            isLoading: isLoading,
+          }}
+        />
         <section className="mt-10 space-y-20">
           <div className="space-y-8">
             <div className="flex items-center justify-center gap-4">
@@ -216,24 +129,6 @@ export default function Home() {
         </section>
       </section>
       <Footer />
-      <Modal
-        className={rubikFont.className}
-        isOpen={isOpen}
-        radius="sm"
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent className="p-2">
-          {() => (
-            <>
-              <ModalHeader className="flex flex-col gap-3">
-                <h3 className="text-xl font-bold">Features that are you missing</h3>
-                <Divider />
-              </ModalHeader>
-              <ModalBody>Roberta model</ModalBody>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
     </>
   )
 }

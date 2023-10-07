@@ -40,6 +40,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/youtube/analysis": {
+            "post": {
+                "description": "An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Performs the analysis of the youtube video",
+                "parameters": [
+                    {
+                        "description": "Youtube video analysis request body",
+                        "name": "video",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubeAnalyzerReqBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubeAnalyzerRespBody"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/youtube/analysis-landing": {
             "post": {
                 "description": "An endpoint used to do a simple analysis with the BERT model to show a result in the landing",
@@ -69,6 +109,46 @@ const docTemplate = `{
                         "description": "No Content",
                         "schema": {
                             "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/youtube/pre-analysis": {
+            "post": {
+                "description": "An endpoint used to retrieve basic information about the youtube video such as title, description, etc.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Basic information about the youtube video",
+                "parameters": [
+                    {
+                        "description": "Youtube video id",
+                        "name": "video",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubePreAnalyzerReqBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubePreAnalyzerRespBody"
                         }
                     },
                     "400": {
@@ -173,6 +253,73 @@ const docTemplate = `{
                 },
                 "results": {
                     "$ref": "#/definitions/models.YoutubeAnalysisLandingResults"
+                },
+                "snippet": {
+                    "$ref": "#/definitions/youtube.VideoSnippet"
+                },
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubeAnalyzerReqBody": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "owner_email": {
+                    "description": "The email of the account sending the request",
+                    "type": "string"
+                },
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubeAnalyzerRespBody": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "last_update": {
+                    "type": "string"
+                },
+                "owner_email": {
+                    "type": "string"
+                },
+                "results_id": {
+                    "description": "firestore results id",
+                    "type": "string"
+                },
+                "snippet": {
+                    "$ref": "#/definitions/youtube.VideoSnippet"
+                },
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubePreAnalyzerReqBody": {
+            "type": "object",
+            "properties": {
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubePreAnalyzerRespBody": {
+            "type": "object",
+            "properties": {
+                "number_of_comments": {
+                    "type": "integer"
+                },
+                "requires_email": {
+                    "type": "boolean"
                 },
                 "snippet": {
                     "$ref": "#/definitions/youtube.VideoSnippet"

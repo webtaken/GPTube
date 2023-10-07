@@ -12,31 +12,32 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"google.golang.org/api/youtube/v3"
 )
 
+// @Summary		Basic information about the youtube video
+// @Description	An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
+// @Produce		json
+// @Param			video	body		models.YoutubePreAnalyzerReqBody	true	"Youtube video id"
+// @Success		200		{object}	models.YoutubePreAnalyzerRespBody
+// @Failure		400		{object}	utils.HandleError.errorResponse
+// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/pre-analysis [post]
 func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubePreAnalyzerReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		c.JSON(fiber.Map{
-			"error": fmt.Errorf("%v", err).Error(),
-		})
-		return c.SendStatus(http.StatusInternalServerError)
+		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 
 	if body.VideoID == "" {
-		c.JSON(fiber.Map{
-			"error": "please provide a videoID",
-		})
-		return c.SendStatus(http.StatusBadRequest)
+		err := fmt.Errorf("please provide a videoID")
+		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
 	videoData, err := services.CanProcessVideo(&body)
 	if err != nil {
-		c.JSON(fiber.Map{
-			"error": fmt.Errorf("%v", err).Error(),
-		})
-		return c.SendStatus(http.StatusBadRequest)
+		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
 	maxNumCommentsRequireEmail, _ := strconv.Atoi(config.Config("YOUTUBE_MAX_COMMENTS_REQUIRE_EMAIL"))
@@ -50,21 +51,34 @@ func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
+// @Summary		Performs the analysis of the youtube video
+// @Description	An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.
+// @Produce		json
+// @Param			video	body		models.YoutubeAnalyzerReqBody	true	"Youtube video analysis request body"
+// @Success		200		{object}	models.YoutubeAnalyzerRespBody
+// @Failure		400		{object}	utils.HandleError.errorResponse
+// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/analysis [post]
 func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		c.JSON(fiber.Map{
-			"error": fmt.Errorf("%v", err).Error(),
-		})
-		return c.SendStatus(http.StatusInternalServerError)
+		return utils.HandleError(err, http.StatusInternalServerError, c)
+	}
+
+	if body.VideoID == "" {
+		err := fmt.Errorf("you must provide the video id")
+		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
 	if body.OwnerEmail == "" {
-		c.JSON(fiber.Map{
-			"error": "You must provide the owner email",
-		})
-		return c.SendStatus(http.StatusBadRequest)
+		err := fmt.Errorf("you must provide the owner email")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	videoData, err := services.GetVideoData(body.VideoID)
+	if err != nil {
+		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
 	// This means we haven´t received email hence is a short video so we do
@@ -75,7 +89,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			c.JSON(fiber.Map{
 				"error": fmt.Sprintf(
 					"GPTube analysis for YT video %q failed 😔, try again later or contact us.",
-					body.VideoTitle,
+					videoData.Items[0].Snippet.Title,
 				),
 			})
 			return c.SendStatus(http.StatusInternalServerError)
@@ -84,7 +98,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		// sending the results to the user
 		successResp := models.YoutubeAnalyzerRespBody{
 			VideoID:    body.VideoID,
-			VideoTitle: body.VideoTitle,
+			Snippet:    videoData.Items[0].Snippet,
 			OwnerEmail: body.OwnerEmail,
 			Results:    results,
 		}
@@ -107,13 +121,13 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	// This means we have received email hence this video is large so we do all
 	// the logic in the server and send the result back to the email of the user
 	// Adding lead email to temporal database
-	go func() {
+	go func(videoData *youtube.VideoListResponse) {
 		results, err := services.Analyze(body)
 		if err != nil {
 			// Sending the e-mail error to the user
 			subjectEmail := fmt.Sprintf(
 				"GPTube analysis for YT video %q failed 😔",
-				body.VideoTitle,
+				videoData.Items[0].Snippet.Title,
 			)
 			log.Printf("%v\n", err.Error())
 			go services.SendYoutubeErrorTemplate(subjectEmail, []string{body.Email})
@@ -123,7 +137,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		// Here we must save the results to FireStore //
 		results2Store := models.YoutubeAnalyzerRespBody{
 			VideoID:    body.VideoID,
-			VideoTitle: body.VideoTitle,
+			Snippet:    videoData.Items[0].Snippet,
 			OwnerEmail: body.OwnerEmail,
 			Results:    results,
 		}
@@ -132,7 +146,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			// Sending the e-mail error to the user
 			subjectEmail := fmt.Sprintf(
 				"GPTube analysis for YT video %q failed 😔",
-				body.VideoTitle,
+				videoData.Items[0].Snippet.Title,
 			)
 			log.Printf("%v\n", err.Error())
 			go services.SendYoutubeErrorTemplate(subjectEmail, []string{body.Email})
@@ -145,13 +159,13 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		// Sending the e-mail to the user
 		subjectEmail := fmt.Sprintf(
 			"GPTube analysis for YT video %q ready 😺!",
-			body.VideoTitle,
+			videoData.Items[0].Snippet.Title,
 		)
 		go services.SendYoutubeSuccessTemplate(
 			results2Store, subjectEmail, []string{body.Email})
 		fmt.Printf("Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
 		fmt.Printf("Number of comments analyzed Roberta: %d\n", results.RobertaResults.SuccessCount)
-	}()
+	}(videoData)
 
 	return c.SendStatus(http.StatusOK)
 }

@@ -18,6 +18,10 @@ import type {
   HandlersHelloApiMessage,
   ModelsYoutubeAnalyzerLandingReqBody,
   ModelsYoutubeAnalyzerLandingRespBody,
+  ModelsYoutubeAnalyzerReqBody,
+  ModelsYoutubeAnalyzerRespBody,
+  ModelsYoutubePreAnalyzerReqBody,
+  ModelsYoutubePreAnalyzerRespBody,
   UtilsHandleErrorErrorResponse,
 } from '../models/index';
 import {
@@ -27,12 +31,28 @@ import {
     ModelsYoutubeAnalyzerLandingReqBodyToJSON,
     ModelsYoutubeAnalyzerLandingRespBodyFromJSON,
     ModelsYoutubeAnalyzerLandingRespBodyToJSON,
+    ModelsYoutubeAnalyzerReqBodyFromJSON,
+    ModelsYoutubeAnalyzerReqBodyToJSON,
+    ModelsYoutubeAnalyzerRespBodyFromJSON,
+    ModelsYoutubeAnalyzerRespBodyToJSON,
+    ModelsYoutubePreAnalyzerReqBodyFromJSON,
+    ModelsYoutubePreAnalyzerReqBodyToJSON,
+    ModelsYoutubePreAnalyzerRespBodyFromJSON,
+    ModelsYoutubePreAnalyzerRespBodyToJSON,
     UtilsHandleErrorErrorResponseFromJSON,
     UtilsHandleErrorErrorResponseToJSON,
 } from '../models/index';
 
 export interface ApiYoutubeAnalysisLandingPostRequest {
     video: ModelsYoutubeAnalyzerLandingReqBody;
+}
+
+export interface ApiYoutubeAnalysisPostRequest {
+    video: ModelsYoutubeAnalyzerReqBody;
+}
+
+export interface ApiYoutubePreAnalysisPostRequest {
+    video: ModelsYoutubePreAnalyzerReqBody;
 }
 
 /**
@@ -100,6 +120,76 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiYoutubeAnalysisLandingPost(requestParameters: ApiYoutubeAnalysisLandingPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeAnalyzerLandingRespBody> {
         const response = await this.apiYoutubeAnalysisLandingPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.
+     * Performs the analysis of the youtube video
+     */
+    async apiYoutubeAnalysisPostRaw(requestParameters: ApiYoutubeAnalysisPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeAnalyzerRespBody>> {
+        if (requestParameters.video === null || requestParameters.video === undefined) {
+            throw new runtime.RequiredError('video','Required parameter requestParameters.video was null or undefined when calling apiYoutubeAnalysisPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/youtube/analysis`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ModelsYoutubeAnalyzerReqBodyToJSON(requestParameters.video),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ModelsYoutubeAnalyzerRespBodyFromJSON(jsonValue));
+    }
+
+    /**
+     * An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.
+     * Performs the analysis of the youtube video
+     */
+    async apiYoutubeAnalysisPost(requestParameters: ApiYoutubeAnalysisPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeAnalyzerRespBody> {
+        const response = await this.apiYoutubeAnalysisPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
+     * Basic information about the youtube video
+     */
+    async apiYoutubePreAnalysisPostRaw(requestParameters: ApiYoutubePreAnalysisPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubePreAnalyzerRespBody>> {
+        if (requestParameters.video === null || requestParameters.video === undefined) {
+            throw new runtime.RequiredError('video','Required parameter requestParameters.video was null or undefined when calling apiYoutubePreAnalysisPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/youtube/pre-analysis`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ModelsYoutubePreAnalyzerReqBodyToJSON(requestParameters.video),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ModelsYoutubePreAnalyzerRespBodyFromJSON(jsonValue));
+    }
+
+    /**
+     * An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
+     * Basic information about the youtube video
+     */
+    async apiYoutubePreAnalysisPost(requestParameters: ApiYoutubePreAnalysisPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubePreAnalyzerRespBody> {
+        const response = await this.apiYoutubePreAnalysisPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

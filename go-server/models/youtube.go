@@ -30,15 +30,15 @@ type YoutubeAnalyzerLandingRespBody struct {
 }
 
 type YoutubeAnalyzerReqBody struct {
-	VideoID    string `json:"video_id,omitempty"`
-	VideoTitle string `json:"video_title,omitempty"`
-	OwnerEmail string `json:"owner_email"` // The email of the account sending the request
+	VideoID string `json:"video_id,omitempty"`
+	// The email of the account sending the request
+	OwnerEmail string `json:"owner_email"`
 	Email      string `json:"email,omitempty"`
 }
 
 type YoutubeAnalyzerRespBody struct {
 	VideoID    string                  `json:"video_id" firestore:"video_id"`
-	VideoTitle string                  `json:"video_title,omitempty" firestore:"video_title,omitempty"`
+	Snippet    *youtube.VideoSnippet   `json:"snippet,omitempty" firestore:"snippet,omitempty"`
 	OwnerEmail string                  `json:"owner_email" firestore:"-"`
 	Email      string                  `json:"email" firestore:"-"`
 	CreatedAt  time.Time               `json:"created_at" firestore:"created_at"`

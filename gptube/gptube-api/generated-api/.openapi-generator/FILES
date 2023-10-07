@@ -7,6 +7,10 @@ models/ModelsBertAIResults.ts
 models/ModelsYoutubeAnalysisLandingResults.ts
 models/ModelsYoutubeAnalyzerLandingReqBody.ts
 models/ModelsYoutubeAnalyzerLandingRespBody.ts
+models/ModelsYoutubeAnalyzerReqBody.ts
+models/ModelsYoutubeAnalyzerRespBody.ts
+models/ModelsYoutubePreAnalyzerReqBody.ts
+models/ModelsYoutubePreAnalyzerRespBody.ts
 models/UtilsHandleErrorErrorResponse.ts
 models/YoutubeThumbnail.ts
 models/YoutubeThumbnailDetails.ts

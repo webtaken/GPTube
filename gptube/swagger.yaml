@@ -50,6 +50,50 @@ definitions:
       video_id:
         type: string
     type: object
+  models.YoutubeAnalyzerReqBody:
+    properties:
+      email:
+        type: string
+      owner_email:
+        description: The email of the account sending the request
+        type: string
+      video_id:
+        type: string
+    type: object
+  models.YoutubeAnalyzerRespBody:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      last_update:
+        type: string
+      owner_email:
+        type: string
+      results_id:
+        description: firestore results id
+        type: string
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
+      video_id:
+        type: string
+    type: object
+  models.YoutubePreAnalyzerReqBody:
+    properties:
+      video_id:
+        type: string
+    type: object
+  models.YoutubePreAnalyzerRespBody:
+    properties:
+      number_of_comments:
+        type: integer
+      requires_email:
+        type: boolean
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
+      video_id:
+        type: string
+    type: object
   utils.HandleError.errorResponse:
     properties:
       error:
@@ -195,6 +239,33 @@ paths:
           schema:
             $ref: '#/definitions/handlers.helloApiMessage'
       summary: Hello message from the api
+  /api/youtube/analysis:
+    post:
+      description: An endpoint used to analyze the content of a video using BERT and
+        RoBERTa model and ChatGPT.
+      parameters:
+      - description: Youtube video analysis request body
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/models.YoutubeAnalyzerReqBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubeAnalyzerRespBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+      summary: Performs the analysis of the youtube video
   /api/youtube/analysis-landing:
     post:
       description: An endpoint used to do a simple analysis with the BERT model to
@@ -226,6 +297,33 @@ paths:
           schema:
             $ref: '#/definitions/utils.HandleError.errorResponse'
       summary: Simple analysis with BERT model for the landing page
+  /api/youtube/pre-analysis:
+    post:
+      description: An endpoint used to retrieve basic information about the youtube
+        video such as title, description, etc.
+      parameters:
+      - description: Youtube video id
+        in: body
+        name: video
+        required: true
+        schema:
+          $ref: '#/definitions/models.YoutubePreAnalyzerReqBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubePreAnalyzerRespBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+      summary: Basic information about the youtube video
   /billing:
     get:
       description: An endpoint used to test the billing api stability

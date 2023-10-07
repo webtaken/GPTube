@@ -65,6 +65,12 @@
                             "$ref": "#/definitions/utils.HandleError.errorResponse"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -147,10 +153,6 @@
                 "video_id": {
                     "type": "string",
                     "example": "1xoy8Q5o8ws"
-                },
-                "video_title": {
-                    "type": "string",
-                    "example": "The Truth About Bun"
                 }
             }
         },
@@ -166,10 +168,10 @@
                 "results": {
                     "$ref": "#/definitions/models.YoutubeAnalysisLandingResults"
                 },
-                "video_id": {
-                    "type": "string"
+                "snippet": {
+                    "$ref": "#/definitions/youtube.VideoSnippet"
                 },
-                "video_title": {
+                "video_id": {
                     "type": "string"
                 }
             }
@@ -180,6 +182,145 @@
                 "error": {
                     "type": "string",
                     "example": "an error ocurred"
+                }
+            }
+        },
+        "youtube.Thumbnail": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "description": "Height: (Optional) Height of the thumbnail image.",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "Url: The thumbnail image's URL.",
+                    "type": "string"
+                },
+                "width": {
+                    "description": "Width: (Optional) Width of the thumbnail image.",
+                    "type": "integer"
+                }
+            }
+        },
+        "youtube.ThumbnailDetails": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "description": "Default: The default image for this resource.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.Thumbnail"
+                        }
+                    ]
+                },
+                "high": {
+                    "description": "High: The high quality image for this resource.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.Thumbnail"
+                        }
+                    ]
+                },
+                "maxres": {
+                    "description": "Maxres: The maximum resolution quality image for this resource.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.Thumbnail"
+                        }
+                    ]
+                },
+                "medium": {
+                    "description": "Medium: The medium quality image for this resource.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.Thumbnail"
+                        }
+                    ]
+                },
+                "standard": {
+                    "description": "Standard: The standard quality image for this resource.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.Thumbnail"
+                        }
+                    ]
+                }
+            }
+        },
+        "youtube.VideoLocalization": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Description: Localized version of the video's description.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Title: Localized version of the video's title.",
+                    "type": "string"
+                }
+            }
+        },
+        "youtube.VideoSnippet": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "description": "CategoryId: The YouTube video category associated with the video.",
+                    "type": "string"
+                },
+                "channelId": {
+                    "description": "ChannelId: The ID that YouTube uses to uniquely identify the channel\nthat the video was uploaded to.",
+                    "type": "string"
+                },
+                "channelTitle": {
+                    "description": "ChannelTitle: Channel title for the channel that the video belongs\nto.",
+                    "type": "string"
+                },
+                "defaultAudioLanguage": {
+                    "description": "DefaultAudioLanguage: The default_audio_language property specifies\nthe language spoken in the video's default audio track.",
+                    "type": "string"
+                },
+                "defaultLanguage": {
+                    "description": "DefaultLanguage: The language of the videos's default snippet.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description: The video's description. @mutable youtube.videos.insert\nyoutube.videos.update",
+                    "type": "string"
+                },
+                "liveBroadcastContent": {
+                    "description": "LiveBroadcastContent: Indicates if the video is an upcoming/active\nlive broadcast. Or it's \"none\" if the video is not an upcoming/active\nlive broadcast.\n\nPossible values:\n  \"none\"\n  \"upcoming\" - The live broadcast is upcoming.\n  \"live\" - The live broadcast is active.\n  \"completed\" - The live broadcast has been completed.",
+                    "type": "string"
+                },
+                "localized": {
+                    "description": "Localized: Localized snippet selected with the hl parameter. If no\nsuch localization exists, this field is populated with the default\nsnippet. (Read-only)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.VideoLocalization"
+                        }
+                    ]
+                },
+                "publishedAt": {
+                    "description": "PublishedAt: The date and time when the video was uploaded.",
+                    "type": "string"
+                },
+                "tags": {
+                    "description": "Tags: A list of keyword tags associated with the video. Tags may\ncontain spaces.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "thumbnails": {
+                    "description": "Thumbnails: A map of thumbnail images associated with the video. For\neach object in the map, the key is the name of the thumbnail image,\nand the value is an object that contains other information about the\nthumbnail.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.ThumbnailDetails"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Title: The video's title. @mutable youtube.videos.insert\nyoutube.videos.update",
+                    "type": "string"
                 }
             }
         }

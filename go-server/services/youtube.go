@@ -94,19 +94,27 @@ func SendYoutubeErrorTemplate(subject string, emails []string) error {
 	return nil
 }
 
+func GetVideoData(videoID string) (*youtube.VideoListResponse, error) {
+	var part = []string{"snippet", "contentDetails", "statistics"}
+	call := Service.Videos.List(part)
+	call.Id(videoID)
+	response, err := call.Do()
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
 func CanProcessVideo(youtubeRequestBody *models.YoutubePreAnalyzerReqBody) (*youtube.VideoListResponse, error) {
 	// The max number of comments we can process
 	maxNumberOfComments, _ := strconv.Atoi(config.Config("YOUTUBE_MAX_COMMENTS_CAPACITY"))
 
-	var part = []string{"snippet", "contentDetails", "statistics"}
-	call := Service.Videos.List(part)
-	call.Id(youtubeRequestBody.VideoID)
-	response, err := call.Do()
+	response, err := GetVideoData(youtubeRequestBody.VideoID)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err)
+		return nil, err
 	}
 	if len(response.Items) == 0 {
-		return nil, fmt.Errorf("video not found")
+		return nil, fmt.Errorf("video doesn't have any comments")
 	} else if response.Items[0].Statistics.CommentCount > uint64(maxNumberOfComments) {
 		return nil, fmt.Errorf("number of comments exceeded, max %v", maxNumberOfComments)
 	}

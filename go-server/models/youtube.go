@@ -18,8 +18,15 @@ type YoutubePreAnalyzerRespBody struct {
 }
 
 type YoutubeAnalyzerLandingReqBody struct {
-	VideoID    string `json:"video_id,omitempty" example:"1xoy8Q5o8ws"`
-	VideoTitle string `json:"video_title,omitempty" example:"The Truth About Bun"`
+	VideoID string `json:"video_id,omitempty" example:"1xoy8Q5o8ws"`
+}
+
+type YoutubeAnalyzerLandingRespBody struct {
+	VideoID   string                         `json:"video_id" firestore:"video_id"`
+	Snippet   *youtube.VideoSnippet          `json:"snippet,omitempty" firestore:"snippet,omitempty"`
+	Email     string                         `json:"email" firestore:"-"`
+	CreatedAt time.Time                      `json:"created_at" firestore:"created_at"`
+	Results   *YoutubeAnalysisLandingResults `json:"results" firestore:"results,omitempty"`
 }
 
 type YoutubeAnalyzerReqBody struct {
@@ -38,14 +45,6 @@ type YoutubeAnalyzerRespBody struct {
 	LastUpdate time.Time               `json:"last_update" firestore:"last_update"`
 	Results    *YoutubeAnalysisResults `json:"-" firestore:"results,omitempty"`
 	ResultsID  string                  `json:"results_id,omitempty" firestore:"-"` // firestore results id
-}
-
-type YoutubeAnalyzerLandingRespBody struct {
-	VideoID    string                         `json:"video_id" firestore:"video_id"`
-	VideoTitle string                         `json:"video_title,omitempty" firestore:"video_title,omitempty"`
-	Email      string                         `json:"email" firestore:"-"`
-	CreatedAt  time.Time                      `json:"created_at" firestore:"created_at"`
-	Results    *YoutubeAnalysisLandingResults `json:"results" firestore:"results,omitempty"`
 }
 
 type YoutubeAnalysisResults struct {

@@ -65,6 +65,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.YoutubeAnalyzerRespBody"
                         }
                     },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
@@ -265,11 +271,12 @@ const docTemplate = `{
         "models.YoutubeAnalyzerReqBody": {
             "type": "object",
             "properties": {
-                "email": {
+                "account_email": {
+                    "description": "The email of the account sending the request",
                     "type": "string"
                 },
-                "owner_email": {
-                    "description": "The email of the account sending the request",
+                "email": {
+                    "description": "The email that will be used to send the results",
                     "type": "string"
                 },
                 "video_id": {
@@ -280,6 +287,9 @@ const docTemplate = `{
         "models.YoutubeAnalyzerRespBody": {
             "type": "object",
             "properties": {
+                "account_email": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -289,15 +299,9 @@ const docTemplate = `{
                 "last_update": {
                     "type": "string"
                 },
-                "owner_email": {
-                    "type": "string"
-                },
                 "results_id": {
                     "description": "firestore results id",
                     "type": "string"
-                },
-                "snippet": {
-                    "$ref": "#/definitions/youtube.VideoSnippet"
                 },
                 "video_id": {
                     "type": "string"
@@ -315,14 +319,14 @@ const docTemplate = `{
         "models.YoutubePreAnalyzerRespBody": {
             "type": "object",
             "properties": {
-                "number_of_comments": {
-                    "type": "integer"
-                },
                 "requires_email": {
                     "type": "boolean"
                 },
                 "snippet": {
                     "$ref": "#/definitions/youtube.VideoSnippet"
+                },
+                "statistics": {
+                    "$ref": "#/definitions/youtube.VideoStatistics"
                 },
                 "video_id": {
                     "type": "string"
@@ -474,6 +478,36 @@ const docTemplate = `{
                 "title": {
                     "description": "Title: The video's title. @mutable youtube.videos.insert\nyoutube.videos.update",
                     "type": "string"
+                }
+            }
+        },
+        "youtube.VideoStatistics": {
+            "type": "object",
+            "properties": {
+                "commentCount": {
+                    "description": "CommentCount: The number of comments for the video.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "dislikeCount": {
+                    "description": "DislikeCount: The number of users who have indicated that they\ndisliked the video by giving it a negative rating.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "favoriteCount": {
+                    "description": "FavoriteCount: The number of users who currently have the video\nmarked as a favorite video.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "likeCount": {
+                    "description": "LikeCount: The number of users who have indicated that they liked the\nvideo by giving it a positive rating.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "viewCount": {
+                    "description": "ViewCount: The number of times the video has been viewed.",
+                    "type": "string",
+                    "example": "0"
                 }
             }
         }

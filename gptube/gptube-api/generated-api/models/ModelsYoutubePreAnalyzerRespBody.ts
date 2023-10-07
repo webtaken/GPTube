@@ -19,6 +19,12 @@ import {
     YoutubeVideoSnippetFromJSONTyped,
     YoutubeVideoSnippetToJSON,
 } from './YoutubeVideoSnippet';
+import type { YoutubeVideoStatistics } from './YoutubeVideoStatistics';
+import {
+    YoutubeVideoStatisticsFromJSON,
+    YoutubeVideoStatisticsFromJSONTyped,
+    YoutubeVideoStatisticsToJSON,
+} from './YoutubeVideoStatistics';
 
 /**
  * 
@@ -26,12 +32,6 @@ import {
  * @interface ModelsYoutubePreAnalyzerRespBody
  */
 export interface ModelsYoutubePreAnalyzerRespBody {
-    /**
-     * 
-     * @type {number}
-     * @memberof ModelsYoutubePreAnalyzerRespBody
-     */
-    numberOfComments?: number;
     /**
      * 
      * @type {boolean}
@@ -44,6 +44,12 @@ export interface ModelsYoutubePreAnalyzerRespBody {
      * @memberof ModelsYoutubePreAnalyzerRespBody
      */
     snippet?: YoutubeVideoSnippet;
+    /**
+     * 
+     * @type {YoutubeVideoStatistics}
+     * @memberof ModelsYoutubePreAnalyzerRespBody
+     */
+    statistics?: YoutubeVideoStatistics;
     /**
      * 
      * @type {string}
@@ -71,9 +77,9 @@ export function ModelsYoutubePreAnalyzerRespBodyFromJSONTyped(json: any, ignoreD
     }
     return {
         
-        'numberOfComments': !exists(json, 'number_of_comments') ? undefined : json['number_of_comments'],
         'requiresEmail': !exists(json, 'requires_email') ? undefined : json['requires_email'],
         'snippet': !exists(json, 'snippet') ? undefined : YoutubeVideoSnippetFromJSON(json['snippet']),
+        'statistics': !exists(json, 'statistics') ? undefined : YoutubeVideoStatisticsFromJSON(json['statistics']),
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
     };
 }
@@ -87,9 +93,9 @@ export function ModelsYoutubePreAnalyzerRespBodyToJSON(value?: ModelsYoutubePreA
     }
     return {
         
-        'number_of_comments': value.numberOfComments,
         'requires_email': value.requiresEmail,
         'snippet': YoutubeVideoSnippetToJSON(value.snippet),
+        'statistics': YoutubeVideoStatisticsToJSON(value.statistics),
         'video_id': value.videoId,
     };
 }

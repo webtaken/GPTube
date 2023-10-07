@@ -14,3 +14,4 @@ export * from './YoutubeThumbnail';
 export * from './YoutubeThumbnailDetails';
 export * from './YoutubeVideoLocalization';
 export * from './YoutubeVideoSnippet';
+export * from './YoutubeVideoStatistics';

@@ -16,5 +16,6 @@ models/YoutubeThumbnail.ts
 models/YoutubeThumbnailDetails.ts
 models/YoutubeVideoLocalization.ts
 models/YoutubeVideoSnippet.ts
+models/YoutubeVideoStatistics.ts
 models/index.ts
 runtime.ts

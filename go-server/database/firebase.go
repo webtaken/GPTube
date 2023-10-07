@@ -84,7 +84,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	defer client.Close()
 
 	currentTime := time.Now().UTC()
-	existingResult, err := GetYoutubeResult(results.OwnerEmail, results.VideoID)
+	existingResult, err := GetYoutubeResult(results.AccountEmail, results.VideoID)
 	if err != nil {
 		results.CreatedAt = currentTime
 	} else {
@@ -92,7 +92,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	}
 	results.LastUpdate = currentTime
 
-	userDoc := client.Collection("users").Doc(results.OwnerEmail)
+	userDoc := client.Collection("users").Doc(results.AccountEmail)
 	if existingResult != nil {
 		_, err = userDoc.Update(Ctx, []firestore.Update{
 			{
@@ -102,7 +102,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 		})
 	} else {
 		_, err = userDoc.Set(Ctx, map[string]interface{}{
-			"email":             results.OwnerEmail,
+			"email":             results.AccountEmail,
 			"usageLimitYoutube": 1,
 		})
 	}
@@ -121,7 +121,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	for _, comment := range results.Results.NegativeComments {
 		_, err = negativeCommentsColl.Doc(comment.CommentID).Set(Ctx, comment)
 		if err != nil {
-			log.Printf("Failed to add negative comment: %v", err)
+			log.Printf("[AddYoutubeResult] Failed to add negative comment: %v", err)
 		}
 	}
 	return nil

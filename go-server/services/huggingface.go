@@ -99,10 +99,10 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 func CleanCommentsForAIModels(comments []*youtube.CommentThread) ([]*youtube.Comment, []string) {
 	validYoutubeComments := make([]*youtube.Comment, 0)
 	cleanedComments := make([]string, 0)
-	maxCharsAllow := 512
+	maxCharsAllowed := 512
 	for _, comment := range comments {
 		clean := utils.CleanComment(comment.Snippet.TopLevelComment.Snippet.TextOriginal)
-		if len(clean) <= maxCharsAllow {
+		if len(clean) <= maxCharsAllowed {
 			cleanedComments = append(cleanedComments, clean)
 			validYoutubeComments = append(validYoutubeComments, comment.Snippet.TopLevelComment)
 		}
@@ -161,7 +161,9 @@ func BertAnalysis(
 
 	err := MakeAICall(AIEndpoints["BERT"], &reqBert, &resBert)
 	if err != nil {
-		return nil, nil, err
+		tmpResults.ErrorsCount += len(cleanedComments)
+		fmt.Println("$", cleanedComments)
+		return nil, tmpResults, err
 	}
 
 	tmpResults.SuccessCount = len(resBert)
@@ -193,8 +195,8 @@ func BertAnalysis(
 		}
 	}
 
-	for i := 0; i < len(resBert); i++ {
-		callback(resBert[i])
+	for _, res := range resBert {
+		callback(res)
 	}
 
 	return &resBert, tmpResults, nil

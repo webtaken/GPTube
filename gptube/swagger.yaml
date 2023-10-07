@@ -52,29 +52,28 @@ definitions:
     type: object
   models.YoutubeAnalyzerReqBody:
     properties:
-      email:
-        type: string
-      owner_email:
+      account_email:
         description: The email of the account sending the request
+        type: string
+      email:
+        description: The email that will be used to send the results
         type: string
       video_id:
         type: string
     type: object
   models.YoutubeAnalyzerRespBody:
     properties:
+      account_email:
+        type: string
       created_at:
         type: string
       email:
         type: string
       last_update:
         type: string
-      owner_email:
-        type: string
       results_id:
         description: firestore results id
         type: string
-      snippet:
-        $ref: '#/definitions/youtube.VideoSnippet'
       video_id:
         type: string
     type: object
@@ -85,12 +84,12 @@ definitions:
     type: object
   models.YoutubePreAnalyzerRespBody:
     properties:
-      number_of_comments:
-        type: integer
       requires_email:
         type: boolean
       snippet:
         $ref: '#/definitions/youtube.VideoSnippet'
+      statistics:
+        $ref: '#/definitions/youtube.VideoStatistics'
       video_id:
         type: string
     type: object
@@ -215,6 +214,35 @@ definitions:
           youtube.videos.update
         type: string
     type: object
+  youtube.VideoStatistics:
+    properties:
+      commentCount:
+        description: 'CommentCount: The number of comments for the video.'
+        example: "0"
+        type: string
+      dislikeCount:
+        description: |-
+          DislikeCount: The number of users who have indicated that they
+          disliked the video by giving it a negative rating.
+        example: "0"
+        type: string
+      favoriteCount:
+        description: |-
+          FavoriteCount: The number of users who currently have the video
+          marked as a favorite video.
+        example: "0"
+        type: string
+      likeCount:
+        description: |-
+          LikeCount: The number of users who have indicated that they liked the
+          video by giving it a positive rating.
+        example: "0"
+        type: string
+      viewCount:
+        description: 'ViewCount: The number of times the video has been viewed.'
+        example: "0"
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -257,6 +285,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.YoutubeAnalyzerRespBody'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
         "400":
           description: Bad Request
           schema:

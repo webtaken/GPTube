@@ -8,8 +8,7 @@ interface PricingPlanProps {
   onSubscribe: () => void
 }
 
-// eslint-disable-next-line react/function-component-definition
-const PricingPlan: React.FC<PricingPlanProps> = ({ subscription, onSubscribe }) => {
+function PricingPlan({ subscription, onSubscribe }: PricingPlanProps) {
   return (
     <div className="bg-black-full text-typo border border-white-full py-7 px-3 rounded-lg text-center">
       <p className="text-xl font-semibold">{subscription.name}</p>
@@ -23,7 +22,13 @@ const PricingPlan: React.FC<PricingPlanProps> = ({ subscription, onSubscribe }) 
       <p className="text-4xl">
         <span className="font-medium">${subscription.price}</span>/month
       </p>
-      <Button className="mt-5 mx-auto primary-button" size="large" onClick={() => onSubscribe()}>
+      <Button
+        className="mt-5 mx-auto primary-button"
+        size="large"
+        onClick={() => {
+          onSubscribe()
+        }}
+      >
         Subscribe
       </Button>
     </div>

@@ -61,6 +61,6 @@ export function useLandingAnalysisFromCache() {
   }, [query.isError])
 
   return {
-    analysisQuery: query,
+    analysisCacheQuery: query,
   }
 }

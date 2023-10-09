@@ -1,7 +1,5 @@
 import Link from 'next/link'
 
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
-
 function Confirmation() {
   return (
     <div className="mt-24 space-y-6">
@@ -26,4 +24,3 @@ function Confirmation() {
 }
 
 export default Confirmation
-Confirmation.Layout = LayoutsAvailable.Admin

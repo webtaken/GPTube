@@ -1,7 +1,6 @@
 import Link from 'next/link'
 
 import LoginForm from '@/components/Auth/LoginForm'
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Login() {
   return (
@@ -20,4 +19,3 @@ function Login() {
 }
 
 export default Login
-Login.Layout = LayoutsAvailable.Auth

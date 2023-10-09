@@ -1,7 +1,6 @@
 import Link from 'next/link'
 
 import ResetPasswordForm from '@/components/Auth/ResetPasswordForm'
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function Reset() {
   return (
@@ -20,4 +19,3 @@ function Reset() {
 }
 
 export default Reset
-Reset.Layout = LayoutsAvailable.Auth

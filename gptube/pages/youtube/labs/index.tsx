@@ -1,5 +1,4 @@
 import PreAnalysis from '@/components/SocialMedia/Youtube/PreAnalysis'
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 function YoutubePanel() {
   return (
@@ -16,4 +15,3 @@ function YoutubePanel() {
 }
 
 export default YoutubePanel
-YoutubePanel.Layout = LayoutsAvailable.Admin

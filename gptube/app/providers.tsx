@@ -8,7 +8,20 @@ import { Toaster } from 'react-hot-toast'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react/hook-use-state
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 60, // 1 hour
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
+            retry: false,
+          },
+        },
+      }),
+  )
 
   return (
     <QueryClientProvider client={queryClient}>

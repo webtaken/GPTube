@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navbar'
 import Link from 'next/link'
 
 import { Button } from './Common/button'

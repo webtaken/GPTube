@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import {nextui} from "@nextui-org/react";
+import { nextui } from "@nextui-org/theme";
 
 module.exports = {
   content: [

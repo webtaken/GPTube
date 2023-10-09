@@ -1,4 +1,5 @@
 import type { ModelsYoutubeAnalyzerLandingReqBody } from '@/gptube-api'
+import type { FormEvent } from 'react'
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
@@ -6,6 +7,7 @@ import toast from 'react-hot-toast'
 
 import { apiClient } from '@/gptube-api'
 import { getAnalysisLandingFromCache } from '@/services/get-analysis-landing-from-cache.service'
+import { extractYTVideoID } from '@/utils'
 
 export function useHandleLandingAnalysis() {
   const mutation = useMutation({
@@ -22,8 +24,21 @@ export function useHandleLandingAnalysis() {
     },
   })
 
-  const handleLandingAnalysis = (data: ModelsYoutubeAnalyzerLandingReqBody) => {
-    mutation.mutate(data)
+  const handleLandingAnalysis = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    const videoLink = formData.get('videoLink')?.toString()
+
+    if (!videoLink) {
+      toast.error('Please enter a valid YouTube video link')
+
+      return
+    }
+
+    const videoId = extractYTVideoID(videoLink)
+
+    mutation.mutate({ videoId })
   }
 
   return {

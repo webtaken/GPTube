@@ -1,11 +1,10 @@
-import { type FormEvent } from 'react'
+'use client'
+
 import { CornerDownLeft, Plus } from 'lucide-react'
 import { Link as LinkIcon } from 'lucide-react'
-import { Card } from '@nextui-org/react'
+import { Card } from '@nextui-org/card'
 import NextImage from 'next/image'
-import toast from 'react-hot-toast'
 
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 import { Footer } from '@/components/footer'
 import openai_logo from '@/assets/icons/openai.svg'
 import youtube_logo from '@/assets/icons/youtube.svg'
@@ -13,33 +12,15 @@ import huggingface_logo from '@/assets/icons/hf-logo-with-title.svg'
 import { Button } from '@/components/Common/button'
 import { Input } from '@/components/Common/input'
 import { useHandleLandingAnalysis } from '@/hooks/use-landing-analysis'
-import { extractYTVideoID } from '@/utils'
 import { AnalysisLanding } from '@/components/landing/analysis-landing'
+import { Header } from '@/components/header'
 
 export default function Home() {
   const { handleLandingAnalysis, isLoading, dataAnalysis } = useHandleLandingAnalysis()
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-
-    const videoLink = formData.get('videoLink')?.toString()
-
-    if (!videoLink) {
-      toast.error('Please enter a valid YouTube video link')
-
-      return
-    }
-
-    const videoId = extractYTVideoID(videoLink)
-
-    handleLandingAnalysis({
-      videoId,
-    })
-  }
-
   return (
     <>
+      <Header />
       <section className="flex flex-col max-w-screen-lg gap-10 p-20 px-4 mx-auto md:pt-28 lg:px-0">
         <h1 className="text-4xl font-bold text-center md:text-6xl">
           Check what people think about
@@ -61,7 +42,7 @@ export default function Home() {
           Boost your YouTube influence with our comment analysis, which provides instant feedback to
           help you reach a broader audience
         </p>
-        <form className="w-full max-w-3xl mx-auto" onSubmit={handleSubmit}>
+        <form className="w-full max-w-3xl mx-auto" onSubmit={handleLandingAnalysis}>
           <Input
             disabled={isLoading}
             endContent={
@@ -132,5 +113,3 @@ export default function Home() {
     </>
   )
 }
-
-Home.Layout = LayoutsAvailable.Admin

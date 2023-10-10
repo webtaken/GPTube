@@ -83,14 +83,14 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 	req.SetRequestURI(endpoint)
 	agent.JSON(reqBody)
 	if err := agent.Parse(); err != nil {
-		log.Println("[MakeAICall] error making the request: ", err)
+		log.Printf("[MakeAICall] error making the request: %v\n", err)
 		return err
 	}
 
 	code, bodyStr, errs := agent.Struct(resBody)
 	if code != http.StatusOK && len(errs) > 0 {
-		log.Println("[MakeAICall] error in response: ", errs[0])
-		log.Println("[MakeAICall] bodyStr: ", string(bodyStr))
+		log.Printf("[MakeAICall] error in response: %v\n", errs[0])
+		log.Printf("[MakeAICall] bodyStr: %v\n", string(bodyStr))
 		return errs[0]
 	}
 	return nil
@@ -161,8 +161,8 @@ func BertAnalysis(
 
 	err := MakeAICall(AIEndpoints["BERT"], &reqBert, &resBert)
 	if err != nil {
+		log.Printf("[BertAnalysis] error making the request: %v", err)
 		tmpResults.ErrorsCount += len(cleanedComments)
-		fmt.Println("$", cleanedComments)
 		return nil, tmpResults, err
 	}
 

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"text/template"
 
 	"github.com/sashabaranov/go-openai"
@@ -121,7 +122,9 @@ func CanProcessVideo(youtubeRequestBody *models.YoutubePreAnalyzerReqBody) (*you
 	return response, nil
 }
 
-func AnalyzeComments(videoID string, maxNumComments int, analyzer func([]*youtube.CommentThread)) error {
+func AnalyzeComments(
+	videoID string,
+	maxNumComments int, analyzer func([]*youtube.CommentThread)) int {
 	var part = []string{"id", "snippet"}
 	nextPageToken := ""
 	call := Service.CommentThreads.List(part)
@@ -129,6 +132,7 @@ func AnalyzeComments(videoID string, maxNumComments int, analyzer func([]*youtub
 	call.VideoId(videoID)
 	call.MaxResults(int64(pageSize))
 	commentsRetrieved := 0
+	commentsRetrieveFailed := 0
 	for commentsRetrieved < maxNumComments {
 		if nextPageToken != "" {
 			call.PageToken(nextPageToken)
@@ -136,7 +140,9 @@ func AnalyzeComments(videoID string, maxNumComments int, analyzer func([]*youtub
 
 		response, err := call.Do()
 		if err != nil {
-			return err
+			log.Printf("[AnalyzeComments] %v\n", err)
+			commentsRetrieveFailed += pageSize
+			continue
 		}
 
 		commentsToAnalyze := len(response.Items)
@@ -153,7 +159,7 @@ func AnalyzeComments(videoID string, maxNumComments int, analyzer func([]*youtub
 			break
 		}
 	}
-	return nil
+	return commentsRetrieveFailed
 }
 
 func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAnalysisResults, error) {
@@ -288,9 +294,12 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 		Mutex.Unlock()
 	}
 
-	AnalyzeComments(body.VideoID, maxNumComments, analyzer)
+	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
 
 	wg.Wait()
+
+	results.BertResults.ErrorsCount += failedComments
+	results.RobertaResults.ErrorsCount += failedComments
 
 	// Averaging results for RoBERTa model
 	results.RobertaResults.AverageResults()
@@ -320,7 +329,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		BertResults: &models.BertAIResults{},
 	}
 	maxNumComments := commentsPerSubscription["landing"]
-	maxNumComments = 2000
+	maxNumComments = 1000
 
 	// Check if AI services are running before calling Youtube API
 	err := CheckAIModelsWork("BERT")
@@ -329,24 +338,24 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		return nil, err
 	}
 
-	var wg sync.WaitGroup
+	var wg WaitGroupCount
 
 	// A max of 10 concurrent workers processing a batch of messages
 	workers := make(chan struct{}, 10)
-	currentWorkers := 0
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
 		defer wg.Done()
 		workers <- struct{}{} // entering a worker to the pool
-		Mutex.Lock()
-		currentWorkers++
-		Mutex.Unlock()
-		fmt.Println("current workers: ", currentWorkers)
 
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
 		resBert, BertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
 		if errBert != nil {
 			log.Printf("[AnalyzeForLanding] bert_analysis_error %v\n", errBert)
+			Mutex.Lock()
+			// BERT
+			results.BertResults.ErrorsCount += BertResults.ErrorsCount
+			Mutex.Unlock()
+			<-workers // free a worker
 			return
 		}
 
@@ -373,16 +382,33 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		results.BertResults.Score5 += BertResults.Score5
 		results.BertResults.ErrorsCount += BertResults.ErrorsCount
 		results.BertResults.SuccessCount += BertResults.SuccessCount
-		currentWorkers--
 		Mutex.Unlock()
 		<-workers // free a worker
 	}
 
-	AnalyzeComments(body.VideoID, maxNumComments, analyzer)
-
+	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
 	wg.Wait()
-
+	results.BertResults.ErrorsCount += failedComments
 	return results, nil
+}
+
+type WaitGroupCount struct {
+	sync.WaitGroup
+	count int64
+}
+
+func (wg *WaitGroupCount) Add(delta int) {
+	atomic.AddInt64(&wg.count, int64(delta))
+	wg.WaitGroup.Add(delta)
+}
+
+func (wg *WaitGroupCount) Done() {
+	atomic.AddInt64(&wg.count, -1)
+	wg.WaitGroup.Done()
+}
+
+func (wg *WaitGroupCount) GetCount() int {
+	return int(atomic.LoadInt64(&wg.count))
 }
 
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {

@@ -18,8 +18,8 @@ import {
 import PrevPage from '@/assets/icons/PrevPage'
 import NextPage from '@/assets/icons/NextIcon'
 import { firestore } from '@/lib/firebase/config-firebase'
-import { useAuth } from '@/hooks/useAuth'
 import { getUniqueID } from '@/utils'
+import { useAuth } from '@/hooks/use-auth'
 
 import Comment from './Comment'
 

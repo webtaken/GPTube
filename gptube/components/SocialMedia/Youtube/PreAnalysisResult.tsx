@@ -3,7 +3,7 @@ import { Layout, Tag, Image, Input, Button } from 'antd'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 import { ENV_CONFIG } from '@/config/env-config'
 
 const { Content } = Layout

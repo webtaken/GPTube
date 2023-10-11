@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { toast, Toaster } from 'react-hot-toast'
 
 import PricingPlan from '@/components/Pricing/PricingPlan'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 
 const subscriptions: Subscription[] = [
   {

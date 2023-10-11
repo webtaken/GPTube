@@ -5,7 +5,7 @@ import { toast, Toaster } from 'react-hot-toast'
 import { Form, Input, Button } from 'antd'
 
 import { extractYTVideoID } from '@/utils'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 
 const NEXT_PUBLIC_BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ''
 

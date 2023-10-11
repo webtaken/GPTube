@@ -20,7 +20,7 @@ import Link from 'next/link'
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
 import { firestore } from '@/lib/firebase/config-firebase'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 
 import Tooltip from '../../components/UI/Tooltip'
 

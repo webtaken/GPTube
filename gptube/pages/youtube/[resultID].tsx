@@ -13,7 +13,6 @@ import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 const { Content } = Layout
 
@@ -135,4 +134,3 @@ function YoutubeResults() {
 }
 
 export default YoutubeResults
-YoutubeResults.Layout = LayoutsAvailable.Admin

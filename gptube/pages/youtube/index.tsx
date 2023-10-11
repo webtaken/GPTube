@@ -21,7 +21,6 @@ import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/useAuth'
-import { LayoutsAvailable } from '@/components/Layouts/map-layouts'
 
 import Tooltip from '../../components/UI/Tooltip'
 
@@ -274,4 +273,3 @@ function YoutubePanel() {
 }
 
 export default YoutubePanel
-YoutubePanel.Layout = LayoutsAvailable.Admin

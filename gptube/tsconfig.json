@@ -35,7 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     "components/Common/Fonts.ts",
-    "pages/api/index.ts"
+    "pages/api/index.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

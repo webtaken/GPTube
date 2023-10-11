@@ -6,6 +6,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 
+import { AuthProvider } from '@/context/AuthContext/AuthContext'
+
 export function Providers({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react/hook-use-state
   const [queryClient] = useState(
@@ -24,10 +26,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   )
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NextUIProvider>{children}</NextUIProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster />
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <NextUIProvider>{children}</NextUIProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <Toaster />
+      </QueryClientProvider>
+    </AuthProvider>
   )
 }

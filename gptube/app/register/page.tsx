@@ -10,15 +10,15 @@ import { GoogleIcon } from '@/assets/icons/google-icon'
 import { Input } from '@/components/Common/input'
 import { useAuthActions } from '@/hooks/use-auth'
 
-export default function Login() {
+export default function Register() {
   const { loginWithGoogleHandler, loginWithCredentialsHandler } = useAuthActions()
 
   return (
     <main className="w-[100dvw] h-[100dvh] flex justify-center items-center">
       <Card className="w-full max-w-md py-8" radius="sm">
         <CardHeader className="flex flex-col items-center gap-2 p-5 text-center">
-          <h2 className="text-lg font-medium ">Sign in to GPTube</h2>
-          <small className="text-neutral-500">Most powerful analyzer to Youtube content</small>
+          <h2 className="text-lg font-medium ">Create your GPTube account</h2>
+          <small className="text-neutral-500">Get started for free</small>
         </CardHeader>
         <Divider />
         <CardFooter className="flex flex-col items-center max-w-sm gap-4 p-5 mx-auto">
@@ -47,7 +47,7 @@ export default function Login() {
               type="submit"
               variant="solid"
             >
-              Sign up
+              Sign in
             </Button>
           </form>
           <span>or</span>
@@ -62,9 +62,9 @@ export default function Login() {
             Continue with Google
           </Button>
           <small className="text-neutral-500">
-            Don&apos;t have an account?{' '}
-            <Link className="font-semibold hover:underline" href="/register">
-              Sign up.
+            Already have an account?{' '}
+            <Link className="font-semibold hover:underline" href="/login">
+              Sign in.
             </Link>
           </small>
         </CardFooter>

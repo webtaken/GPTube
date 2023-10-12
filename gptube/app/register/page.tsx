@@ -11,7 +11,7 @@ import { Input } from '@/components/Common/input'
 import { useAuthActions } from '@/hooks/use-auth'
 
 export default function Register() {
-  const { loginWithGoogleHandler, loginWithCredentialsHandler } = useAuthActions()
+  const { loginWithGoogleHandler, signupHandler } = useAuthActions()
 
   return (
     <main className="w-[100dvw] h-[100dvh] flex justify-center items-center">
@@ -22,7 +22,7 @@ export default function Register() {
         </CardHeader>
         <Divider />
         <CardFooter className="flex flex-col items-center max-w-sm gap-4 p-5 mx-auto">
-          <form className="flex flex-col w-full gap-4" onSubmit={loginWithCredentialsHandler}>
+          <form className="flex flex-col w-full gap-4" onSubmit={signupHandler}>
             <Input
               isRequired
               required

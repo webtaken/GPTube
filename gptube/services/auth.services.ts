@@ -9,8 +9,18 @@ import { FirebaseError } from 'firebase/app'
 
 import { auth, googleAuthProvider } from '@/lib/firebase/config-firebase'
 
-export function signup(props: { email: string; password: string }) {
-  return createUserWithEmailAndPassword(auth, props.email, props.password)
+export async function signup(props: { email: string; password: string }) {
+  try {
+    await createUserWithEmailAndPassword(auth, props.email, props.password)
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error('Email already in use, please log in.')
+      }
+    }
+
+    throw new Error('Something went wrong, please try again.')
+  }
 }
 
 export async function loginWithCredentials(props: { email: string; password: string }) {

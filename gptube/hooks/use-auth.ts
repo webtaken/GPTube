@@ -9,6 +9,7 @@ import {
   loginWithCredentials,
   loginWithGoogle,
   logout,
+  signup,
   resetPassword,
 } from '@/services/auth.services'
 
@@ -81,10 +82,34 @@ export function useAuthActions() {
     }
   }
 
+  const signupHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+
+    const data = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    }
+
+    try {
+      await signup(data)
+      toast.success('Signed up successfully 😸')
+      router.push('/')
+    } catch (error) {
+      if (error instanceof Error) {
+        return toast.error(error.message)
+      }
+
+      toast.error('Something went wrong, please try again.')
+    }
+  }
+
   return {
     loginWithCredentialsHandler,
     loginWithGoogleHandler,
     logoutHandler,
     resetPasswordHandler,
+    signupHandler,
   }
 }

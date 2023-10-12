@@ -1,3 +1,5 @@
+import type { FormEvent } from 'react'
+
 import toast from 'react-hot-toast'
 import { useContext } from 'react'
 import { useRouter } from 'next/navigation'
@@ -17,9 +19,20 @@ export function useAuth() {
 export function useAuthActions() {
   const router = useRouter()
 
-  const loginWithCredentialsHandler = async (props: { email: string; password: string }) => {
+  const loginWithCredentialsHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+
+    const data = {
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+    }
+
     try {
-      await loginWithCredentials(props)
+      await loginWithCredentials(data)
+      toast.success('Logged successfully 😸')
+      router.push('/')
     } catch (error) {
       if (error instanceof Error) {
         return toast.error(error.message)

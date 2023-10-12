@@ -2,28 +2,53 @@
 
 import { Card, CardHeader, CardFooter } from '@nextui-org/card'
 import { Divider } from '@nextui-org/divider'
+import Link from 'next/link'
+import { LogIn } from 'lucide-react'
 
 import { Button } from '@/components/Common/button'
 import { GoogleIcon } from '@/assets/icons/google-icon'
+import { Input } from '@/components/Common/input'
 
 export default function Login() {
   return (
     <main className="w-[100dvw] h-[100dvh] flex justify-center items-center">
-      <Card className="max-w-sm w-full py-8 " radius="sm">
-        <CardHeader className="text-center flex flex-col items-center gap-2">
-          <h2 className="text-xl font-medium ">Create your GPtube account</h2>
-          <span className="text-neutral-600">Get started for free</span>
+      <Card className="w-full max-w-md py-8" radius="sm">
+        <CardHeader className="flex flex-col items-center gap-2 p-5 text-center">
+          <h2 className="text-lg font-medium ">Sign in to GPTube</h2>
+          <small className="text-neutral-500">Most powerful analyzer to Youtube content</small>
         </CardHeader>
         <Divider />
-        <CardFooter>
+        <CardFooter className="flex flex-col items-center max-w-sm gap-4 p-5 mx-auto">
+          <form className="flex flex-col w-full gap-4">
+            <Input isRequired required label="Email" type="email" variant="underlined" />
+            <Input isRequired required label="Password" type="password" variant="underlined" />
+            <Button
+              fullWidth
+              className="mx-auto font-medium bg-white border-2 hover:border-neutral-800"
+              radius="sm"
+              startContent={<LogIn className="w-5 h-5" />}
+              type="submit"
+              variant="solid"
+            >
+              Sign up
+            </Button>
+          </form>
+          <span>or</span>
           <Button
-            className="bg-white border-2 hover:border-neutral-800 text-medium mx-auto"
+            fullWidth
+            className="mx-auto font-medium bg-white border-2 hover:border-neutral-800"
             radius="sm"
             startContent={<GoogleIcon className="w-5 h-5" />}
             variant="solid"
           >
             Continue with Google
           </Button>
+          <small className="text-neutral-500">
+            Don&apos;t have an account?{' '}
+            <Link className="font-semibold hover:underline" href="/signup">
+              Sign up.
+            </Link>
+          </small>
         </CardFooter>
       </Card>
     </main>

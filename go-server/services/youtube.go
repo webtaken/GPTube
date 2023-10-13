@@ -171,7 +171,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 		NegativeCommentsLimit: negCommentsLimit,
 	}
 	maxNumComments := commentsPerSubscription[plan]
-	maxNumComments = 5000
+	maxNumComments = 2000
 
 	// Check if AI services are running before calling Youtube API
 	err := CheckAIModelsWork()
@@ -183,53 +183,55 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	// A max of 10 concurrent workers processing a batch of messages
 	workers := make(chan struct{}, 10)
 	var wg sync.WaitGroup
-	currentWorkers := 0
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
-		defer wg.Done()
-
 		workers <- struct{}{} // entering a worker to the pool
-		Mutex.Lock()
-		currentWorkers++
-		Mutex.Unlock()
-
-		fmt.Printf("Current Workers: %d\n", currentWorkers)
+		defer func() {
+			wg.Done()
+			<-workers // free a worker
+		}()
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
 		var wgAI sync.WaitGroup
-		var errBERT, errRoBERTa error
-		var resBERT *models.ResBertAI
-		var resRoBERTa *models.ResRobertaAI
-		var BERTResults *models.BertAIResults
-		var RoBERTaResults *models.RobertaAIResults
+		var errBert, errRoberta error
+		var resBert *models.ResBertAI
+		var resRoberta *models.ResRobertaAI
+		var bertResults *models.BertAIResults
+		var robertaResults *models.RobertaAIResults
 
 		wgAI.Add(2)
 		go func() {
 			defer wgAI.Done()
-			resBERT, BERTResults, errBERT = BertAnalysis(comments, cleanedComments, cleanedInputs)
-			if errBERT != nil {
-				log.Printf("[Analyze] bert_analysis_error %v\n", errBERT)
-			}
+			resBert, bertResults, errBert = BertAnalysis(comments, cleanedComments, cleanedInputs)
 		}()
 		go func() {
 			defer wgAI.Done()
-			resRoBERTa, RoBERTaResults, errRoBERTa = RobertaAnalysis(comments, cleanedComments, cleanedInputs)
-			if errRoBERTa != nil {
-				log.Printf("[Analyze] roberta_analysis_error %v\n", errRoBERTa)
-			}
+			resRoberta, robertaResults, errRoberta = RobertaAnalysis(comments, cleanedComments, cleanedInputs)
 		}()
 		wgAI.Wait()
 
-		if errBERT != nil || errRoBERTa != nil {
+		if errBert != nil || errRoberta != nil {
+			if errBert != nil {
+				log.Printf("[Analyze] bert_analysis_error %v\n", errBert)
+				Mutex.Lock()
+				results.BertResults.ErrorsCount += bertResults.ErrorsCount
+				Mutex.Unlock()
+			}
+			if errRoberta != nil {
+				log.Printf("[Analyze] roberta_analysis_error %v\n", errRoberta)
+				Mutex.Lock()
+				results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+				Mutex.Unlock()
+			}
 			return
 		}
 
 		tmpNegativeComments := make([]*models.NegativeComment, 0)
-		for i := 0; i < len(*resBERT); i++ {
+		for i := 0; i < len(*resBert); i++ {
 			tmpBertScore := models.ResAISchema{{
 				Label: "1 star",
 				Score: math.Inf(-1),
 			}}[0]
-			resultsBERT := []models.ResAISchema(*resBERT)
+			resultsBERT := []models.ResAISchema(*resBert)
 			for _, result := range resultsBERT[i] {
 				if result.Score > tmpBertScore.Score {
 					tmpBertScore.Label = result.Label
@@ -241,7 +243,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 				Label: "negative",
 				Score: math.Inf(-1),
 			}}[0]
-			resultsRoBERTa := []models.ResAISchema(*resRoBERTa)
+			resultsRoBERTa := []models.ResAISchema(*resRoberta)
 			for _, result := range resultsRoBERTa[i] {
 				if result.Score > tmpRobertaScore.Score {
 					tmpRobertaScore.Label = result.Label
@@ -267,27 +269,23 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 				tmpNegativeComments = append(tmpNegativeComments, &badComment)
 			}
 		}
-		<-workers // free a worker
-		Mutex.Lock()
-		currentWorkers--
-		Mutex.Unlock()
 
 		// Writing response to the global result
 		Mutex.Lock()
 		// BERT
-		results.BertResults.Score1 += BERTResults.Score1
-		results.BertResults.Score2 += BERTResults.Score2
-		results.BertResults.Score3 += BERTResults.Score3
-		results.BertResults.Score4 += BERTResults.Score4
-		results.BertResults.Score5 += BERTResults.Score5
-		results.BertResults.ErrorsCount += BERTResults.ErrorsCount
-		results.BertResults.SuccessCount += BERTResults.SuccessCount
+		results.BertResults.Score1 += bertResults.Score1
+		results.BertResults.Score2 += bertResults.Score2
+		results.BertResults.Score3 += bertResults.Score3
+		results.BertResults.Score4 += bertResults.Score4
+		results.BertResults.Score5 += bertResults.Score5
+		results.BertResults.ErrorsCount += bertResults.ErrorsCount
+		results.BertResults.SuccessCount += bertResults.SuccessCount
 		// RoBERTa
-		results.RobertaResults.Positive += RoBERTaResults.Positive
-		results.RobertaResults.Negative += RoBERTaResults.Negative
-		results.RobertaResults.Neutral += RoBERTaResults.Neutral
-		results.RobertaResults.ErrorsCount += RoBERTaResults.ErrorsCount
-		results.RobertaResults.SuccessCount += RoBERTaResults.SuccessCount
+		results.RobertaResults.Positive += robertaResults.Positive
+		results.RobertaResults.Negative += robertaResults.Negative
+		results.RobertaResults.Neutral += robertaResults.Neutral
+		results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+		results.RobertaResults.SuccessCount += robertaResults.SuccessCount
 
 		// Adding most negative comments
 		results.NegativeComments = append(results.NegativeComments, tmpNegativeComments...)
@@ -329,7 +327,6 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		BertResults: &models.BertAIResults{},
 	}
 	maxNumComments := commentsPerSubscription["landing"]
-	maxNumComments = 1000
 
 	// Check if AI services are running before calling Youtube API
 	err := CheckAIModelsWork("BERT")
@@ -338,24 +335,26 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		return nil, err
 	}
 
-	var wg WaitGroupCount
+	var wg sync.WaitGroup
 
 	// A max of 10 concurrent workers processing a batch of messages
 	workers := make(chan struct{}, 10)
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
-		defer wg.Done()
+		defer func() {
+			wg.Done()
+			<-workers // free a worker
+		}()
 		workers <- struct{}{} // entering a worker to the pool
 
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
-		resBert, BertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
+		resBert, bertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
 		if errBert != nil {
 			log.Printf("[AnalyzeForLanding] bert_analysis_error %v\n", errBert)
 			Mutex.Lock()
 			// BERT
-			results.BertResults.ErrorsCount += BertResults.ErrorsCount
+			results.BertResults.ErrorsCount += bertResults.ErrorsCount
 			Mutex.Unlock()
-			<-workers // free a worker
 			return
 		}
 
@@ -375,15 +374,14 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		// Writing response to the global result
 		Mutex.Lock()
 		// BERT
-		results.BertResults.Score1 += BertResults.Score1
-		results.BertResults.Score2 += BertResults.Score2
-		results.BertResults.Score3 += BertResults.Score3
-		results.BertResults.Score4 += BertResults.Score4
-		results.BertResults.Score5 += BertResults.Score5
-		results.BertResults.ErrorsCount += BertResults.ErrorsCount
-		results.BertResults.SuccessCount += BertResults.SuccessCount
+		results.BertResults.Score1 += bertResults.Score1
+		results.BertResults.Score2 += bertResults.Score2
+		results.BertResults.Score3 += bertResults.Score3
+		results.BertResults.Score4 += bertResults.Score4
+		results.BertResults.Score5 += bertResults.Score5
+		results.BertResults.ErrorsCount += bertResults.ErrorsCount
+		results.BertResults.SuccessCount += bertResults.SuccessCount
 		Mutex.Unlock()
-		<-workers // free a worker
 	}
 
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)

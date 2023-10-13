@@ -123,7 +123,9 @@ func RobertaAnalysis(
 
 	err := MakeAICall(AIEndpoints["RoBERTa"], &reqRoberta, &resRoberta)
 	if err != nil {
-		return nil, nil, err
+		log.Printf("[RobertaAnalysis] error making the request: %v", err)
+		tmpResults.ErrorsCount += len(cleanedComments)
+		return nil, tmpResults, err
 	}
 
 	tmpResults.SuccessCount = len(resRoberta)

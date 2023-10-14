@@ -47,7 +47,7 @@ export default function Login() {
               type="submit"
               variant="solid"
             >
-              Sign up
+              Sign in
             </Button>
           </form>
           <span>or</span>

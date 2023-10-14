@@ -47,7 +47,7 @@ export default function Register() {
               type="submit"
               variant="solid"
             >
-              Sign in
+              Sign up
             </Button>
           </form>
           <span>or</span>

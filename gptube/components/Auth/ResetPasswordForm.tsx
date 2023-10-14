@@ -1,11 +1,7 @@
 import { Form, Input } from 'antd'
 import { Toaster } from 'react-hot-toast'
 
-import { useAuth } from '@/hooks/useAuth'
-
 function ResetPasswordForm() {
-  const { resetPasswordHandler } = useAuth()
-
   return (
     <Form
       autoComplete="off"
@@ -13,7 +9,6 @@ function ResetPasswordForm() {
       labelCol={{ span: 24 }}
       name="reset_password_form"
       wrapperCol={{ span: 24 }}
-      onFinish={resetPasswordHandler}
     >
       <Toaster />
       <Form.Item

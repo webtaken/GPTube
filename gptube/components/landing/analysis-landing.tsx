@@ -34,11 +34,6 @@ export function AnalysisLanding({
 
   const videoIdRender = analysis.data?.videoId ?? analysisCacheQuery.data?.videoId
 
-  console.log({
-    bertResults,
-    videoMetadata,
-  })
-
   return (
     <>
       <Card fullWidth className="p-4 h-[40rem] bg-gray-100">

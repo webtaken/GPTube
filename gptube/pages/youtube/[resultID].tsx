@@ -12,7 +12,7 @@ import RobertaResultsBanner from '@/components/SocialMedia/Youtube/RobertaResult
 import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/use-auth'
 
 const { Content } = Layout
 

@@ -1,5 +1,7 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navbar'
 import Link from 'next/link'
+import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
+import { LogIn } from 'lucide-react'
 
 import { useAuth, useAuthActions } from '@/hooks/use-auth'
 
@@ -17,9 +19,37 @@ export function Header() {
       <NavbarContent justify="end">
         {user ? (
           <NavbarItem>
-            <Button color="danger" radius="md" variant="flat" onClick={logoutHandler}>
-              Sign out
-            </Button>
+            <Dropdown>
+              <DropdownTrigger>
+                <Avatar
+                  showFallback
+                  className="cursor-pointer"
+                  role="button"
+                  src={user.photoURL ?? undefined}
+                />
+              </DropdownTrigger>
+              <DropdownMenu
+                variant="light"
+                onAction={key => {
+                  if (key === 'logout') {
+                    logoutHandler()
+                  }
+                }}
+              >
+                <DropdownItem key="profile" disableAnimation className="h-14 gap-2">
+                  <p className="font-medium">{user.displayName}</p>
+                  <p className="text-neutral-500">{user.email}</p>
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  className="font-medium"
+                  color="danger"
+                  startContent={<LogIn className="w-4 h-4" />}
+                >
+                  Sign out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </NavbarItem>
         ) : (
           <NavbarItem>

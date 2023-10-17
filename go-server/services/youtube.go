@@ -150,7 +150,6 @@ func AnalyzeComments(
 			commentsToAnalyze = maxNumComments - commentsRetrieved
 		}
 		commentsRetrieved += commentsToAnalyze
-		fmt.Println(commentsRetrieved)
 
 		go analyzer(response.Items[:commentsToAnalyze])
 
@@ -288,6 +287,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	}
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
 	wg.Wait()
+	fmt.Printf("[Analyze] Number of failed comments because of youtube API %d\n", failedComments)
 	results.BertResults.ErrorsCount += failedComments
 	results.RobertaResults.ErrorsCount += failedComments
 
@@ -296,18 +296,10 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 
 	// We will handle the 30% of all the negative comments
 	maxPercentageNegativeComments := 0.3
-	tmpLimit := int(math.Ceil(float64(
+	results.NegativeCommentsLimit = int(math.Ceil(float64(
 		len(results.NegativeComments)) * maxPercentageNegativeComments))
-	tempNegativeComments := make([]*youtube.Comment, 0)
-	if tmpLimit < results.NegativeCommentsLimit {
-		results.NegativeCommentsLimit = tmpLimit
-	}
-	// results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
-	for i := 0; i < results.NegativeCommentsLimit; i++ {
-		tempNegativeComments = append(tempNegativeComments, results.NegativeComments[i])
-	}
-	results.NegativeComments = tempNegativeComments
-	fmt.Printf("[Analyze] Number of most negative comments: %d\n", len(results.NegativeComments))
+	results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
+	fmt.Printf("[Analyze] Number of most negative comments: %d\n", results.NegativeCommentsLimit)
 	if results.NegativeCommentsLimit > 0 {
 		recommendation, err := GetRecommendation(results)
 		if err != nil {
@@ -390,13 +382,13 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
-	message.WriteString("Here is the list of comments:\n")
+	message.WriteString("Here is a list of negative comments I received from my video. What's the main reason this comments are posted? Summarize your answer in bullet points and give me a final recommendation in one paragraph at the end:\n")
 	for _, negative := range results.NegativeComments {
 		message.WriteString(fmt.Sprintf("-%s\n", utils.CleanComment(negative.Snippet.TextOriginal)))
 		if NumTokensFromMessages([]openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "Act as a professional social media content advisor for youtube. Tell me how to avoid the following types of comments. Summarize your answer in two paragraphs to improve my content",
+				Content: "You're a professional youtube content moderator and advisor.",
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,
@@ -408,7 +400,6 @@ func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 			break
 		}
 	}
-	fmt.Println("Message to chatGPT: ", message.String())
 	resp, err := Chat(message.String())
 	if err != nil {
 		return "", err

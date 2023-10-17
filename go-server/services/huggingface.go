@@ -8,20 +8,18 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/api/youtube/v3"
 )
 
 var huggingFaceAuthHeader = fmt.Sprintf("Bearer %s", config.Config("HUGGING_FACE_TOKEN"))
-var Mutex sync.Mutex
 var AIEndpoints = map[string]string{
-	"BERT": fmt.Sprintf(
+	"bert": fmt.Sprintf(
 		"%s/models/nlptown/bert-base-multilingual-uncased-sentiment",
 		config.Config("AI_SERVER_URL"),
 	),
-	"RoBERTa": fmt.Sprintf(
+	"roberta": fmt.Sprintf(
 		"%s/models/cardiffnlp/twitter-xlm-roberta-base-sentiment",
 		config.Config("AI_SERVER_URL"),
 	),
@@ -121,7 +119,7 @@ func RobertaAnalysis(
 	reqRoberta.Inputs = cleanedAIInputs
 	tmpResults.ErrorsCount += len(originalComments) - len(cleanedComments)
 
-	err := MakeAICall(AIEndpoints["RoBERTa"], &reqRoberta, &resRoberta)
+	err := MakeAICall(AIEndpoints["roberta"], &reqRoberta, &resRoberta)
 	if err != nil {
 		log.Printf("[RobertaAnalysis] error making the request: %v", err)
 		tmpResults.ErrorsCount += len(cleanedComments)
@@ -142,8 +140,8 @@ func RobertaAnalysis(
 		}
 	}
 
-	for i := 0; i < len(resRoberta); i++ {
-		callback(resRoberta[i])
+	for _, res := range resRoberta {
+		callback(res)
 	}
 
 	return &resRoberta, tmpResults, nil
@@ -161,7 +159,7 @@ func BertAnalysis(
 	reqBert.Inputs = cleanedAIInputs
 	tmpResults.ErrorsCount += len(originalComments) - len(cleanedComments)
 
-	err := MakeAICall(AIEndpoints["BERT"], &reqBert, &resBert)
+	err := MakeAICall(AIEndpoints["bert"], &reqBert, &resBert)
 	if err != nil {
 		log.Printf("[BertAnalysis] error making the request: %v", err)
 		tmpResults.ErrorsCount += len(cleanedComments)

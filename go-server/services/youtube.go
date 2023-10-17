@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"gptube/config"
 	"gptube/models"
+	"gptube/utils"
 	"log"
 	"math"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"text/template"
 
 	"github.com/sashabaranov/go-openai"
@@ -167,11 +167,10 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	results := &models.YoutubeAnalysisResults{
 		BertResults:           &models.BertAIResults{},
 		RobertaResults:        &models.RobertaAIResults{},
-		NegativeComments:      make([]*models.NegativeComment, 0),
+		NegativeComments:      make([]*youtube.Comment, 0),
 		NegativeCommentsLimit: negCommentsLimit,
 	}
 	maxNumComments := commentsPerSubscription[plan]
-	maxNumComments = 2000
 
 	// Check if AI services are running before calling Youtube API
 	err := CheckAIModelsWork()
@@ -183,6 +182,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	// A max of 10 concurrent workers processing a batch of messages
 	workers := make(chan struct{}, 10)
 	var wg sync.WaitGroup
+	var mutex sync.Mutex
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
 		workers <- struct{}{} // entering a worker to the pool
@@ -191,134 +191,131 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 			<-workers // free a worker
 		}()
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
+		negativeCommentsBert := make(map[string]*youtube.Comment, 0)
+		negativeCommentsRoberta := make(map[string]*youtube.Comment, 0)
 		var wgAI sync.WaitGroup
-		var errBert, errRoberta error
-		var resBert *models.ResBertAI
-		var resRoberta *models.ResRobertaAI
-		var bertResults *models.BertAIResults
-		var robertaResults *models.RobertaAIResults
-
 		wgAI.Add(2)
 		go func() {
 			defer wgAI.Done()
-			resBert, bertResults, errBert = BertAnalysis(comments, cleanedComments, cleanedInputs)
+			resBert, bertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
+			if errBert != nil {
+				log.Printf("[Analyze] bert_analysis_error %v\n", errBert)
+				mutex.Lock()
+				results.BertResults.ErrorsCount += bertResults.ErrorsCount
+				mutex.Unlock()
+				return
+			}
+			for i := 0; i < len(*resBert); i++ {
+				tmpBertScore := models.ResAISchema{{
+					Label: "1 star",
+					Score: math.Inf(-1),
+				}}[0]
+				resultsBERT := []models.ResAISchema(*resBert)
+				for _, result := range resultsBERT[i] {
+					if result.Score > tmpBertScore.Score {
+						tmpBertScore.Label = result.Label
+						tmpBertScore.Score = result.Score
+					}
+				}
+				if tmpBertScore.Label == "1 star" || tmpBertScore.Label == "2 stars" {
+					negativeCommentsBert[cleanedComments[i].Id] = cleanedComments[i]
+				}
+			}
+
+			// Writing response to the global result
+			mutex.Lock()
+			results.BertResults.Score1 += bertResults.Score1
+			results.BertResults.Score2 += bertResults.Score2
+			results.BertResults.Score3 += bertResults.Score3
+			results.BertResults.Score4 += bertResults.Score4
+			results.BertResults.Score5 += bertResults.Score5
+			results.BertResults.ErrorsCount += bertResults.ErrorsCount
+			results.BertResults.SuccessCount += bertResults.SuccessCount
+			mutex.Unlock()
 		}()
 		go func() {
 			defer wgAI.Done()
-			resRoberta, robertaResults, errRoberta = RobertaAnalysis(comments, cleanedComments, cleanedInputs)
+			resRoberta, robertaResults, errRoberta := RobertaAnalysis(comments, cleanedComments, cleanedInputs)
+
+			if errRoberta != nil {
+				log.Printf("[Analyze] roberta_analysis_error %v\n", errRoberta)
+				mutex.Lock()
+				results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+				mutex.Unlock()
+				return
+			}
+
+			for i := 0; i < len(*resRoberta); i++ {
+				tmpRobertaScore := models.ResAISchema{{
+					Label: "negative",
+					Score: math.Inf(-1),
+				}}[0]
+				resultsRoBERTa := []models.ResAISchema(*resRoberta)
+				for _, result := range resultsRoBERTa[i] {
+					if result.Score > tmpRobertaScore.Score {
+						tmpRobertaScore.Label = result.Label
+						tmpRobertaScore.Score = result.Score
+					}
+				}
+				if tmpRobertaScore.Label == "Negative" || tmpRobertaScore.Label == "negative" {
+					negativeCommentsRoberta[cleanedComments[i].Id] = cleanedComments[i]
+				}
+			}
+			mutex.Lock()
+			results.RobertaResults.Positive += robertaResults.Positive
+			results.RobertaResults.Negative += robertaResults.Negative
+			results.RobertaResults.Neutral += robertaResults.Neutral
+			results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+			results.RobertaResults.SuccessCount += robertaResults.SuccessCount
+			mutex.Unlock()
 		}()
 		wgAI.Wait()
 
-		if errBert != nil || errRoberta != nil {
-			if errBert != nil {
-				log.Printf("[Analyze] bert_analysis_error %v\n", errBert)
-				Mutex.Lock()
-				results.BertResults.ErrorsCount += bertResults.ErrorsCount
-				Mutex.Unlock()
-			}
-			if errRoberta != nil {
-				log.Printf("[Analyze] roberta_analysis_error %v\n", errRoberta)
-				Mutex.Lock()
-				results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
-				Mutex.Unlock()
-			}
-			return
-		}
-
-		tmpNegativeComments := make([]*models.NegativeComment, 0)
-		for i := 0; i < len(*resBert); i++ {
-			tmpBertScore := models.ResAISchema{{
-				Label: "1 star",
-				Score: math.Inf(-1),
-			}}[0]
-			resultsBERT := []models.ResAISchema(*resBert)
-			for _, result := range resultsBERT[i] {
-				if result.Score > tmpBertScore.Score {
-					tmpBertScore.Label = result.Label
-					tmpBertScore.Score = result.Score
-				}
-			}
-
-			tmpRobertaScore := models.ResAISchema{{
-				Label: "negative",
-				Score: math.Inf(-1),
-			}}[0]
-			resultsRoBERTa := []models.ResAISchema(*resRoberta)
-			for _, result := range resultsRoBERTa[i] {
-				if result.Score > tmpRobertaScore.Score {
-					tmpRobertaScore.Label = result.Label
-					tmpRobertaScore.Score = result.Score
-				}
-			}
-
-			if (tmpBertScore.Label == "1 star" || tmpBertScore.Label == "2 stars") &&
-				(tmpRobertaScore.Label == "Negative" || tmpRobertaScore.Label == "negative") {
-				badComment := models.NegativeComment{
-					CommentID:             cleanedComments[i].Id,
-					TextDisplay:           cleanedComments[i].Snippet.TextDisplay,
-					TextOriginal:          cleanedComments[i].Snippet.TextOriginal,
-					TextCleaned:           cleanedInputs[i],
-					AuthorDisplayName:     cleanedComments[i].Snippet.AuthorDisplayName,
-					AuthorProfileImageUrl: cleanedComments[i].Snippet.AuthorProfileImageUrl,
-					ParentID:              cleanedComments[i].Snippet.ParentId,
-					LikeCount:             cleanedComments[i].Snippet.LikeCount,
-					ModerationStatus:      cleanedComments[i].Snippet.ModerationStatus,
-					// We set the score as the average of the two scores
-					Priority: (tmpRobertaScore.Score + tmpBertScore.Score) / 2,
-				}
-				tmpNegativeComments = append(tmpNegativeComments, &badComment)
+		tempNegativeComments := make([]*youtube.Comment, 0)
+		for id, comment := range negativeCommentsBert {
+			if _, ok := negativeCommentsRoberta[id]; ok {
+				tempNegativeComments = append(tempNegativeComments, comment)
 			}
 		}
 
-		// Writing response to the global result
-		Mutex.Lock()
-		// BERT
-		results.BertResults.Score1 += bertResults.Score1
-		results.BertResults.Score2 += bertResults.Score2
-		results.BertResults.Score3 += bertResults.Score3
-		results.BertResults.Score4 += bertResults.Score4
-		results.BertResults.Score5 += bertResults.Score5
-		results.BertResults.ErrorsCount += bertResults.ErrorsCount
-		results.BertResults.SuccessCount += bertResults.SuccessCount
-		// RoBERTa
-		results.RobertaResults.Positive += robertaResults.Positive
-		results.RobertaResults.Negative += robertaResults.Negative
-		results.RobertaResults.Neutral += robertaResults.Neutral
-		results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
-		results.RobertaResults.SuccessCount += robertaResults.SuccessCount
-
+		mutex.Lock()
 		// Adding most negative comments
-		results.NegativeComments = append(results.NegativeComments, tmpNegativeComments...)
-		Mutex.Unlock()
+		if len(results.NegativeComments)+len(tempNegativeComments) > results.NegativeCommentsLimit {
+			tempNegativeComments = tempNegativeComments[:results.NegativeCommentsLimit-len(results.NegativeComments)]
+		}
+		results.NegativeComments = append(results.NegativeComments, tempNegativeComments...)
+		mutex.Unlock()
 	}
-
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
-
 	wg.Wait()
-
 	results.BertResults.ErrorsCount += failedComments
 	results.RobertaResults.ErrorsCount += failedComments
 
 	// Averaging results for RoBERTa model
 	results.RobertaResults.AverageResults()
 
-	// tmpLimit := int(math.Ceil(float64(len(results.NegativeComments)) * 0.2))
-	// tmpNegativeComments := make([]*models.NegativeComment, 0)
-	// if tmpLimit < results.NegativeCommentsLimit {
-	// 	results.NegativeCommentsLimit = tmpLimit
-	// }
-	// for i := 0; i < results.NegativeCommentsLimit; i++ {
-	// 	tmpNegativeComments = append(tmpNegativeComments, results.NegativeComments[i])
-	// }
-	// results.NegativeComments = tmpNegativeComments
-	// if results.NegativeCommentsLimit > 0 {
-	// 	recommendation, err := GetRecommendation(results)
-	// 	if err != nil {
-	// 		results.RecommendationChatGPT = ""
-	// 		return results, err
-	// 	}
-	// 	results.RecommendationChatGPT = recommendation
-	// }
+	// We will handle the 30% of all the negative comments
+	maxPercentageNegativeComments := 0.3
+	tmpLimit := int(math.Ceil(float64(
+		len(results.NegativeComments)) * maxPercentageNegativeComments))
+	tempNegativeComments := make([]*youtube.Comment, 0)
+	if tmpLimit < results.NegativeCommentsLimit {
+		results.NegativeCommentsLimit = tmpLimit
+	}
+	// results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
+	for i := 0; i < results.NegativeCommentsLimit; i++ {
+		tempNegativeComments = append(tempNegativeComments, results.NegativeComments[i])
+	}
+	results.NegativeComments = tempNegativeComments
+	fmt.Printf("[Analyze] Number of most negative comments: %d\n", len(results.NegativeComments))
+	if results.NegativeCommentsLimit > 0 {
+		recommendation, err := GetRecommendation(results)
+		if err != nil {
+			results.RecommendationChatGPT = ""
+			return results, err
+		}
+		results.RecommendationChatGPT = recommendation
+	}
 	return results, nil
 }
 
@@ -336,7 +333,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 	}
 
 	var wg sync.WaitGroup
-
+	var mutex sync.Mutex
 	// A max of 10 concurrent workers processing a batch of messages
 	workers := make(chan struct{}, 10)
 	analyzer := func(comments []*youtube.CommentThread) {
@@ -351,10 +348,10 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		resBert, bertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
 		if errBert != nil {
 			log.Printf("[AnalyzeForLanding] bert_analysis_error %v\n", errBert)
-			Mutex.Lock()
+			mutex.Lock()
 			// BERT
 			results.BertResults.ErrorsCount += bertResults.ErrorsCount
-			Mutex.Unlock()
+			mutex.Unlock()
 			return
 		}
 
@@ -372,7 +369,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		}
 
 		// Writing response to the global result
-		Mutex.Lock()
+		mutex.Lock()
 		// BERT
 		results.BertResults.Score1 += bertResults.Score1
 		results.BertResults.Score2 += bertResults.Score2
@@ -381,7 +378,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		results.BertResults.Score5 += bertResults.Score5
 		results.BertResults.ErrorsCount += bertResults.ErrorsCount
 		results.BertResults.SuccessCount += bertResults.SuccessCount
-		Mutex.Unlock()
+		mutex.Unlock()
 	}
 
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
@@ -390,34 +387,16 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 	return results, nil
 }
 
-type WaitGroupCount struct {
-	sync.WaitGroup
-	count int64
-}
-
-func (wg *WaitGroupCount) Add(delta int) {
-	atomic.AddInt64(&wg.count, int64(delta))
-	wg.WaitGroup.Add(delta)
-}
-
-func (wg *WaitGroupCount) Done() {
-	atomic.AddInt64(&wg.count, -1)
-	wg.WaitGroup.Done()
-}
-
-func (wg *WaitGroupCount) GetCount() int {
-	return int(atomic.LoadInt64(&wg.count))
-}
-
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
+	message.WriteString("Here is the list of comments:\n")
 	for _, negative := range results.NegativeComments {
-		message.WriteString(fmt.Sprintf("-%s\n", negative.TextCleaned))
+		message.WriteString(fmt.Sprintf("-%s\n", utils.CleanComment(negative.Snippet.TextOriginal)))
 		if NumTokensFromMessages([]openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "You're a professional social media content advisor. I'll give you a list of comments summarize this comments and give me a recommendation in one paragraph to improve my content",
+				Content: "Act as a professional social media content advisor for youtube. Tell me how to avoid the following types of comments. Summarize your answer in two paragraphs to improve my content",
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,
@@ -429,6 +408,7 @@ func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 			break
 		}
 	}
+	fmt.Println("Message to chatGPT: ", message.String())
 	resp, err := Chat(message.String())
 	if err != nil {
 		return "", err

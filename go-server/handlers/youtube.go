@@ -93,7 +93,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			return utils.HandleError(err, http.StatusInternalServerError, c)
 		}
 
-		if results.BertResults.SuccessCount == 0 || results.RobertaResults.SuccessCount == 0 {
+		if results.BertResults.SuccessCount == 0 && results.RobertaResults.SuccessCount == 0 {
 			noContentError := fmt.Errorf("couldn't analyze any comment")
 			return utils.HandleError(noContentError, http.StatusNoContent, c)
 		}
@@ -106,9 +106,8 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			ResultsID:    body.VideoID,
 			Snippet:      videoData.Items[0].Snippet,
 		}
-		// Here we must save the results to FireStore //
-		// err = database.AddYoutubeResult(&successResp)
-		err = nil
+		// Here we must save the results to FireStore
+		err = database.AddYoutubeResult(&successResp)
 		if err != nil {
 			// Sending the e-mail error to the user
 			log.Printf("error saving data to firebase: %v\n", err.Error())

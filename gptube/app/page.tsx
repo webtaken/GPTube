@@ -1,5 +1,6 @@
 'use client'
 
+import { DashboardUI } from '@/components/dashboard/dashboard-ui'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { LandingUI } from '@/components/landing/landing-ui'
@@ -15,8 +16,14 @@ export default function Home() {
   return (
     <>
       <Header />
-      {user ? <div>Logged in as {user.email}</div> : <LandingUI />}
-      <Footer />
+      {user ? (
+        <DashboardUI />
+      ) : (
+        <>
+          <LandingUI />
+          <Footer />
+        </>
+      )}
     </>
   )
 }

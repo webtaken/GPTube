@@ -19,7 +19,7 @@ export function LandingUI() {
   const { handleLandingAnalysis, isLoading, dataAnalysis } = useHandleLandingAnalysis()
 
   return (
-    <section className="flex flex-col max-w-screen-lg gap-10 p-20 px-4 mx-auto md:pt-28 lg:px-0">
+    <main className="flex flex-col max-w-screen-lg gap-10 p-20 px-6 mx-auto md:pt-28 lg:px-0">
       <h1 className="text-4xl font-bold text-center md:text-6xl">
         Check what people think about
         <br />
@@ -106,6 +106,6 @@ export function LandingUI() {
           </Button>
         </div>
       </section>
-    </section>
+    </main>
   )
 }

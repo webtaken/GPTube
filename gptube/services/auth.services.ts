@@ -40,8 +40,21 @@ export async function loginWithCredentials(props: { email: string; password: str
   }
 }
 
-export function loginWithGoogle() {
-  return signInWithPopup(auth, googleAuthProvider)
+export async function loginWithGoogle() {
+  try {
+    await signInWithPopup(auth, googleAuthProvider)
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      if (error.code === 'auth/account-exists-with-different-credential')
+        throw new Error('Email already in use, please log in.')
+
+      if (error.code === 'auth/popup-closed-by-user')
+        throw new Error('Popup closed by user, please try again.')
+
+      if (error.code === 'auth/cancelled-popup-request')
+        throw new Error('Popup closed by user, please try again.')
+    }
+  }
 }
 
 export function resetPassword(email: string) {

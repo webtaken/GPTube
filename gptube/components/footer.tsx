@@ -17,7 +17,7 @@ export function Footer() {
           and{' '}
           <a
             className="text-green-700"
-            href="https://github.com/webtaken"
+            href="https://github.com/CamiloEMP"
             rel="noopener"
             target="_blank"
           >

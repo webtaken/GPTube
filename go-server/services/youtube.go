@@ -150,7 +150,6 @@ func AnalyzeComments(
 			commentsToAnalyze = maxNumComments - commentsRetrieved
 		}
 		commentsRetrieved += commentsToAnalyze
-		// fmt.Printf("%v\n", commentsRetrieved)
 		go analyzer(response.Items[:commentsToAnalyze])
 
 		nextPageToken = response.NextPageToken
@@ -302,14 +301,14 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
 	fmt.Printf("[Analyze] Number of most negative comments after 30%% handling: %d\n",
 		len(results.NegativeComments))
-	// if results.NegativeCommentsLimit > 0 {
-	// 	recommendation, err := GetRecommendation(results)
-	// 	if err != nil {
-	// 		results.RecommendationChatGPT = ""
-	// 		return results, err
-	// 	}
-	// 	results.RecommendationChatGPT = recommendation
-	// }
+	if results.NegativeCommentsLimit > 0 {
+		recommendation, err := GetRecommendation(results)
+		if err != nil {
+			results.RecommendationChatGPT = ""
+			return results, err
+		}
+		results.RecommendationChatGPT = recommendation
+	}
 	return results, nil
 }
 

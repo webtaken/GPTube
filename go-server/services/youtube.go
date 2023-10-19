@@ -106,6 +106,9 @@ func GetVideoData(videoID string) (*youtube.VideoListResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(response.Items) == 0 {
+		return nil, fmt.Errorf("video not found")
+	}
 	return response, nil
 }
 
@@ -114,9 +117,6 @@ func CanProcessVideo(youtubeRequestBody *models.YoutubePreAnalyzerReqBody) (*you
 	response, err := GetVideoData(youtubeRequestBody.VideoID)
 	if err != nil {
 		return nil, err
-	}
-	if len(response.Items) == 0 {
-		return nil, fmt.Errorf("video doesn't have any comments")
 	}
 	return response, nil
 }

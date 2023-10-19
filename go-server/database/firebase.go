@@ -119,11 +119,31 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 
 	negativeCommentsColl := youtubeDoc.Collection("NegativeComments")
 	for _, comment := range results.Results.NegativeComments {
-		_, err = negativeCommentsColl.Doc(comment.Id).Set(Ctx, comment)
+		_, err = negativeCommentsColl.Doc(comment.Id).Get(Ctx)
 		if err != nil {
-			log.Printf("[AddYoutubeResult] Failed to add negative comment: %v", err)
+			// Comment doesn't exists we need to insert it
+			fmt.Printf("[AddYoutubeResult] Comment with ID %v doesn't exists inserting...\n", comment.Id)
+			_, err = negativeCommentsColl.Doc(comment.Id).Set(Ctx, comment)
+			if err != nil {
+				log.Printf("[AddYoutubeResult] Failed to add negative comment %v: %v",
+					comment.Id, err)
+			}
+			continue
 		}
 	}
+
+	// aggregationQuery := negativeCommentsColl.NewAggregationQuery().WithCount("all")
+	// res, err := aggregationQuery.Get(Ctx)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// count, ok := res["all"]
+	// if !ok {
+	// 	return errors.New("firestore: couldn't get alias for COUNT from results")
+	// }
+	// countValue := count.(*firestorepb.Value)
+	// fmt.Printf("Number of Negative Comments after insertions: %d\n", countValue.GetIntegerValue())
 	return nil
 }
 

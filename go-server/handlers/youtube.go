@@ -110,7 +110,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		err = database.AddYoutubeResult(&successResp)
 		if err != nil {
 			// Sending the e-mail error to the user
-			log.Printf("error saving data to firebase: %v\n", err.Error())
+			log.Printf("[YoutubeAnalysisHandler] Error saving data to firebase: %v\n", err.Error())
 		} else {
 			// Saving the resultID into the result2Store var to send the email
 			successResp.ResultsID = body.VideoID
@@ -159,6 +159,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			ResultsID:    body.VideoID,
 			Snippet:      videoData.Items[0].Snippet,
 		}
+
 		err = database.AddYoutubeResult(&results2Store)
 		if err != nil {
 			// Sending the e-mail error to the user
@@ -181,8 +182,11 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		)
 		go services.SendYoutubeSuccessEmailTemplate(
 			results2Store, subjectEmail, []string{body.Email})
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments analyzed Bert: %d\n", results.BertResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments analyzed Roberta: %d\n", results.RobertaResults.SuccessCount)
+
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n", results.RobertaResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n", results.RobertaResults.ErrorsCount)
 	}(videoData)
 
 	return c.SendStatus(http.StatusOK)

@@ -22,6 +22,9 @@ import (
 
 var Service *youtube.Service
 
+// The hole system will have a max of 200 concurrent workers
+var Workers = make(chan struct{}, 200)
+
 var commentsPerSubscription = map[string]int{
 	"landing": 250,
 	"free":    500,
@@ -108,23 +111,20 @@ func GetVideoData(videoID string) (*youtube.VideoListResponse, error) {
 
 func CanProcessVideo(youtubeRequestBody *models.YoutubePreAnalyzerReqBody) (*youtube.VideoListResponse, error) {
 	// The max number of comments we can process
-	maxNumberOfComments, _ := strconv.Atoi(config.Config("YOUTUBE_MAX_COMMENTS_CAPACITY"))
-
 	response, err := GetVideoData(youtubeRequestBody.VideoID)
 	if err != nil {
 		return nil, err
 	}
 	if len(response.Items) == 0 {
 		return nil, fmt.Errorf("video doesn't have any comments")
-	} else if response.Items[0].Statistics.CommentCount > uint64(maxNumberOfComments) {
-		return nil, fmt.Errorf("number of comments exceeded, max %v", maxNumberOfComments)
 	}
 	return response, nil
 }
 
 func AnalyzeComments(
 	videoID string,
-	maxNumComments int, analyzer func([]*youtube.CommentThread)) int {
+	maxNumComments int,
+	analyzer func([]*youtube.CommentThread)) int {
 	var part = []string{"id", "snippet"}
 	nextPageToken := ""
 	call := Service.CommentThreads.List(part)
@@ -150,7 +150,7 @@ func AnalyzeComments(
 			commentsToAnalyze = maxNumComments - commentsRetrieved
 		}
 		commentsRetrieved += commentsToAnalyze
-
+		// fmt.Printf("%v\n", commentsRetrieved)
 		go analyzer(response.Items[:commentsToAnalyze])
 
 		nextPageToken = response.NextPageToken
@@ -178,16 +178,14 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 		return nil, err
 	}
 
-	// A max of 10 concurrent workers processing a batch of messages
-	workers := make(chan struct{}, 10)
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
-		workers <- struct{}{} // entering a worker to the pool
+		Workers <- struct{}{} // entering a worker to the pool
 		defer func() {
 			wg.Done()
-			<-workers // free a worker
+			<-Workers // free a worker
 		}()
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
 		negativeCommentsBert := make(map[string]*youtube.Comment, 0)
@@ -287,6 +285,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	}
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
 	wg.Wait()
+
 	fmt.Printf("[Analyze] Number of failed comments because of youtube API %d\n", failedComments)
 	results.BertResults.ErrorsCount += failedComments
 	results.RobertaResults.ErrorsCount += failedComments
@@ -294,20 +293,23 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 	// Averaging results for RoBERTa model
 	results.RobertaResults.AverageResults()
 
+	fmt.Printf("[Analyze] Number of most negative comments before 30%% handling: %d\n",
+		len(results.NegativeComments))
 	// We will handle the 30% of all the negative comments
 	maxPercentageNegativeComments := 0.3
 	results.NegativeCommentsLimit = int(math.Ceil(float64(
 		len(results.NegativeComments)) * maxPercentageNegativeComments))
 	results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
-	fmt.Printf("[Analyze] Number of most negative comments: %d\n", results.NegativeCommentsLimit)
-	if results.NegativeCommentsLimit > 0 {
-		recommendation, err := GetRecommendation(results)
-		if err != nil {
-			results.RecommendationChatGPT = ""
-			return results, err
-		}
-		results.RecommendationChatGPT = recommendation
-	}
+	fmt.Printf("[Analyze] Number of most negative comments after 30%% handling: %d\n",
+		len(results.NegativeComments))
+	// if results.NegativeCommentsLimit > 0 {
+	// 	recommendation, err := GetRecommendation(results)
+	// 	if err != nil {
+	// 		results.RecommendationChatGPT = ""
+	// 		return results, err
+	// 	}
+	// 	results.RecommendationChatGPT = recommendation
+	// }
 	return results, nil
 }
 
@@ -326,15 +328,13 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
-	// A max of 10 concurrent workers processing a batch of messages
-	workers := make(chan struct{}, 10)
 	analyzer := func(comments []*youtube.CommentThread) {
 		wg.Add(1)
 		defer func() {
 			wg.Done()
-			<-workers // free a worker
+			<-Workers // free a worker
 		}()
-		workers <- struct{}{} // entering a worker to the pool
+		Workers <- struct{}{} // entering a worker to the pool
 
 		cleanedComments, cleanedInputs := CleanCommentsForAIModels(comments)
 		resBert, bertResults, errBert := BertAnalysis(comments, cleanedComments, cleanedInputs)
@@ -372,7 +372,6 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 		results.BertResults.SuccessCount += bertResults.SuccessCount
 		mutex.Unlock()
 	}
-
 	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
 	wg.Wait()
 	results.BertResults.ErrorsCount += failedComments
@@ -382,25 +381,28 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
-	message.WriteString("Here is a list of negative comments I received from my video. What's the main reason this comments are posted? Summarize your answer in bullet points and give me a final recommendation in one paragraph at the end:\n")
+	message.WriteString("Here is a list of negative comments I received from my video. What's the main reason this comments are posted? Summarize the main reasons in bullet points and give me a final recommendation in one paragraph at the end:\n")
+	queryMessages := []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: "You're a professional youtube content moderator and advisor.",
+		},
+		{
+			Role:    openai.ChatMessageRoleUser,
+			Content: message.String(),
+		},
+	}
 	for _, negative := range results.NegativeComments {
 		message.WriteString(fmt.Sprintf("-%s\n", utils.CleanComment(negative.Snippet.TextOriginal)))
-		if NumTokensFromMessages([]openai.ChatCompletionMessage{
-			{
-				Role:    openai.ChatMessageRoleSystem,
-				Content: "You're a professional youtube content moderator and advisor.",
-			},
-			{
-				Role:    openai.ChatMessageRoleUser,
-				Content: message.String() + message.String(),
-			},
-		}, "gpt-3.5-turbo") > maxNumOfTokens {
+		queryMessages[1].Content = message.String()
+		if NumTokensFromMessages(queryMessages, "gpt-3.5-turbo") > maxNumOfTokens {
 			log.Printf("[GetRecommendation] max number of tokens (%d) reached!\nStarting analysis...",
 				maxNumOfTokens)
 			break
 		}
 	}
-	resp, err := Chat(message.String())
+	fmt.Printf("[GetRecommendation] Number of tokens: %d\n", NumTokensFromMessages(queryMessages, "gpt-3.5-turbo"))
+	resp, err := Chat(queryMessages)
 	if err != nil {
 		return "", err
 	}

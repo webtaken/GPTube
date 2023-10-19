@@ -12,10 +12,10 @@ type YoutubePreAnalyzerReqBody struct {
 }
 
 type YoutubePreAnalyzerRespBody struct {
-	VideoID       string                   `json:"video_id,omitempty"`
-	RequiresEmail bool                     `json:"requires_email,omitempty"`
-	Snippet       *youtube.VideoSnippet    `json:"snippet,omitempty"`
-	Statistics    *youtube.VideoStatistics `json:"statistics,omitempty"`
+	VideoID       string                   `json:"video_id"`
+	RequiresEmail bool                     `json:"requires_email"`
+	Snippet       *youtube.VideoSnippet    `json:"snippet"`
+	Statistics    *youtube.VideoStatistics `json:"statistics"`
 }
 
 // Models for the youtube analysis landing page

@@ -2,28 +2,6 @@ package models
 
 import "gptube/utils"
 
-type NegativeComment struct {
-	CommentID             string `json:"commentID,omitempty" firestore:"commentID,omitempty"`
-	TextDisplay           string `json:"textDisplay,omitempty" firestore:"textDisplay,omitempty"`
-	TextOriginal          string `json:"textOriginal,omitempty" firestore:"textOriginal,omitempty"`
-	TextCleaned           string `json:"textCleaned,omitempty" firestore:"textCleaned,omitempty"`
-	AuthorDisplayName     string `json:"authorDisplayName,omitempty" firestore:"authorDisplayName,omitempty"`
-	AuthorProfileImageUrl string `json:"authorProfileImageUrl,omitempty" firestore:"authorProfileImageUrl,omitempty"`
-	ParentID              string `json:"parentID,omitempty" firestore:"parentID,omitempty"`
-	LikeCount             int64  `json:"likeCount,omitempty" firestore:"likeCount,omitempty"`
-	// ModerationStatus: The comment's moderation status. Will not be set if
-	// the comments were requested through the id filter.
-	//
-	// Possible values:
-	//   "published" - The comment is available for public display.
-	//   "heldForReview" - The comment is awaiting review by a moderator.
-	//   "likelySpam"
-	//   "rejected" - The comment is unfit for display.
-	ModerationStatus string `json:"moderationStatus,omitempty" firestore:"moderationStatus,omitempty"`
-	// Score given to the comment
-	Priority float64 `json:"priority,omitempty" firestore:"priority"`
-}
-
 type BertAIResults struct {
 	Score1       int `json:"score_1" firestore:"score_1"`
 	Score2       int `json:"score_2" firestore:"score_2"`

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"math"
 	"regexp"
 
@@ -28,7 +27,7 @@ func HandleError(err error, statusCode int, c *fiber.Ctx) error {
 		Error string `json:"error" example:"an error ocurred"`
 	}
 	c.JSON(errorResponse{
-		Error: fmt.Errorf("%v", err).Error(),
+		Error: err.Error(),
 	})
 	return c.SendStatus(statusCode)
 }

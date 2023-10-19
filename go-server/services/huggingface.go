@@ -8,20 +8,18 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/api/youtube/v3"
 )
 
 var huggingFaceAuthHeader = fmt.Sprintf("Bearer %s", config.Config("HUGGING_FACE_TOKEN"))
-var Mutex sync.Mutex
 var AIEndpoints = map[string]string{
-	"BERT": fmt.Sprintf(
+	"bert": fmt.Sprintf(
 		"%s/models/nlptown/bert-base-multilingual-uncased-sentiment",
 		config.Config("AI_SERVER_URL"),
 	),
-	"RoBERTa": fmt.Sprintf(
+	"roberta": fmt.Sprintf(
 		"%s/models/cardiffnlp/twitter-xlm-roberta-base-sentiment",
 		config.Config("AI_SERVER_URL"),
 	),
@@ -83,14 +81,14 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 	req.SetRequestURI(endpoint)
 	agent.JSON(reqBody)
 	if err := agent.Parse(); err != nil {
-		log.Println("[MakeAICall] error making the request: ", err)
+		log.Printf("[MakeAICall] error making the request: %v\n", err)
 		return err
 	}
 
 	code, bodyStr, errs := agent.Struct(resBody)
 	if code != http.StatusOK && len(errs) > 0 {
-		log.Println("[MakeAICall] error in response: ", errs[0])
-		log.Println("[MakeAICall] bodyStr: ", string(bodyStr))
+		log.Printf("[MakeAICall] error in response: %v\n", errs[0])
+		log.Printf("[MakeAICall] bodyStr: %v\n", string(bodyStr))
 		return errs[0]
 	}
 	return nil
@@ -99,10 +97,10 @@ func MakeAICall(endpoint string, reqBody interface{}, resBody interface{}) error
 func CleanCommentsForAIModels(comments []*youtube.CommentThread) ([]*youtube.Comment, []string) {
 	validYoutubeComments := make([]*youtube.Comment, 0)
 	cleanedComments := make([]string, 0)
-	maxCharsAllow := 512
+	maxCharsAllowed := 512
 	for _, comment := range comments {
 		clean := utils.CleanComment(comment.Snippet.TopLevelComment.Snippet.TextOriginal)
-		if len(clean) <= maxCharsAllow {
+		if len(clean) <= maxCharsAllowed {
 			cleanedComments = append(cleanedComments, clean)
 			validYoutubeComments = append(validYoutubeComments, comment.Snippet.TopLevelComment)
 		}
@@ -121,9 +119,11 @@ func RobertaAnalysis(
 	reqRoberta.Inputs = cleanedAIInputs
 	tmpResults.ErrorsCount += len(originalComments) - len(cleanedComments)
 
-	err := MakeAICall(AIEndpoints["RoBERTa"], &reqRoberta, &resRoberta)
+	err := MakeAICall(AIEndpoints["roberta"], &reqRoberta, &resRoberta)
 	if err != nil {
-		return nil, nil, err
+		log.Printf("[RobertaAnalysis] error making the request: %v", err)
+		tmpResults.ErrorsCount += len(cleanedComments)
+		return nil, tmpResults, err
 	}
 
 	tmpResults.SuccessCount = len(resRoberta)
@@ -140,8 +140,8 @@ func RobertaAnalysis(
 		}
 	}
 
-	for i := 0; i < len(resRoberta); i++ {
-		callback(resRoberta[i])
+	for _, res := range resRoberta {
+		callback(res)
 	}
 
 	return &resRoberta, tmpResults, nil
@@ -159,9 +159,11 @@ func BertAnalysis(
 	reqBert.Inputs = cleanedAIInputs
 	tmpResults.ErrorsCount += len(originalComments) - len(cleanedComments)
 
-	err := MakeAICall(AIEndpoints["BERT"], &reqBert, &resBert)
+	err := MakeAICall(AIEndpoints["bert"], &reqBert, &resBert)
 	if err != nil {
-		return nil, nil, err
+		log.Printf("[BertAnalysis] error making the request: %v", err)
+		tmpResults.ErrorsCount += len(cleanedComments)
+		return nil, tmpResults, err
 	}
 
 	tmpResults.SuccessCount = len(resBert)
@@ -193,8 +195,8 @@ func BertAnalysis(
 		}
 	}
 
-	for i := 0; i < len(resBert); i++ {
-		callback(resBert[i])
+	for _, res := range resBert {
+		callback(res)
 	}
 
 	return &resBert, tmpResults, nil

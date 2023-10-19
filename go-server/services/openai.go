@@ -46,17 +46,12 @@ func NumTokensFromMessages(messages []openai.ChatCompletionMessage, model string
 	return num_tokens
 }
 
-func Chat(message string) (*openai.ChatCompletionResponse, error) {
+func Chat(messages []openai.ChatCompletionMessage) (*openai.ChatCompletionResponse, error) {
 	resp, err := ChatGPTClient.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: message,
-				},
-			},
+			Model:       openai.GPT3Dot5Turbo,
+			Messages:    messages,
 			Temperature: 0.8,
 		},
 	)

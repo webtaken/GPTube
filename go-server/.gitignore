@@ -40,3 +40,8 @@ acme.json
 
 # VSCODE
 .vscode
+
+# VEGETA tests
+landing.json
+pre_analysis.json
+target.list

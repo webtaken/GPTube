@@ -1,12 +1,10 @@
-export const extractYTVideoID = (youtubeURL: string) => {
-  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-  const match = regExp.exec(youtubeURL)
+export const youtubeURLRegex = /^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.be)\/.+$/g
 
-  if (match && match[2].length == 11) {
+export const extractYTVideoID = (youtubeURL: string) => {
+  const match = youtubeURLRegex.exec(youtubeURL)
+  if (match && match[2].length == 11)
     return match[2]
-  } else {
-    return ''
-  }
+  return undefined;
 }
 
 export const paramValToString = (str: string | string[] | undefined): string => {

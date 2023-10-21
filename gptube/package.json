@@ -27,7 +27,8 @@
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.10.1",
-    "recharts": "^2.8.0"
+    "recharts": "^2.8.0",
+    "use-debounce": "^9.0.4"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.5.4",

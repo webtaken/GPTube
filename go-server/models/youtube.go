@@ -6,6 +6,14 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+// Models for the youtube videos endpoint
+type YoutubeVideosRespBody struct {
+	Count    int                     `json:"count"`
+	Next     *string                 `json:"next"`
+	Previous *string                 `json:"previous"`
+	Results  []*youtube.VideoSnippet `json:"results"`
+}
+
 // Models for the youtube pre-analysis
 type YoutubePreAnalyzerReqBody struct {
 	VideoID string `json:"video_id"`

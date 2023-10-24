@@ -8,6 +8,7 @@ import (
 	"gptube/services"
 	"gptube/utils"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,6 +16,60 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"google.golang.org/api/youtube/v3"
 )
+
+// @Summary		Get all the videos related to a user in paginated mode
+// @Description	An endpoint to retrieve all the youtube videos that a user has analyzed.
+// @Produce		json
+// @Param			account_email	query		string	true	"the account email"
+// @Param			page			query		int		false	"the queried page"
+// @Param			page_size		query		int		false	"page size for the results (default: 10, max: 50)"
+// @Success		200				{object}	models.YoutubeVideosRespBody
+// @Failure		400				{object}	utils.HandleError.errorResponse
+// @Failure		500				{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/videos [get]
+func YoutubeVideosHandler(c *fiber.Ctx) error {
+	accountEmail := c.Query("account_email", "")
+
+	if accountEmail == "" {
+		err := fmt.Errorf("please provide an account email")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	page, err := strconv.Atoi(c.Query("page", "1"))
+
+	if err != nil {
+		err := fmt.Errorf("please provide a valid page number")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+	if page < 0 {
+		err := fmt.Errorf("page number can not be negative")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	pageSize, err := strconv.Atoi(c.Query("page_size", "10"))
+
+	if err != nil {
+		err := fmt.Errorf("please provide a valid page size number")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+	if pageSize < 0 {
+		err := fmt.Errorf("page size number can not be negative")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	pageSize = int(math.Min(float64(pageSize), 50))
+
+	fmt.Printf("%s\n%d\n%d\n", accountEmail, page, pageSize)
+
+	successResp := models.YoutubeVideosRespBody{
+		Count:    0,
+		Next:     nil,
+		Previous: nil,
+		Results:  make([]*youtube.VideoSnippet, 0),
+	}
+	c.JSON(successResp)
+	return c.SendStatus(http.StatusOK)
+}
 
 // @Summary		Basic information about the youtube video
 // @Description	An endpoint used to retrieve basic information about the youtube video such as title, description, etc.

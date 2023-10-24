@@ -93,6 +93,19 @@ definitions:
       video_id:
         type: string
     type: object
+  models.YoutubeVideosRespBody:
+    properties:
+      count:
+        type: integer
+      next:
+        type: string
+      previous:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/youtube.VideoSnippet'
+        type: array
+    type: object
   utils.HandleError.errorResponse:
     properties:
       error:
@@ -243,7 +256,7 @@ definitions:
         example: "0"
         type: string
     type: object
-host: localhost:8000
+host: localhost:8001
 info:
   contact:
     email: luckly083@gmail.com
@@ -356,6 +369,40 @@ paths:
           schema:
             $ref: '#/definitions/utils.HandleError.errorResponse'
       summary: Basic information about the youtube video
+  /api/youtube/videos:
+    get:
+      description: An endpoint to retrieve all the youtube videos that a user has
+        analyzed.
+      parameters:
+      - description: the account email
+        in: query
+        name: account_email
+        required: true
+        type: string
+      - description: the queried page
+        in: query
+        name: page
+        type: integer
+      - description: 'page size for the results (default: 10, max: 50)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubeVideosRespBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+      summary: Get all the videos related to a user in paginated mode
   /billing:
     get:
       description: An endpoint used to test the billing api stability

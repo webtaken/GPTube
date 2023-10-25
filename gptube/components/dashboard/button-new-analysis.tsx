@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react'
 import {
   Input,
   Checkbox,
@@ -11,37 +10,27 @@ import {
 } from '@nextui-org/react'
 import { useDebounce } from 'use-debounce'
 
-import { youtubeURLRegex } from '@/utils'
 import { useVideoPreview } from '@/hooks/use-video-preview'
+import { isValidEmail, isValidYoutubeUrl } from '@/utils/validations.utils'
+import { useForm } from '@/hooks/use-form'
 
 import { Button } from '../Common/button'
 
 import { VideoPreview } from './video-preview'
 
 export function ButtonNewAnalysis() {
-  const [url, setUrl] = useState('')
-  const [email, setEmail] = useState('')
-  const [showEmail, setShowEmail] = useState(false)
+  const { handleChange, email, showEmail, url } = useForm({
+    url: '',
+    email: '',
+    showEmail: false,
+  })
+
   const [debouncedUrl] = useDebounce(url, 500)
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const { isLoading, isSuccess, isError, dataPreAnalysis } = useVideoPreview(debouncedUrl)
+  const modalAnalysis = useDisclosure()
+  const videoPreviewQuery = useVideoPreview(debouncedUrl)
 
-  const validateYoutubeURL = (inputUrl: string) => inputUrl.match(youtubeURLRegex)
-  const validateEmail = (inputEmail: string) =>
-    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i.exec(inputEmail)
-
-  const isInvalidURL = useMemo(() => {
-    if (url === '') return false
-
-    return validateYoutubeURL(url) ? false : true
-  }, [url])
-
-  const isInvalidEmail = useMemo(() => {
-    if (email === '') return false
-
-    return validateEmail(email) ? false : true
-  }, [email])
-
+  const isInvalidUrl = url === '' || !isValidYoutubeUrl(url)
+  const isInvalidEmail = email === '' || !isValidEmail(email)
 
   return (
     <>
@@ -50,11 +39,11 @@ export function ButtonNewAnalysis() {
         color="success"
         radius="sm"
         variant="ghost"
-        onPress={onOpen}
+        onPress={modalAnalysis.onOpen}
       >
         New Analysis
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={modalAnalysis.isOpen} onOpenChange={modalAnalysis.onOpenChange}>
         <ModalContent>
           {onClose => (
             <>
@@ -66,22 +55,27 @@ export function ButtonNewAnalysis() {
                   <div className="w-1/2">
                     <p className="text-sm">Paste a youtube video url to start the analysis</p>
                     <Input
-                      color={isInvalidURL || isError ? 'danger' : 'success'}
+                      color={isInvalidUrl || videoPreviewQuery.isError ? 'danger' : 'success'}
                       errorMessage={
-                        isInvalidURL
+                        isInvalidUrl
                           ? 'Please enter a valid Url'
-                          : isError
+                          : videoPreviewQuery.isError
                           ? 'Something is wrong with the Url (check the video id)'
                           : null
                       }
-                      isInvalid={isInvalidURL}
+                      isInvalid={isInvalidUrl}
                       label="Url"
                       name="videoURL"
                       placeholder="https://youtu.be/mv5SZ7i6QLI"
                       type="url"
                       value={url}
                       variant="underlined"
-                      onValueChange={setUrl}
+                      onValueChange={value => {
+                        handleChange({
+                          name: 'url',
+                          value: value,
+                        })
+                      }}
                     />
                     <Checkbox
                       classNames={{
@@ -92,7 +86,12 @@ export function ButtonNewAnalysis() {
                       isSelected={showEmail}
                       radius="sm"
                       size="md"
-                      onValueChange={setShowEmail}
+                      onValueChange={value => {
+                        handleChange({
+                          name: 'showEmail',
+                          value: value,
+                        })
+                      }}
                     >
                       Send to email
                     </Checkbox>
@@ -107,18 +106,17 @@ export function ButtonNewAnalysis() {
                         type="email"
                         value={email}
                         variant="underlined"
-                        onValueChange={setEmail}
+                        onValueChange={value => {
+                          handleChange({
+                            name: 'email',
+                            value: value,
+                          })
+                        }}
                       />
                     ) : null}
                   </div>
                   <div className="w-1/2">
-                    <VideoPreview
-                      preview={{
-                        isSuccess: isSuccess,
-                        isLoading: isLoading,
-                        previewData: dataPreAnalysis,
-                      }}
-                    />
+                    <VideoPreview {...videoPreviewQuery} />
                   </div>
                 </div>
               </ModalBody>

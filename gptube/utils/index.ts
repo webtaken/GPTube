@@ -1,9 +1,7 @@
-export const youtubeURLRegex = /^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.be)\/.+$/g
-
 export const extractYTVideoID = (youtubeURL: string) => {
-  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
   const match = regExp.exec(youtubeURL)
-  console.log(match)
+
   if (match && match[2].length == 11) return match[2]
 
   return undefined

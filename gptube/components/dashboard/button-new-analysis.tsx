@@ -7,22 +7,25 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
+  Divider,
 } from '@nextui-org/react'
 import { useDebounce } from 'use-debounce'
 
 import { useVideoPreview } from '@/hooks/use-video-preview'
 import { isValidEmail, isValidYoutubeUrl } from '@/utils/validations.utils'
 import { useForm } from '@/hooks/use-form'
+import { useAuth } from '@/hooks/use-auth'
 
 import { Button } from '../Common/button'
 
 import { VideoPreview } from './video-preview'
 
 export function ButtonNewAnalysis() {
+  const { user } = useAuth()
   const { handleChange, email, showEmail, url } = useForm({
     url: '',
-    email: '',
-    showEmail: false,
+    email: user?.email || '',
+    showEmail: true,
   })
 
   const [debouncedUrl] = useDebounce(url, 500)
@@ -43,7 +46,7 @@ export function ButtonNewAnalysis() {
       >
         New Analysis
       </Button>
-      <Modal isOpen={modalAnalysis.isOpen} onOpenChange={modalAnalysis.onOpenChange}>
+      <Modal isOpen={modalAnalysis.isOpen} size="2xl" onOpenChange={modalAnalysis.onOpenChange}>
         <ModalContent>
           {onClose => (
             <>
@@ -51,9 +54,8 @@ export function ButtonNewAnalysis() {
                 New video analysis
               </ModalHeader>
               <ModalBody className="text-sm">
-                <div className="flex">
-                  <div className="w-1/2">
-                    <p className="text-sm">Paste a youtube video url to start the analysis</p>
+                <section className="grid grid-cols-[1fr_10px_1fr] gap-6">
+                  <aside className="flex flex-col gap-3">
                     <Input
                       color={isInvalidUrl || videoPreviewQuery.isError ? 'danger' : 'success'}
                       errorMessage={
@@ -114,11 +116,12 @@ export function ButtonNewAnalysis() {
                         }}
                       />
                     ) : null}
-                  </div>
-                  <div className="w-1/2">
+                  </aside>
+                  <Divider orientation="vertical" />
+                  <aside className="">
                     <VideoPreview {...videoPreviewQuery} />
-                  </div>
-                </div>
+                  </aside>
+                </section>
               </ModalBody>
               <ModalFooter>
                 <Button

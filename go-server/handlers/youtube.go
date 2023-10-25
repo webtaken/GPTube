@@ -59,13 +59,9 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 
 	pageSize = int(math.Min(float64(pageSize), 50))
 
-	fmt.Printf("%s\n%d\n%d\n", accountEmail, page, pageSize)
-
-	successResp := models.YoutubeVideosRespBody{
-		Count:    0,
-		Next:     nil,
-		Previous: nil,
-		Results:  make([]*youtube.VideoSnippet, 0),
+	successResp, err := database.GetYoutubeVideosPage(page, pageSize, accountEmail)
+	if err != nil {
+		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 	c.JSON(successResp)
 	return c.SendStatus(http.StatusOK)

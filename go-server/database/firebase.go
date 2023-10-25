@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"gptube/config"
 	"gptube/models"
@@ -9,9 +10,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	firebase "firebase.google.com/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/youtube/v3"
 )
 
 var Ctx context.Context
@@ -132,19 +135,73 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 		}
 	}
 
-	// aggregationQuery := negativeCommentsColl.NewAggregationQuery().WithCount("all")
-	// res, err := aggregationQuery.Get(Ctx)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// count, ok := res["all"]
-	// if !ok {
-	// 	return errors.New("firestore: couldn't get alias for COUNT from results")
-	// }
-	// countValue := count.(*firestorepb.Value)
-	// fmt.Printf("Number of Negative Comments after insertions: %d\n", countValue.GetIntegerValue())
 	return nil
+}
+
+func GetYoutubeVideosPage(page int, pageSize int, accountEmail string) (*models.YoutubeVideosRespBody, error) {
+	app, err := firebase.NewApp(Ctx, nil, Sa)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := app.Firestore(Ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	defer client.Close()
+
+	response := &models.YoutubeVideosRespBody{
+		Count:    0,
+		Next:     nil,
+		Previous: nil,
+		Results:  make([]*youtube.VideoSnippet, 0),
+	}
+
+	userDoc := client.Collection("users").Doc(accountEmail)
+	youtubeColl := userDoc.Collection("youtube")
+
+	// Count all the youtube videos in the collection
+	aggQuery := youtubeColl.NewAggregationQuery().WithCount("all")
+	res, err := aggQuery.Get(Ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	count, ok := res["all"]
+	if !ok {
+		return nil, errors.New("couldn't get alias for COUNT from results")
+	}
+	countValue := count.(*firestorepb.Value)
+	response.Count = int(countValue.GetIntegerValue())
+
+	// Get the youtube videos on the page
+	query := youtubeColl.OrderBy("last_update", firestore.Asc).Limit(pageSize)
+	if page > 1 {
+		prevPageSnapshot, err := youtubeColl.OrderBy("last_update", firestore.Asc).
+			Limit(pageSize * (page - 1)).Documents(Ctx).GetAll()
+		if err != nil {
+			return nil, err
+		}
+		lastDoc := prevPageSnapshot[len(prevPageSnapshot)-1]
+		query = youtubeColl.OrderBy("last_update", firestore.Asc).
+			StartAfter(lastDoc.Data()).Limit(pageSize)
+	}
+
+	pageSnapshot, err := query.Documents(Ctx).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(pageSnapshot) == 0 {
+		return nil, errors.New("page does not exist")
+	}
+
+	for _, snapshot := range pageSnapshot {
+		fmt.Printf("%v\n", *snapshot)
+	}
+
+	return response, nil
 }
 
 func RetrieveSubscriptions(email string) (*[]map[string]interface{}, error) {

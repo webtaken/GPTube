@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { apiClient } from '@/gptube-api'
 import { extractYTVideoID } from '@/utils'
+import { isValidYoutubeUrl } from '@/utils/validations.utils'
 
 export function useVideoPreview(videoURL: string) {
   const videoQuery = useQuery({
@@ -11,7 +12,7 @@ export function useVideoPreview(videoURL: string) {
       return apiClient.apiYoutubePreAnalysisPost({ video: { videoId } })
     },
     queryKey: ['video-preview', videoURL],
-    enabled: videoURL.length > 0,
+    enabled: videoURL.length > 0 && isValidYoutubeUrl(videoURL),
   })
 
   return {

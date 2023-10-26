@@ -11,6 +11,8 @@ models/ModelsYoutubeAnalyzerReqBody.ts
 models/ModelsYoutubeAnalyzerRespBody.ts
 models/ModelsYoutubePreAnalyzerReqBody.ts
 models/ModelsYoutubePreAnalyzerRespBody.ts
+models/ModelsYoutubeVideoDashboard.ts
+models/ModelsYoutubeVideosRespBody.ts
 models/UtilsHandleErrorErrorResponse.ts
 models/YoutubeThumbnail.ts
 models/YoutubeThumbnailDetails.ts

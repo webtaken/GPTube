@@ -18,7 +18,7 @@ import (
 )
 
 // @Summary		Get all the videos related to a user in paginated mode
-// @Description	An endpoint to retrieve all the youtube videos that a user has analyzed.
+// @Description	An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.
 // @Produce		json
 // @Param			account_email	query		string	true	"the account email"
 // @Param			page			query		int		false	"the queried page"
@@ -41,8 +41,8 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 		err := fmt.Errorf("please provide a valid page number")
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
-	if page < 0 {
-		err := fmt.Errorf("page number can not be negative")
+	if page <= 0 {
+		err := fmt.Errorf("page number can not be zero or negative")
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
@@ -52,17 +52,19 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 		err := fmt.Errorf("please provide a valid page size number")
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
-	if pageSize < 0 {
-		err := fmt.Errorf("page size number can not be negative")
+	if pageSize <= 0 {
+		err := fmt.Errorf("page size number can not be zero or negative")
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
 	pageSize = int(math.Min(float64(pageSize), 50))
 
 	successResp, err := database.GetYoutubeVideosPage(page, pageSize, accountEmail)
+
 	if err != nil {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
+
 	c.JSON(successResp)
 	return c.SendStatus(http.StatusOK)
 }

@@ -7,11 +7,18 @@ import (
 )
 
 // Models for the youtube videos endpoint
+type YoutubeVideoDashboard struct {
+	VideoID    string                `json:"video_id" firestore:"video_id"`
+	CreatedAt  time.Time             `json:"created_at" firestore:"created_at"`
+	LastUpdate time.Time             `json:"last_update" firestore:"last_update"`
+	Snippet    *youtube.VideoSnippet `json:"snippet" firestore:"snippet"`
+}
+
 type YoutubeVideosRespBody struct {
-	Count    int                     `json:"count"`
-	Next     *string                 `json:"next"`
-	Previous *string                 `json:"previous"`
-	Results  []*youtube.VideoSnippet `json:"results"`
+	Count    int                     `json:"count" example:"10"`
+	Next     *string                 `json:"next" example:"http://example.com"`
+	Previous *string                 `json:"previous" example:"http://example.com"`
+	Results  []YoutubeVideoDashboard `json:"results"`
 }
 
 // Models for the youtube pre-analysis
@@ -60,8 +67,8 @@ type YoutubeAnalyzerRespBody struct {
 	Email        string                  `json:"email" firestore:"-"`
 	CreatedAt    time.Time               `json:"created_at" firestore:"created_at"`
 	LastUpdate   time.Time               `json:"last_update" firestore:"last_update"`
-	Results      *YoutubeAnalysisResults `json:"-" firestore:"results,omitempty"`
-	Snippet      *youtube.VideoSnippet   `json:"-" firestore:"snippet,omitempty"`
+	Results      *YoutubeAnalysisResults `json:"-" firestore:"results"`
+	Snippet      *youtube.VideoSnippet   `json:"-" firestore:"snippet"`
 	ResultsID    string                  `json:"results_id,omitempty" firestore:"-"` // firestore results id
 }
 

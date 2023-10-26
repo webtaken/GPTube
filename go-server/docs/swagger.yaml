@@ -93,17 +93,31 @@ definitions:
       video_id:
         type: string
     type: object
+  models.YoutubeVideoDashboard:
+    properties:
+      created_at:
+        type: string
+      last_update:
+        type: string
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
+      video_id:
+        type: string
+    type: object
   models.YoutubeVideosRespBody:
     properties:
       count:
+        example: 10
         type: integer
       next:
+        example: http://example.com
         type: string
       previous:
+        example: http://example.com
         type: string
       results:
         items:
-          $ref: '#/definitions/youtube.VideoSnippet'
+          $ref: '#/definitions/models.YoutubeVideoDashboard'
         type: array
     type: object
   utils.HandleError.errorResponse:
@@ -372,7 +386,7 @@ paths:
   /api/youtube/videos:
     get:
       description: An endpoint to retrieve all the youtube videos that a user has
-        analyzed.
+        analyzed, results are sorted by last_update field.
       parameters:
       - description: the account email
         in: query

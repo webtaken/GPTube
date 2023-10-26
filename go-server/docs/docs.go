@@ -174,7 +174,7 @@ const docTemplate = `{
         },
         "/api/youtube/videos": {
             "get": {
-                "description": "An endpoint to retrieve all the youtube videos that a user has analyzed.",
+                "description": "An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.",
                 "produces": [
                     "application/json"
                 ],
@@ -383,22 +383,42 @@ const docTemplate = `{
                 }
             }
         },
+        "models.YoutubeVideoDashboard": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "last_update": {
+                    "type": "string"
+                },
+                "snippet": {
+                    "$ref": "#/definitions/youtube.VideoSnippet"
+                },
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.YoutubeVideosRespBody": {
             "type": "object",
             "properties": {
                 "count": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "next": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "http://example.com"
                 },
                 "previous": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "http://example.com"
                 },
                 "results": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/youtube.VideoSnippet"
+                        "$ref": "#/definitions/models.YoutubeVideoDashboard"
                     }
                 }
             }

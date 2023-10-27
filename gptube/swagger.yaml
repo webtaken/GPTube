@@ -1,5 +1,11 @@
-basePath: /api
 definitions:
+  fiber.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   handlers.helloApiMessage:
     properties:
       message:
@@ -22,6 +28,19 @@ definitions:
       success_count:
         type: integer
     type: object
+  models.RobertaAIResults:
+    properties:
+      errors_count:
+        type: integer
+      negative:
+        type: number
+      neutral:
+        type: number
+      positive:
+        type: number
+      success_count:
+        type: integer
+    type: object
   models.YoutubeAnalysisLandingResults:
     properties:
       bert_results:
@@ -30,6 +49,15 @@ definitions:
         type: string
       video_title:
         type: string
+    type: object
+  models.YoutubeAnalysisResults:
+    properties:
+      bert_results:
+        $ref: '#/definitions/models.BertAIResults'
+      recommendation_chat_gpt:
+        type: string
+      roberta_results:
+        $ref: '#/definitions/models.RobertaAIResults'
     type: object
   models.YoutubeAnalyzerLandingReqBody:
     properties:
@@ -65,17 +93,12 @@ definitions:
     properties:
       account_email:
         type: string
-      created_at:
-        type: string
       email:
-        type: string
-      last_update:
-        type: string
-      results_id:
-        description: firestore results id
         type: string
       video_id:
         type: string
+      video_results:
+        $ref: '#/definitions/models.YoutubeVideoAnalyzed'
     type: object
   models.YoutubePreAnalyzerReqBody:
     properties:
@@ -90,6 +113,19 @@ definitions:
         $ref: '#/definitions/youtube.VideoSnippet'
       statistics:
         $ref: '#/definitions/youtube.VideoStatistics'
+      video_id:
+        type: string
+    type: object
+  models.YoutubeVideoAnalyzed:
+    properties:
+      created_at:
+        type: string
+      last_update:
+        type: string
+      results:
+        $ref: '#/definitions/models.YoutubeAnalysisResults'
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
       video_id:
         type: string
     type: object
@@ -377,11 +413,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
       summary: Basic information about the youtube video
   /api/youtube/videos:
     get:
@@ -417,6 +453,36 @@ paths:
           schema:
             $ref: '#/definitions/utils.HandleError.errorResponse'
       summary: Get all the videos related to a user in paginated mode
+  /api/youtube/videos/{videoId}:
+    get:
+      description: An endpoint to retrieve the data for a video and its analysis results.
+      parameters:
+      - description: the account email
+        in: query
+        name: account_email
+        required: true
+        type: string
+      - description: the video id to be queried
+        in: path
+        name: videoId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubeVideoAnalyzed'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Error'
+      summary: Get the analysis results and data for a video
   /billing:
     get:
       description: An endpoint used to test the billing api stability

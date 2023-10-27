@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  FiberError,
   HandlersHelloApiMessage,
   ModelsYoutubeAnalyzerLandingReqBody,
   ModelsYoutubeAnalyzerLandingRespBody,
@@ -22,10 +23,13 @@ import type {
   ModelsYoutubeAnalyzerRespBody,
   ModelsYoutubePreAnalyzerReqBody,
   ModelsYoutubePreAnalyzerRespBody,
+  ModelsYoutubeVideoAnalyzed,
   ModelsYoutubeVideosRespBody,
   UtilsHandleErrorErrorResponse,
 } from '../models/index';
 import {
+    FiberErrorFromJSON,
+    FiberErrorToJSON,
     HandlersHelloApiMessageFromJSON,
     HandlersHelloApiMessageToJSON,
     ModelsYoutubeAnalyzerLandingReqBodyFromJSON,
@@ -40,6 +44,8 @@ import {
     ModelsYoutubePreAnalyzerReqBodyToJSON,
     ModelsYoutubePreAnalyzerRespBodyFromJSON,
     ModelsYoutubePreAnalyzerRespBodyToJSON,
+    ModelsYoutubeVideoAnalyzedFromJSON,
+    ModelsYoutubeVideoAnalyzedToJSON,
     ModelsYoutubeVideosRespBodyFromJSON,
     ModelsYoutubeVideosRespBodyToJSON,
     UtilsHandleErrorErrorResponseFromJSON,
@@ -62,6 +68,11 @@ export interface ApiYoutubeVideosGetRequest {
     accountEmail: string;
     page?: number;
     pageSize?: number;
+}
+
+export interface ApiYoutubeVideosVideoIdGetRequest {
+    accountEmail: string;
+    videoId: string;
 }
 
 /**
@@ -243,6 +254,46 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiYoutubeVideosGet(requestParameters: ApiYoutubeVideosGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeVideosRespBody> {
         const response = await this.apiYoutubeVideosGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * An endpoint to retrieve the data for a video and its analysis results.
+     * Get the analysis results and data for a video
+     */
+    async apiYoutubeVideosVideoIdGetRaw(requestParameters: ApiYoutubeVideosVideoIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeVideoAnalyzed>> {
+        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
+            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdGet.');
+        }
+
+        if (requestParameters.videoId === null || requestParameters.videoId === undefined) {
+            throw new runtime.RequiredError('videoId','Required parameter requestParameters.videoId was null or undefined when calling apiYoutubeVideosVideoIdGet.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.accountEmail !== undefined) {
+            queryParameters['account_email'] = requestParameters.accountEmail;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/youtube/videos/{videoId}`.replace(`{${"videoId"}}`, encodeURIComponent(String(requestParameters.videoId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ModelsYoutubeVideoAnalyzedFromJSON(jsonValue));
+    }
+
+    /**
+     * An endpoint to retrieve the data for a video and its analysis results.
+     * Get the analysis results and data for a video
+     */
+    async apiYoutubeVideosVideoIdGet(requestParameters: ApiYoutubeVideosVideoIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeVideoAnalyzed> {
+        const response = await this.apiYoutubeVideosVideoIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

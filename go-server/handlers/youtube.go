@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"gptube/config"
 	"gptube/database"
@@ -11,6 +12,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,8 +29,8 @@ import (
 // @Failure		400				{object}	utils.HandleError.errorResponse
 // @Failure		500				{object}	utils.HandleError.errorResponse
 // @Router			/api/youtube/videos [get]
-func YoutubeVideosHandler(c *fiber.Ctx) error {
-	accountEmail := c.Query("account_email", "")
+func YoutubeListVideosHandler(c *fiber.Ctx) error {
+	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
 
 	if accountEmail == "" {
 		err := fmt.Errorf("please provide an account email")
@@ -69,29 +71,58 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
+// @Summary		Get the analysis results and data for a video
+// @Description	An endpoint to retrieve the data for a video and its analysis results.
+// @Produce		json
+// @Param			account_email	query		string	true	"the account email"
+// @Param			videoId			path		string	true	"the video id to be queried"
+// @Success		200				{object}	models.YoutubeVideoAnalyzed
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
+// @Router			/api/youtube/videos/{videoId} [get]
+func YoutubeGetVideoHandler(c *fiber.Ctx) error {
+	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
+	if accountEmail == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide an account email")
+	}
+
+	videoId := c.Params("videoId")
+	if videoId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide a videoId")
+	}
+
+	response, err := database.GetYoutubeResult(accountEmail, videoId)
+	if err != nil {
+		return fiber.NewError(http.StatusInternalServerError,
+			"error while retrieving the video analysis")
+	}
+
+	return c.Status(http.StatusOK).JSON(response)
+}
+
 // @Summary		Basic information about the youtube video
 // @Description	An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
 // @Produce		json
 // @Param			video	body		models.YoutubePreAnalyzerReqBody	true	"Youtube video id"
 // @Success		200		{object}	models.YoutubePreAnalyzerRespBody
-// @Failure		400		{object}	utils.HandleError.errorResponse
-// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
 // @Router			/api/youtube/pre-analysis [post]
 func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubePreAnalyzerReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "error with the request body")
 	}
 
 	if body.VideoID == "" {
-		err := fmt.Errorf("please provide a video id")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide a video id")
 	}
 
 	videoData, err := services.CanProcessVideo(&body)
 	if err != nil {
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest,
+			"error while retrieving the video data please verify the video id")
 	}
 
 	maxNumCommentsRequireEmail, _ := strconv.Atoi(config.Config("YOUTUBE_MAX_COMMENTS_REQUIRE_EMAIL"))
@@ -101,8 +132,7 @@ func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 		Statistics:    videoData.Items[0].Statistics,
 		RequiresEmail: videoData.Items[0].Statistics.CommentCount > uint64(maxNumCommentsRequireEmail),
 	}
-	c.JSON(successResp)
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(successResp)
 }
 
 // @Summary		Performs the analysis of the youtube video
@@ -121,7 +151,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		return utils.HandleError(err, http.StatusInternalServerError, c)
 	}
 
-	if body.VideoID == "" {
+	if body.VideoId == "" {
 		err := fmt.Errorf("you must provide the youtube video id")
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
@@ -131,7 +161,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		return utils.HandleError(err, http.StatusBadRequest, c)
 	}
 
-	videoData, err := services.GetVideoData(body.VideoID)
+	videoData, err := services.GetVideoData(body.VideoId)
 	if err != nil {
 		if err.Error() == "video not found" {
 			err = fmt.Errorf("video analysis failed 😿, video not found please provide a valid video id")
@@ -145,46 +175,56 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	// This means we haven´t received email hence is a short video so we do
 	// all the logic here and send the response instantly to the client
 	if body.Email == "" {
-		results, err := services.Analyze(body, "free")
+		analysis, err := services.Analyze(body, "free")
+		analysis.VideoId = body.VideoId
+		analysis.Snippet = videoData.Items[0].Snippet
+
 		if err != nil {
 			err = fmt.Errorf("video analysis for %q failed 😿, try again later or contact us",
 				videoData.Items[0].Snippet.Title)
 			return utils.HandleError(err, http.StatusInternalServerError, c)
 		}
 
-		if results.BertResults.SuccessCount == 0 && results.RobertaResults.SuccessCount == 0 {
+		if analysis.Results.BertResults.SuccessCount == 0 && analysis.Results.RobertaResults.SuccessCount == 0 {
 			err = fmt.Errorf("video analysis for %q failed 😿, couldn't analyze any comment",
 				videoData.Items[0].Snippet.Title)
 			log.Printf("[YoutubeAnalysisHandler] Couldn't analyze any comment for a model\n")
-			log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n", results.RobertaResults.SuccessCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n", results.RobertaResults.ErrorsCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
+				analysis.Results.BertResults.SuccessCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
+				analysis.Results.BertResults.ErrorsCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
+				analysis.Results.RobertaResults.SuccessCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
+				analysis.Results.RobertaResults.ErrorsCount)
 			return utils.HandleError(err, http.StatusNoContent, c)
 		}
 
 		// sending the results to the user
 		successResp := models.YoutubeAnalyzerRespBody{
-			VideoID:      body.VideoID,
+			VideoId:      body.VideoId,
 			AccountEmail: body.AccountEmail,
-			Results:      results,
-			ResultsID:    body.VideoID,
-			Snippet:      videoData.Items[0].Snippet,
+			VideoResults: analysis,
 		}
 		// Here we must save the results to FireStore
 		err = database.AddYoutubeResult(&successResp)
 		if err != nil {
 			// Sending the e-mail error to the user
-			log.Printf("[YoutubeAnalysisHandler] Error saving data to firebase: %v\n", err.Error())
-		} else {
-			// Saving the resultID into the result2Store var to send the email
-			successResp.ResultsID = body.VideoID
+			log.Printf("[YoutubeAnalysisHandler] Error saving data to firebase: %v\n",
+				err.Error())
+			return utils.HandleError(errors.New("error while saving analysis results"),
+				http.StatusInternalServerError, c)
 		}
+
 		////////////////////////////////////////////////
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n", results.RobertaResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n", results.RobertaResults.ErrorsCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
+			analysis.Results.BertResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
+			analysis.Results.BertResults.ErrorsCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
+			analysis.Results.RobertaResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
+			analysis.Results.RobertaResults.ErrorsCount)
 		c.JSON(successResp)
 		return c.SendStatus(http.StatusOK)
 	}
@@ -193,7 +233,10 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	// the logic in the server and send the result back to the email of the user
 	// Adding lead email to temporal database
 	go func(videoData *youtube.VideoListResponse) {
-		results, err := services.Analyze(body, "free")
+		analysis, err := services.Analyze(body, "free")
+		analysis.VideoId = body.VideoId
+		analysis.Snippet = videoData.Items[0].Snippet
+
 		if err != nil {
 			// Sending the e-mail error to the user
 			subjectEmail := fmt.Sprintf(
@@ -205,28 +248,30 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			return
 		}
 
-		if results.BertResults.SuccessCount == 0 && results.RobertaResults.SuccessCount == 0 {
+		if analysis.Results.BertResults.SuccessCount == 0 && analysis.Results.RobertaResults.SuccessCount == 0 {
 			// Sending the e-mail error to the user in case no comments were analyzed
 			subjectEmail := fmt.Sprintf(
 				"GPTube analysis for YT video %q failed 🙀",
 				videoData.Items[0].Snippet.Title,
 			)
 			log.Printf("[YoutubeAnalysisHandler] Couldn't analyze any comment for a model\n")
-			log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n", results.RobertaResults.SuccessCount)
-			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n", results.RobertaResults.ErrorsCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
+				analysis.Results.BertResults.SuccessCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
+				analysis.Results.BertResults.ErrorsCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
+				analysis.Results.RobertaResults.SuccessCount)
+			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
+				analysis.Results.RobertaResults.ErrorsCount)
 			go services.SendYoutubeErrorEmailTemplate(subjectEmail, []string{body.Email})
 			return
 		}
 
 		// Here we must save the results to FireStore //
 		results2Store := models.YoutubeAnalyzerRespBody{
-			VideoID:      body.VideoID,
+			VideoId:      body.VideoId,
 			AccountEmail: body.AccountEmail,
-			Results:      results,
-			ResultsID:    body.VideoID,
-			Snippet:      videoData.Items[0].Snippet,
+			VideoResults: analysis,
 		}
 
 		err = database.AddYoutubeResult(&results2Store)
@@ -240,9 +285,6 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			go services.SendYoutubeErrorEmailTemplate(subjectEmail, []string{body.Email})
 			return
 		}
-		// Saving the resultID into the result2Store var to send the email
-		results2Store.ResultsID = body.VideoID
-		////////////////////////////////////////////////
 
 		// Sending the e-mail to the user
 		subjectEmail := fmt.Sprintf(
@@ -252,10 +294,14 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		go services.SendYoutubeSuccessEmailTemplate(
 			results2Store, subjectEmail, []string{body.Email})
 
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n", results.RobertaResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n", results.RobertaResults.ErrorsCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
+			analysis.Results.BertResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
+			analysis.Results.BertResults.ErrorsCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
+			analysis.Results.RobertaResults.SuccessCount)
+		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
+			analysis.Results.RobertaResults.ErrorsCount)
 	}(videoData)
 
 	return c.SendStatus(http.StatusOK)

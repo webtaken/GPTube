@@ -361,14 +361,10 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.BertAIResults"
                 },
                 "recommendation_chat_gpt": {
-                    "description": "Recommendation given by ChatGPT based on all the comments retrieved",
                     "type": "string"
                 },
                 "roberta_results": {
                     "$ref": "#/definitions/models.RobertaAIResults"
-                },
-                "video_id": {
-                    "type": "string"
                 }
             }
         },
@@ -423,21 +419,14 @@ const docTemplate = `{
                 "account_email": {
                     "type": "string"
                 },
-                "created_at": {
-                    "type": "string"
-                },
                 "email": {
-                    "type": "string"
-                },
-                "last_update": {
-                    "type": "string"
-                },
-                "results_id": {
-                    "description": "firestore results id",
                     "type": "string"
                 },
                 "video_id": {
                     "type": "string"
+                },
+                "video_results": {
+                    "$ref": "#/definitions/models.YoutubeVideoAnalyzed"
                 }
             }
         },

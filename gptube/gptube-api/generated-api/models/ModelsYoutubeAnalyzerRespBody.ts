@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { ModelsYoutubeVideoAnalyzed } from './ModelsYoutubeVideoAnalyzed';
+import {
+    ModelsYoutubeVideoAnalyzedFromJSON,
+    ModelsYoutubeVideoAnalyzedFromJSONTyped,
+    ModelsYoutubeVideoAnalyzedToJSON,
+} from './ModelsYoutubeVideoAnalyzed';
+
 /**
  * 
  * @export
@@ -30,31 +37,19 @@ export interface ModelsYoutubeAnalyzerRespBody {
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerRespBody
      */
-    createdAt?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelsYoutubeAnalyzerRespBody
-     */
     email?: string;
     /**
      * 
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerRespBody
      */
-    lastUpdate?: string;
-    /**
-     * firestore results id
-     * @type {string}
-     * @memberof ModelsYoutubeAnalyzerRespBody
-     */
-    resultsId?: string;
+    videoId?: string;
     /**
      * 
-     * @type {string}
+     * @type {ModelsYoutubeVideoAnalyzed}
      * @memberof ModelsYoutubeAnalyzerRespBody
      */
-    videoId?: string;
+    videoResults?: ModelsYoutubeVideoAnalyzed;
 }
 
 /**
@@ -77,11 +72,9 @@ export function ModelsYoutubeAnalyzerRespBodyFromJSONTyped(json: any, ignoreDisc
     return {
         
         'accountEmail': !exists(json, 'account_email') ? undefined : json['account_email'],
-        'createdAt': !exists(json, 'created_at') ? undefined : json['created_at'],
         'email': !exists(json, 'email') ? undefined : json['email'],
-        'lastUpdate': !exists(json, 'last_update') ? undefined : json['last_update'],
-        'resultsId': !exists(json, 'results_id') ? undefined : json['results_id'],
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
+        'videoResults': !exists(json, 'video_results') ? undefined : ModelsYoutubeVideoAnalyzedFromJSON(json['video_results']),
     };
 }
 
@@ -95,11 +88,9 @@ export function ModelsYoutubeAnalyzerRespBodyToJSON(value?: ModelsYoutubeAnalyze
     return {
         
         'account_email': value.accountEmail,
-        'created_at': value.createdAt,
         'email': value.email,
-        'last_update': value.lastUpdate,
-        'results_id': value.resultsId,
         'video_id': value.videoId,
+        'video_results': ModelsYoutubeVideoAnalyzedToJSON(value.videoResults),
     };
 }
 

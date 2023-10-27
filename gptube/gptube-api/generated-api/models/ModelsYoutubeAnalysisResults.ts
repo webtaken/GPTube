@@ -39,7 +39,7 @@ export interface ModelsYoutubeAnalysisResults {
      */
     bertResults?: ModelsBertAIResults;
     /**
-     * Recommendation given by ChatGPT based on all the comments retrieved
+     * 
      * @type {string}
      * @memberof ModelsYoutubeAnalysisResults
      */
@@ -50,12 +50,6 @@ export interface ModelsYoutubeAnalysisResults {
      * @memberof ModelsYoutubeAnalysisResults
      */
     robertaResults?: ModelsRobertaAIResults;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModelsYoutubeAnalysisResults
-     */
-    videoId?: string;
 }
 
 /**
@@ -80,7 +74,6 @@ export function ModelsYoutubeAnalysisResultsFromJSONTyped(json: any, ignoreDiscr
         'bertResults': !exists(json, 'bert_results') ? undefined : ModelsBertAIResultsFromJSON(json['bert_results']),
         'recommendationChatGpt': !exists(json, 'recommendation_chat_gpt') ? undefined : json['recommendation_chat_gpt'],
         'robertaResults': !exists(json, 'roberta_results') ? undefined : ModelsRobertaAIResultsFromJSON(json['roberta_results']),
-        'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
     };
 }
 
@@ -96,7 +89,6 @@ export function ModelsYoutubeAnalysisResultsToJSON(value?: ModelsYoutubeAnalysis
         'bert_results': ModelsBertAIResultsToJSON(value.bertResults),
         'recommendation_chat_gpt': value.recommendationChatGpt,
         'roberta_results': ModelsRobertaAIResultsToJSON(value.robertaResults),
-        'video_id': value.videoId,
     };
 }
 

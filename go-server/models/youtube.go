@@ -6,23 +6,7 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-// GENERAL MODELS
-type YoutubeAnalysisResults struct {
-	BertResults           *BertAIResults     `json:"bert_results,omitempty" firestore:"bert_results"`
-	RobertaResults        *RobertaAIResults  `json:"roberta_results,omitempty" firestore:"roberta_results"`
-	RecommendationChatGPT string             `json:"recommendation_chat_gpt,omitempty" firestore:"recommendation_chat_gpt"`
-	NegativeComments      []*youtube.Comment `json:"-" firestore:"-"`
-	NegativeCommentsLimit int                `json:"-" firestore:"-"`
-}
-
-type YoutubeVideoAnalyzed struct {
-	VideoId    string                  `json:"video_id" firestore:"video_id"`
-	CreatedAt  time.Time               `json:"created_at" firestore:"created_at"`
-	LastUpdate time.Time               `json:"last_update" firestore:"last_update"`
-	Results    *YoutubeAnalysisResults `json:"results" firestore:"results"`
-	Snippet    *youtube.VideoSnippet   `json:"snippet" firestore:"snippet"`
-}
-
+// Models for the youtube videos endpoint
 type YoutubeVideoDashboard struct {
 	VideoID    string                `json:"video_id" firestore:"video_id"`
 	CreatedAt  time.Time             `json:"created_at" firestore:"created_at"`
@@ -30,7 +14,6 @@ type YoutubeVideoDashboard struct {
 	Snippet    *youtube.VideoSnippet `json:"snippet" firestore:"snippet"`
 }
 
-// Req/Resp for youtube videos list
 type YoutubeVideosRespBody struct {
 	Count    int                     `json:"count" example:"10"`
 	Next     *string                 `json:"next" example:"http://example.com"`
@@ -38,7 +21,7 @@ type YoutubeVideosRespBody struct {
 	Results  []YoutubeVideoDashboard `json:"results"`
 }
 
-// Req/Resp for youtube pre-analysis
+// Models for the youtube pre-analysis
 type YoutubePreAnalyzerReqBody struct {
 	VideoID string `json:"video_id"`
 }
@@ -50,7 +33,7 @@ type YoutubePreAnalyzerRespBody struct {
 	Statistics    *youtube.VideoStatistics `json:"statistics"`
 }
 
-// Req/Resp for youtube analysis landing page
+// Models for the youtube analysis landing page
 type YoutubeAnalyzerLandingReqBody struct {
 	VideoID string `json:"video_id,omitempty" example:"1xoy8Q5o8ws"`
 }
@@ -69,7 +52,7 @@ type YoutubeAnalysisLandingResults struct {
 	BertResults *BertAIResults `json:"bert_results,omitempty" firestore:"bert_results,omitempty"`
 }
 
-// Req/Resp for youtube analysis
+// Models for the youtube analysis
 type YoutubeAnalyzerReqBody struct {
 	VideoID string `json:"video_id,omitempty"`
 	// The email of the account sending the request
@@ -79,8 +62,22 @@ type YoutubeAnalyzerReqBody struct {
 }
 
 type YoutubeAnalyzerRespBody struct {
-	VideoId      string                `json:"video_id"`
-	AccountEmail string                `json:"account_email"`
-	Email        string                `json:"email"`
-	VideoResults *YoutubeVideoAnalyzed `json:"video_results"`
+	VideoID      string                  `json:"video_id" firestore:"video_id"`
+	AccountEmail string                  `json:"account_email" firestore:"-"`
+	Email        string                  `json:"email" firestore:"-"`
+	CreatedAt    time.Time               `json:"created_at" firestore:"created_at"`
+	LastUpdate   time.Time               `json:"last_update" firestore:"last_update"`
+	Results      *YoutubeAnalysisResults `json:"-" firestore:"results"`
+	Snippet      *youtube.VideoSnippet   `json:"-" firestore:"snippet"`
+	ResultsID    string                  `json:"results_id,omitempty" firestore:"-"` // firestore results id
+}
+
+type YoutubeAnalysisResults struct {
+	VideoID               string             `json:"video_id,omitempty" firestore:"video_id,omitempty"`
+	BertResults           *BertAIResults     `json:"bert_results,omitempty" firestore:"bert_results,omitempty"`
+	RobertaResults        *RobertaAIResults  `json:"roberta_results,omitempty" firestore:"roberta_results,omitempty"`
+	NegativeComments      []*youtube.Comment `json:"-" firestore:"-"`
+	NegativeCommentsLimit int                `json:"-" firestore:"-"`
+	// Recommendation given by ChatGPT based on all the comments retrieved
+	RecommendationChatGPT string `json:"recommendation_chat_gpt,omitempty" firestore:"recommendation_chat_gpt,omitempty"`
 }

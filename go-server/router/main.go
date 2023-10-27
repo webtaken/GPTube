@@ -28,9 +28,8 @@ func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	api.Get("", handlers.ApiHandler)
 	youtubeRoutes := api.Group("/youtube")
-	youtubeRoutes.Get("/videos/:videoId", handlers.YoutubeGetVideoHandler)
 	// documented
-	youtubeRoutes.Get("/videos", handlers.YoutubeListVideosHandler)
+	youtubeRoutes.Get("/videos", handlers.YoutubeVideosHandler)
 	// documented
 	youtubeRoutes.Post("/pre-analysis", handlers.YoutubePreAnalysisHandler)
 	// documented

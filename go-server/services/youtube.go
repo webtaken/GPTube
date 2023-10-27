@@ -160,13 +160,14 @@ func AnalyzeComments(
 	return commentsRetrieveFailed
 }
 
-func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAnalysisResults, error) {
+func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeVideoAnalyzed, error) {
 	negCommentsLimit, _ := strconv.Atoi(config.Config("YOUTUBE_NEGATIVE_COMMENTS_LIMIT"))
-	results := &models.YoutubeAnalysisResults{
-		BertResults:           &models.BertAIResults{},
-		RobertaResults:        &models.RobertaAIResults{},
-		NegativeComments:      make([]*youtube.Comment, 0),
-		NegativeCommentsLimit: negCommentsLimit,
+	analysis := &models.YoutubeVideoAnalyzed{
+		Results: &models.YoutubeAnalysisResults{
+			BertResults:    &models.BertAIResults{},
+			RobertaResults: &models.RobertaAIResults{},
+		},
+		NegativeComments: make([]*youtube.Comment, 0),
 	}
 	maxNumComments := commentsPerSubscription[plan]
 
@@ -197,7 +198,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 			if errBert != nil {
 				log.Printf("[Analyze] bert_analysis_error %v\n", errBert)
 				mutex.Lock()
-				results.BertResults.ErrorsCount += bertResults.ErrorsCount
+				analysis.Results.BertResults.ErrorsCount += bertResults.ErrorsCount
 				mutex.Unlock()
 				return
 			}
@@ -220,13 +221,13 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 
 			// Writing response to the global result
 			mutex.Lock()
-			results.BertResults.Score1 += bertResults.Score1
-			results.BertResults.Score2 += bertResults.Score2
-			results.BertResults.Score3 += bertResults.Score3
-			results.BertResults.Score4 += bertResults.Score4
-			results.BertResults.Score5 += bertResults.Score5
-			results.BertResults.ErrorsCount += bertResults.ErrorsCount
-			results.BertResults.SuccessCount += bertResults.SuccessCount
+			analysis.Results.BertResults.Score1 += bertResults.Score1
+			analysis.Results.BertResults.Score2 += bertResults.Score2
+			analysis.Results.BertResults.Score3 += bertResults.Score3
+			analysis.Results.BertResults.Score4 += bertResults.Score4
+			analysis.Results.BertResults.Score5 += bertResults.Score5
+			analysis.Results.BertResults.ErrorsCount += bertResults.ErrorsCount
+			analysis.Results.BertResults.SuccessCount += bertResults.SuccessCount
 			mutex.Unlock()
 		}()
 		go func() {
@@ -236,7 +237,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 			if errRoberta != nil {
 				log.Printf("[Analyze] roberta_analysis_error %v\n", errRoberta)
 				mutex.Lock()
-				results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+				analysis.Results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
 				mutex.Unlock()
 				return
 			}
@@ -258,11 +259,11 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 				}
 			}
 			mutex.Lock()
-			results.RobertaResults.Positive += robertaResults.Positive
-			results.RobertaResults.Negative += robertaResults.Negative
-			results.RobertaResults.Neutral += robertaResults.Neutral
-			results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
-			results.RobertaResults.SuccessCount += robertaResults.SuccessCount
+			analysis.Results.RobertaResults.Positive += robertaResults.Positive
+			analysis.Results.RobertaResults.Negative += robertaResults.Negative
+			analysis.Results.RobertaResults.Neutral += robertaResults.Neutral
+			analysis.Results.RobertaResults.ErrorsCount += robertaResults.ErrorsCount
+			analysis.Results.RobertaResults.SuccessCount += robertaResults.SuccessCount
 			mutex.Unlock()
 		}()
 		wgAI.Wait()
@@ -276,40 +277,40 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 
 		mutex.Lock()
 		// Adding most negative comments
-		if len(results.NegativeComments)+len(tempNegativeComments) > results.NegativeCommentsLimit {
-			tempNegativeComments = tempNegativeComments[:results.NegativeCommentsLimit-len(results.NegativeComments)]
+		if len(analysis.NegativeComments)+len(tempNegativeComments) > negCommentsLimit {
+			tempNegativeComments = tempNegativeComments[:negCommentsLimit-len(analysis.NegativeComments)]
 		}
-		results.NegativeComments = append(results.NegativeComments, tempNegativeComments...)
+		analysis.NegativeComments = append(analysis.NegativeComments, tempNegativeComments...)
 		mutex.Unlock()
 	}
-	failedComments := AnalyzeComments(body.VideoID, maxNumComments, analyzer)
+	failedComments := AnalyzeComments(body.VideoId, maxNumComments, analyzer)
 	wg.Wait()
 
 	fmt.Printf("[Analyze] Number of failed comments because of youtube API %d\n", failedComments)
-	results.BertResults.ErrorsCount += failedComments
-	results.RobertaResults.ErrorsCount += failedComments
+	analysis.Results.BertResults.ErrorsCount += failedComments
+	analysis.Results.RobertaResults.ErrorsCount += failedComments
 
 	// Averaging results for RoBERTa model
-	results.RobertaResults.AverageResults()
+	analysis.Results.RobertaResults.AverageResults()
 
 	fmt.Printf("[Analyze] Number of most negative comments before 30%% handling: %d\n",
-		len(results.NegativeComments))
+		len(analysis.NegativeComments))
 	// We will handle the 30% of all the negative comments
 	maxPercentageNegativeComments := 0.3
-	results.NegativeCommentsLimit = int(math.Ceil(float64(
-		len(results.NegativeComments)) * maxPercentageNegativeComments))
-	results.NegativeComments = results.NegativeComments[:results.NegativeCommentsLimit]
+	negCommentsLimit = int(math.Ceil(float64(
+		len(analysis.NegativeComments)) * maxPercentageNegativeComments))
+	analysis.NegativeComments = analysis.NegativeComments[:negCommentsLimit]
 	fmt.Printf("[Analyze] Number of most negative comments after 30%% handling: %d\n",
-		len(results.NegativeComments))
-	if results.NegativeCommentsLimit > 0 {
-		recommendation, err := GetRecommendation(results)
+		len(analysis.NegativeComments))
+	if negCommentsLimit > 0 {
+		recommendation, err := GetRecommendation(analysis)
 		if err != nil {
-			results.RecommendationChatGPT = ""
-			return results, err
+			analysis.Results.RecommendationChatGPT = ""
+			return analysis, err
 		}
-		results.RecommendationChatGPT = recommendation
+		analysis.Results.RecommendationChatGPT = recommendation
 	}
-	return results, nil
+	return analysis, nil
 }
 
 func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.YoutubeAnalysisLandingResults, error) {
@@ -377,7 +378,7 @@ func AnalyzeForLanding(body models.YoutubeAnalyzerLandingReqBody) (*models.Youtu
 	return results, nil
 }
 
-func GetRecommendation(results *models.YoutubeAnalysisResults) (string, error) {
+func GetRecommendation(results *models.YoutubeVideoAnalyzed) (string, error) {
 	maxNumOfTokens := 4000
 	message := strings.Builder{}
 	message.WriteString("Here is a list of negative comments I received from my video. What's the main reason this comments are posted? Summarize the main reasons in bullet points and give me a final recommendation in one paragraph at the end:\n")

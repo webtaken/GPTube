@@ -12,18 +12,18 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-func GetYoutubeResult(emailUser string, videoID string) (*models.YoutubeAnalyzerRespBody, error) {
+func GetYoutubeResult(emailUser string, videoId string) (*models.YoutubeVideoAnalyzed, error) {
 	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
 	defer client.Close()
 	snap, err := client.Collection("users").
-		Doc(emailUser).Collection("youtube").Doc(videoID).Get(Ctx)
+		Doc(emailUser).Collection("youtube").Doc(videoId).Get(Ctx)
 	if err != nil {
 		return nil, err
 	}
-	var result models.YoutubeAnalyzerRespBody
+	var result models.YoutubeVideoAnalyzed
 	snap.DataTo(&result)
 	return &result, nil
 }
@@ -43,7 +43,7 @@ func GetYoutubeLandingResult(videoID string) (*models.YoutubeAnalyzerLandingResp
 	return &result, nil
 }
 
-func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
+func AddYoutubeResult(analysis *models.YoutubeAnalyzerRespBody) error {
 	client, err := GetClient()
 	if err != nil {
 		return err
@@ -51,15 +51,15 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 	defer client.Close()
 
 	currentTime := time.Now().UTC()
-	existingResult, err := GetYoutubeResult(results.AccountEmail, results.VideoID)
+	existingResult, err := GetYoutubeResult(analysis.AccountEmail, analysis.VideoId)
 	if err != nil {
-		results.CreatedAt = currentTime
+		analysis.VideoResults.CreatedAt = currentTime
 	} else {
-		results.CreatedAt = existingResult.CreatedAt
+		analysis.VideoResults.CreatedAt = existingResult.CreatedAt
 	}
-	results.LastUpdate = currentTime
+	analysis.VideoResults.LastUpdate = currentTime
 
-	userDoc := client.Collection("users").Doc(results.AccountEmail)
+	userDoc := client.Collection("users").Doc(analysis.AccountEmail)
 	if existingResult != nil {
 		_, err = userDoc.Update(Ctx, []firestore.Update{
 			{
@@ -69,7 +69,7 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 		})
 	} else {
 		_, err = userDoc.Set(Ctx, map[string]interface{}{
-			"email":             results.AccountEmail,
+			"email":             analysis.AccountEmail,
 			"usageLimitYoutube": 1,
 		})
 	}
@@ -78,14 +78,14 @@ func AddYoutubeResult(results *models.YoutubeAnalyzerRespBody) error {
 		return err
 	}
 
-	youtubeDoc := userDoc.Collection("youtube").Doc(results.VideoID)
-	_, err = youtubeDoc.Set(Ctx, results)
+	youtubeDoc := userDoc.Collection("youtube").Doc(analysis.VideoId)
+	_, err = youtubeDoc.Set(Ctx, analysis.VideoResults)
 	if err != nil {
 		return err
 	}
 
 	negativeCommentsColl := youtubeDoc.Collection("NegativeComments")
-	for _, comment := range results.Results.NegativeComments {
+	for _, comment := range analysis.VideoResults.NegativeComments {
 		_, err = negativeCommentsColl.Doc(comment.Id).Get(Ctx)
 		if err != nil {
 			// Comment doesn't exists we need to insert it

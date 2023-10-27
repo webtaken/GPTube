@@ -27,7 +27,7 @@ import (
 // @Failure		400				{object}	utils.HandleError.errorResponse
 // @Failure		500				{object}	utils.HandleError.errorResponse
 // @Router			/api/youtube/videos [get]
-func YoutubeVideosHandler(c *fiber.Ctx) error {
+func YoutubeListVideosHandler(c *fiber.Ctx) error {
 	accountEmail := c.Query("account_email", "")
 
 	if accountEmail == "" {
@@ -66,6 +66,28 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 	}
 
 	c.JSON(successResp)
+	return c.SendStatus(http.StatusOK)
+}
+
+// @Summary		Get all the analysis results from an specific video
+// @Description	An endpoint to retrieve all the analysis results from a given video id.
+// @Produce		json
+// @Param			account_email	query		string	true	"the account email"
+// @Param			videoId			path		string		true	"the video id to be queried"
+// @Success		200				{object}	models.YoutubeVideosRespBody
+// @Failure		400				{object}	utils.HandleError.errorResponse
+// @Failure		500				{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/videos/{videoId} [get]
+func YoutubeGetVideoHandler(c *fiber.Ctx) error {
+	accountEmail := c.Query("account_email", "")
+
+	if accountEmail == "" {
+		err := fmt.Errorf("please provide an account email")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	// videoId := c.Params("videoId")
+
 	return c.SendStatus(http.StatusOK)
 }
 
@@ -165,20 +187,17 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 
 		// sending the results to the user
 		successResp := models.YoutubeAnalyzerRespBody{
-			VideoID:      body.VideoID,
+			VideoId:      body.VideoID,
 			AccountEmail: body.AccountEmail,
-			Results:      results,
-			ResultsID:    body.VideoID,
-			Snippet:      videoData.Items[0].Snippet,
+			VideoResults: &models.YoutubeVideoAnalyzed{
+				Results: results,
+			},
 		}
 		// Here we must save the results to FireStore
 		err = database.AddYoutubeResult(&successResp)
 		if err != nil {
 			// Sending the e-mail error to the user
 			log.Printf("[YoutubeAnalysisHandler] Error saving data to firebase: %v\n", err.Error())
-		} else {
-			// Saving the resultID into the result2Store var to send the email
-			successResp.ResultsID = body.VideoID
 		}
 		////////////////////////////////////////////////
 		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)

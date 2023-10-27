@@ -167,6 +167,7 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeAn
 		RobertaResults:        &models.RobertaAIResults{},
 		NegativeComments:      make([]*youtube.Comment, 0),
 		NegativeCommentsLimit: negCommentsLimit,
+		RecommendationChatGPT: "",
 	}
 	maxNumComments := commentsPerSubscription[plan]
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gptube/config"
+	"gptube/handlers"
 	"gptube/router"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +24,9 @@ import (
 // @host			localhost:8001
 // @BasePath
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: handlers.CustomErrorHandler,
+	})
 	app.Use(cors.New())
 	router.SetupRoutes(app)
 	appPort := config.Config("PORT")

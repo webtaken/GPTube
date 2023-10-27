@@ -160,13 +160,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -255,13 +255,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -286,6 +286,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "fiber.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.helloApiMessage": {
             "type": "object",
             "properties": {

@@ -77,26 +77,27 @@ func YoutubeListVideosHandler(c *fiber.Ctx) error {
 // @Param			account_email	query		string	true	"the account email"
 // @Param			videoId			path		string	true	"the video id to be queried"
 // @Success		200				{object}	models.YoutubeVideoAnalyzed
-// @Failure		400				{object}	utils.HandleError.errorResponse
-// @Failure		500				{object}	utils.HandleError.errorResponse
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
 // @Router			/api/youtube/videos/{videoId} [get]
 func YoutubeGetVideoHandler(c *fiber.Ctx) error {
 	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
-
 	if accountEmail == "" {
-		err := fmt.Errorf("please provide an account email")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide an account email")
 	}
 
 	videoId := c.Params("videoId")
 	if videoId == "" {
-		return utils.HandleError(errors.New("please provide a videoId"),
-			http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide a videoId")
 	}
 
-	fmt.Printf("%v\n", videoId)
+	response, err := database.GetYoutubeResult(accountEmail, videoId)
+	if err != nil {
+		return fiber.NewError(http.StatusInternalServerError,
+			"error while retrieving the video analysis")
+	}
 
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(response)
 }
 
 // @Summary		Basic information about the youtube video
@@ -104,24 +105,24 @@ func YoutubeGetVideoHandler(c *fiber.Ctx) error {
 // @Produce		json
 // @Param			video	body		models.YoutubePreAnalyzerReqBody	true	"Youtube video id"
 // @Success		200		{object}	models.YoutubePreAnalyzerRespBody
-// @Failure		400		{object}	utils.HandleError.errorResponse
-// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
 // @Router			/api/youtube/pre-analysis [post]
 func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubePreAnalyzerReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "error with the request body")
 	}
 
 	if body.VideoID == "" {
-		err := fmt.Errorf("please provide a video id")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide a video id")
 	}
 
 	videoData, err := services.CanProcessVideo(&body)
 	if err != nil {
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest,
+			"error while retrieving the video data please verify the video id")
 	}
 
 	maxNumCommentsRequireEmail, _ := strconv.Atoi(config.Config("YOUTUBE_MAX_COMMENTS_REQUIRE_EMAIL"))
@@ -131,8 +132,7 @@ func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 		Statistics:    videoData.Items[0].Statistics,
 		RequiresEmail: videoData.Items[0].Statistics.CommentCount > uint64(maxNumCommentsRequireEmail),
 	}
-	c.JSON(successResp)
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(successResp)
 }
 
 // @Summary		Performs the analysis of the youtube video

@@ -24,7 +24,10 @@ func GetYoutubeResult(emailUser string, videoId string) (*models.YoutubeVideoAna
 		return nil, err
 	}
 	var result models.YoutubeVideoAnalyzed
-	snap.DataTo(&result)
+	err = snap.DataTo(&result)
+	if err != nil {
+		return nil, err
+	}
 	return &result, nil
 }
 

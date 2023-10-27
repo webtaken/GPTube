@@ -1,4 +1,11 @@
 definitions:
+  fiber.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   handlers.helloApiMessage:
     properties:
       message:
@@ -406,11 +413,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
       summary: Basic information about the youtube video
   /api/youtube/videos:
     get:
@@ -470,11 +477,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
       summary: Get the analysis results and data for a video
   /billing:
     get:

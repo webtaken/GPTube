@@ -9,8 +9,6 @@ export * from './ModelsYoutubeAnalyzerReqBody';
 export * from './ModelsYoutubeAnalyzerRespBody';
 export * from './ModelsYoutubePreAnalyzerReqBody';
 export * from './ModelsYoutubePreAnalyzerRespBody';
-export * from './ModelsYoutubeVideoDashboard';
-export * from './ModelsYoutubeVideosRespBody';
 export * from './UtilsHandleErrorErrorResponse';
 export * from './YoutubeThumbnail';
 export * from './YoutubeThumbnailDetails';

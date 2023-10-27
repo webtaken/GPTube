@@ -22,7 +22,6 @@ import type {
   ModelsYoutubeAnalyzerRespBody,
   ModelsYoutubePreAnalyzerReqBody,
   ModelsYoutubePreAnalyzerRespBody,
-  ModelsYoutubeVideosRespBody,
   UtilsHandleErrorErrorResponse,
 } from '../models/index';
 import {
@@ -40,8 +39,6 @@ import {
     ModelsYoutubePreAnalyzerReqBodyToJSON,
     ModelsYoutubePreAnalyzerRespBodyFromJSON,
     ModelsYoutubePreAnalyzerRespBodyToJSON,
-    ModelsYoutubeVideosRespBodyFromJSON,
-    ModelsYoutubeVideosRespBodyToJSON,
     UtilsHandleErrorErrorResponseFromJSON,
     UtilsHandleErrorErrorResponseToJSON,
 } from '../models/index';
@@ -56,12 +53,6 @@ export interface ApiYoutubeAnalysisPostRequest {
 
 export interface ApiYoutubePreAnalysisPostRequest {
     video: ModelsYoutubePreAnalyzerReqBody;
-}
-
-export interface ApiYoutubeVideosGetRequest {
-    accountEmail: string;
-    page?: number;
-    pageSize?: number;
 }
 
 /**
@@ -199,50 +190,6 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiYoutubePreAnalysisPost(requestParameters: ApiYoutubePreAnalysisPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubePreAnalyzerRespBody> {
         const response = await this.apiYoutubePreAnalysisPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.
-     * Get all the videos related to a user in paginated mode
-     */
-    async apiYoutubeVideosGetRaw(requestParameters: ApiYoutubeVideosGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeVideosRespBody>> {
-        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
-            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosGet.');
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters.accountEmail !== undefined) {
-            queryParameters['account_email'] = requestParameters.accountEmail;
-        }
-
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
-        }
-
-        if (requestParameters.pageSize !== undefined) {
-            queryParameters['page_size'] = requestParameters.pageSize;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/api/youtube/videos`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ModelsYoutubeVideosRespBodyFromJSON(jsonValue));
-    }
-
-    /**
-     * An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.
-     * Get all the videos related to a user in paginated mode
-     */
-    async apiYoutubeVideosGet(requestParameters: ApiYoutubeVideosGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeVideosRespBody> {
-        const response = await this.apiYoutubeVideosGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

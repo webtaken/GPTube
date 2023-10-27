@@ -172,56 +172,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/youtube/videos": {
-            "get": {
-                "description": "An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get all the videos related to a user in paginated mode",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the account email",
-                        "name": "account_email",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "the queried page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "page size for the results (default: 10, max: 50)",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.YoutubeVideosRespBody"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/billing": {
             "get": {
                 "description": "An endpoint used to test the billing api stability",
@@ -380,46 +330,6 @@ const docTemplate = `{
                 },
                 "video_id": {
                     "type": "string"
-                }
-            }
-        },
-        "models.YoutubeVideoDashboard": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "last_update": {
-                    "type": "string"
-                },
-                "snippet": {
-                    "$ref": "#/definitions/youtube.VideoSnippet"
-                },
-                "video_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.YoutubeVideosRespBody": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "next": {
-                    "type": "string",
-                    "example": "http://example.com"
-                },
-                "previous": {
-                    "type": "string",
-                    "example": "http://example.com"
-                },
-                "results": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.YoutubeVideoDashboard"
-                    }
                 }
             }
         },
@@ -607,7 +517,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8001",
+	Host:             "localhost:8000",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "GPTube API swagger docs",

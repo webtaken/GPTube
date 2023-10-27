@@ -8,6 +8,7 @@ import {
   ModalHeader,
   useDisclosure,
   Divider,
+  ScrollShadow,
 } from '@nextui-org/react'
 import { useDebounce } from 'use-debounce'
 
@@ -32,7 +33,7 @@ export function ButtonNewAnalysis() {
   const modalAnalysis = useDisclosure()
   const videoPreviewQuery = useVideoPreview(debouncedUrl)
 
-  const isInvalidUrl = url === '' || !isValidYoutubeUrl(url)
+  const isInvalidUrl = !isValidYoutubeUrl(url)
   const isInvalidEmail = email === '' || !isValidEmail(email)
 
   return (
@@ -46,15 +47,13 @@ export function ButtonNewAnalysis() {
       >
         New Analysis
       </Button>
-      <Modal isOpen={modalAnalysis.isOpen} size="2xl" onOpenChange={modalAnalysis.onOpenChange}>
+      <Modal isOpen={modalAnalysis.isOpen} size="4xl" onOpenChange={modalAnalysis.onOpenChange}>
         <ModalContent>
           {onClose => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-center">
-                New video analysis
-              </ModalHeader>
+              <ModalHeader>New video analysis</ModalHeader>
               <ModalBody className="text-sm">
-                <section className="grid grid-cols-[1fr_10px_1fr] gap-6">
+                <section className="grid grid-cols-[300px_10px_1fr] gap-6">
                   <aside className="flex flex-col gap-3">
                     <Input
                       color={isInvalidUrl || videoPreviewQuery.isError ? 'danger' : 'success'}
@@ -118,9 +117,9 @@ export function ButtonNewAnalysis() {
                     ) : null}
                   </aside>
                   <Divider orientation="vertical" />
-                  <aside className="">
+                  <ScrollShadow className="w-full max-h-96" offset={0} size={0}>
                     <VideoPreview {...videoPreviewQuery} />
-                  </aside>
+                  </ScrollShadow>
                 </section>
               </ModalBody>
               <ModalFooter>

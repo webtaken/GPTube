@@ -1,4 +1,3 @@
-basePath: /api
 definitions:
   handlers.helloApiMessage:
     properties:
@@ -22,6 +21,19 @@ definitions:
       success_count:
         type: integer
     type: object
+  models.RobertaAIResults:
+    properties:
+      errors_count:
+        type: integer
+      negative:
+        type: number
+      neutral:
+        type: number
+      positive:
+        type: number
+      success_count:
+        type: integer
+    type: object
   models.YoutubeAnalysisLandingResults:
     properties:
       bert_results:
@@ -29,6 +41,18 @@ definitions:
       video_id:
         type: string
       video_title:
+        type: string
+    type: object
+  models.YoutubeAnalysisResults:
+    properties:
+      bert_results:
+        $ref: '#/definitions/models.BertAIResults'
+      recommendation_chat_gpt:
+        description: Recommendation given by ChatGPT based on all the comments retrieved
+        type: string
+      roberta_results:
+        $ref: '#/definitions/models.RobertaAIResults'
+      video_id:
         type: string
     type: object
   models.YoutubeAnalyzerLandingReqBody:
@@ -90,6 +114,19 @@ definitions:
         $ref: '#/definitions/youtube.VideoSnippet'
       statistics:
         $ref: '#/definitions/youtube.VideoStatistics'
+      video_id:
+        type: string
+    type: object
+  models.YoutubeVideoAnalyzed:
+    properties:
+      created_at:
+        type: string
+      last_update:
+        type: string
+      results:
+        $ref: '#/definitions/models.YoutubeAnalysisResults'
+      snippet:
+        $ref: '#/definitions/youtube.VideoSnippet'
       video_id:
         type: string
     type: object
@@ -417,6 +454,36 @@ paths:
           schema:
             $ref: '#/definitions/utils.HandleError.errorResponse'
       summary: Get all the videos related to a user in paginated mode
+  /api/youtube/videos/{videoId}:
+    get:
+      description: An endpoint to retrieve the data for a video and its analysis results.
+      parameters:
+      - description: the account email
+        in: query
+        name: account_email
+        required: true
+        type: string
+      - description: the video id to be queried
+        in: path
+        name: videoId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.YoutubeVideoAnalyzed'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HandleError.errorResponse'
+      summary: Get the analysis results and data for a video
   /billing:
     get:
       description: An endpoint used to test the billing api stability

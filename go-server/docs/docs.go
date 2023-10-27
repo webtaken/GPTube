@@ -222,6 +222,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/youtube/videos/{videoId}": {
+            "get": {
+                "description": "An endpoint to retrieve the data for a video and its analysis results.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the analysis results and data for a video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the account email",
+                        "name": "account_email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the video id to be queried",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubeVideoAnalyzed"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/billing": {
             "get": {
                 "description": "An endpoint used to test the billing api stability",
@@ -275,6 +320,26 @@ const docTemplate = `{
                 }
             }
         },
+        "models.RobertaAIResults": {
+            "type": "object",
+            "properties": {
+                "errors_count": {
+                    "type": "integer"
+                },
+                "negative": {
+                    "type": "number"
+                },
+                "neutral": {
+                    "type": "number"
+                },
+                "positive": {
+                    "type": "number"
+                },
+                "success_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.YoutubeAnalysisLandingResults": {
             "type": "object",
             "properties": {
@@ -285,6 +350,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "video_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubeAnalysisResults": {
+            "type": "object",
+            "properties": {
+                "bert_results": {
+                    "$ref": "#/definitions/models.BertAIResults"
+                },
+                "recommendation_chat_gpt": {
+                    "description": "Recommendation given by ChatGPT based on all the comments retrieved",
+                    "type": "string"
+                },
+                "roberta_results": {
+                    "$ref": "#/definitions/models.RobertaAIResults"
+                },
+                "video_id": {
                     "type": "string"
                 }
             }
@@ -377,6 +460,26 @@ const docTemplate = `{
                 },
                 "statistics": {
                     "$ref": "#/definitions/youtube.VideoStatistics"
+                },
+                "video_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.YoutubeVideoAnalyzed": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "last_update": {
+                    "type": "string"
+                },
+                "results": {
+                    "$ref": "#/definitions/models.YoutubeAnalysisResults"
+                },
+                "snippet": {
+                    "$ref": "#/definitions/youtube.VideoSnippet"
                 },
                 "video_id": {
                     "type": "string"
@@ -608,7 +711,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8001",
-	BasePath:         "/api",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "GPTube API swagger docs",
 	Description:      "This is the API documentation of GPTube",

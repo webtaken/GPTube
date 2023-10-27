@@ -6,6 +6,15 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+// GENERAL MODELS
+type YoutubeVideoAnalyzed struct {
+	VideoID    string                  `json:"video_id" firestore:"video_id"`
+	CreatedAt  time.Time               `json:"created_at" firestore:"created_at"`
+	LastUpdate time.Time               `json:"last_update" firestore:"last_update"`
+	Results    *YoutubeAnalysisResults `json:"results" firestore:"results"`
+	Snippet    *youtube.VideoSnippet   `json:"snippet" firestore:"snippet"`
+}
+
 // Models for the youtube videos endpoint
 type YoutubeVideoDashboard struct {
 	VideoID    string                `json:"video_id" firestore:"video_id"`

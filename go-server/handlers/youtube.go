@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"gptube/config"
 	"gptube/database"
@@ -11,6 +12,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,8 +29,8 @@ import (
 // @Failure		400				{object}	utils.HandleError.errorResponse
 // @Failure		500				{object}	utils.HandleError.errorResponse
 // @Router			/api/youtube/videos [get]
-func YoutubeVideosHandler(c *fiber.Ctx) error {
-	accountEmail := c.Query("account_email", "")
+func YoutubeListVideosHandler(c *fiber.Ctx) error {
+	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
 
 	if accountEmail == "" {
 		err := fmt.Errorf("please provide an account email")
@@ -66,6 +68,34 @@ func YoutubeVideosHandler(c *fiber.Ctx) error {
 	}
 
 	c.JSON(successResp)
+	return c.SendStatus(http.StatusOK)
+}
+
+// @Summary		Get the analysis results and data for a video
+// @Description	An endpoint to retrieve the data for a video and its analysis results.
+// @Produce		json
+// @Param			account_email	query		string	true	"the account email"
+// @Param			videoId			path		string	true	"the video id to be queried"
+// @Success		200				{object}	models.YoutubeVideoAnalyzed
+// @Failure		400				{object}	utils.HandleError.errorResponse
+// @Failure		500				{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/videos/{videoId} [get]
+func YoutubeGetVideoHandler(c *fiber.Ctx) error {
+	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
+
+	if accountEmail == "" {
+		err := fmt.Errorf("please provide an account email")
+		return utils.HandleError(err, http.StatusBadRequest, c)
+	}
+
+	videoId := c.Params("videoId")
+	if videoId == "" {
+		return utils.HandleError(errors.New("please provide a videoId"),
+			http.StatusBadRequest, c)
+	}
+
+	fmt.Printf("%v\n", videoId)
+
 	return c.SendStatus(http.StatusOK)
 }
 

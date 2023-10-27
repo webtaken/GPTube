@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './FiberError';
 export * from './HandlersHelloApiMessage';
 export * from './ModelsBertAIResults';
 export * from './ModelsRobertaAIResults';

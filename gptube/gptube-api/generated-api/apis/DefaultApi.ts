@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  FiberError,
   HandlersHelloApiMessage,
   ModelsYoutubeAnalyzerLandingReqBody,
   ModelsYoutubeAnalyzerLandingRespBody,
@@ -27,6 +28,8 @@ import type {
   UtilsHandleErrorErrorResponse,
 } from '../models/index';
 import {
+    FiberErrorFromJSON,
+    FiberErrorToJSON,
     HandlersHelloApiMessageFromJSON,
     HandlersHelloApiMessageToJSON,
     ModelsYoutubeAnalyzerLandingReqBodyFromJSON,

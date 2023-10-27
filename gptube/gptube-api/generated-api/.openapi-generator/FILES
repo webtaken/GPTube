@@ -2,6 +2,7 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/FiberError.ts
 models/HandlersHelloApiMessage.ts
 models/ModelsBertAIResults.ts
 models/ModelsRobertaAIResults.ts

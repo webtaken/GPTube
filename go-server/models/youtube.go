@@ -37,6 +37,14 @@ type YoutubeVideosRespBody struct {
 	Results  []YoutubeVideoDashboard `json:"results"`
 }
 
+// Models for the youtube video negative comments endpoint
+type YoutubeVideoNegativeCommentsRespBody struct {
+	Count    int                `json:"count" example:"10"`
+	Next     *string            `json:"next" example:"http://example.com"`
+	Previous *string            `json:"previous" example:"http://example.com"`
+	Results  []*youtube.Comment `json:"results"`
+}
+
 // Models for the youtube pre-analysis
 type YoutubePreAnalyzerReqBody struct {
 	VideoID string `json:"video_id"`

@@ -16,8 +16,12 @@ models/ModelsYoutubePreAnalyzerReqBody.ts
 models/ModelsYoutubePreAnalyzerRespBody.ts
 models/ModelsYoutubeVideoAnalyzed.ts
 models/ModelsYoutubeVideoDashboard.ts
+models/ModelsYoutubeVideoNegativeCommentsRespBody.ts
 models/ModelsYoutubeVideosRespBody.ts
 models/UtilsHandleErrorErrorResponse.ts
+models/YoutubeComment.ts
+models/YoutubeCommentSnippet.ts
+models/YoutubeCommentSnippetAuthorChannelId.ts
 models/YoutubeThumbnail.ts
 models/YoutubeThumbnailDetails.ts
 models/YoutubeVideoLocalization.ts

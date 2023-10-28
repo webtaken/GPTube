@@ -33,6 +33,9 @@ func SetupRoutes(app *fiber.App) {
 	// documented
 	youtubeRoutes.Get("/videos/:videoId", handlers.YoutubeGetVideoHandler)
 	// documented
+	youtubeRoutes.Get("/videos/:videoId/negative-comments",
+		handlers.YoutubeGetNegativeCommentsHandler)
+	// documented
 	youtubeRoutes.Post("/pre-analysis", handlers.YoutubePreAnalysisHandler)
 	// documented
 	youtubeRoutes.Post("/analysis-landing", handlers.YoutubeAnalysisLandingHandler)

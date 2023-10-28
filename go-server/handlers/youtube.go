@@ -26,56 +26,51 @@ import (
 // @Param			page			query		int		false	"the queried page"
 // @Param			page_size		query		int		false	"page size for the results (default: 10, max: 50)"
 // @Success		200				{object}	models.YoutubeVideosRespBody
-// @Failure		400				{object}	utils.HandleError.errorResponse
-// @Failure		500				{object}	utils.HandleError.errorResponse
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
 // @Router			/api/youtube/videos [get]
 func YoutubeListVideosHandler(c *fiber.Ctx) error {
 	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
 
 	if accountEmail == "" {
-		err := fmt.Errorf("please provide an account email")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide an account email")
 	}
 
-	page, err := strconv.Atoi(c.Query("page", "1"))
-
-	if err != nil {
-		err := fmt.Errorf("please provide a valid page number")
-		return utils.HandleError(err, http.StatusBadRequest, c)
-	}
-	if page <= 0 {
-		err := fmt.Errorf("page number can not be zero or negative")
-		return utils.HandleError(err, http.StatusBadRequest, c)
-	}
-
-	pageSize, err := strconv.Atoi(c.Query("page_size", "10"))
+	page, err := strconv.Atoi(c.Query("page", fmt.Sprintf("%d", config.DEFAULT_PAGE_NUM)))
 
 	if err != nil {
-		err := fmt.Errorf("please provide a valid page size number")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page number")
 	}
-	if pageSize <= 0 {
-		err := fmt.Errorf("page size number can not be zero or negative")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+	if page < config.MIN_PAGE_NUM {
+		return fiber.NewError(http.StatusBadRequest, "page number can not be zero or negative")
 	}
 
-	pageSize = int(math.Min(float64(pageSize), 50))
+	pageSize, err := strconv.Atoi(c.Query("page_size", fmt.Sprintf("%d", config.DEFAULT_PAGE_SIZE)))
+
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page size number")
+	}
+	if pageSize < config.MIN_PAGE_SIZE {
+		return fiber.NewError(http.StatusBadRequest, "page size number can not be zero or negative")
+	}
+
+	// Ensuring the max page size
+	pageSize = int(math.Min(float64(pageSize), config.MAX_PAGE_SIZE))
 
 	successResp, err := database.GetYoutubeVideosPage(page, pageSize, accountEmail)
 
 	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(successResp)
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(successResp)
 }
 
 // @Summary		Get the analysis results and data for a video
 // @Description	An endpoint to retrieve the data for a video and its analysis results.
 // @Produce		json
-// @Param			account_email	query		string	true	"the account email"
 // @Param			videoId			path		string	true	"the video id to be queried"
+// @Param			account_email	query		string	true	"the account email"
 // @Success		200				{object}	models.YoutubeVideoAnalyzed
 // @Failure		400				{object}	fiber.Error
 // @Failure		500				{object}	fiber.Error
@@ -95,6 +90,57 @@ func YoutubeGetVideoHandler(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(http.StatusInternalServerError,
 			"error while retrieving the video analysis")
+	}
+
+	return c.Status(http.StatusOK).JSON(response)
+}
+
+// @Summary		Get the analysis results and data for a video
+// @Description	An endpoint to retrieve the data for a video and its analysis results.
+// @Produce		json
+// @Param			videoId			path		string	true	"the video id to be queried"
+// @Param			account_email	query		string	true	"the account email"
+// @Param			page			query		int		false	"the queried page"
+// @Param			page_size		query		int		false	"page size for the results (default: 10, max: 50)"
+// @Success		200				{object}	models.YoutubeVideoNegativeCommentsRespBody
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
+// @Router			/api/youtube/videos/{videoId}/negative-comments [get]
+func YoutubeGetNegativeCommentsHandler(c *fiber.Ctx) error {
+	accountEmail := strings.TrimSpace(c.Query("account_email", ""))
+	if accountEmail == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide an account email")
+	}
+
+	videoId := c.Params("videoId")
+	if videoId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide a videoId")
+	}
+
+	page, err := strconv.Atoi(c.Query("page", fmt.Sprintf("%d", config.DEFAULT_PAGE_NUM)))
+
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page number")
+	}
+	if page < config.MIN_PAGE_NUM {
+		return fiber.NewError(http.StatusBadRequest, "page number can not be zero or negative")
+	}
+
+	pageSize, err := strconv.Atoi(c.Query("page_size", fmt.Sprintf("%d", config.DEFAULT_PAGE_SIZE)))
+
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page size number")
+	}
+	if pageSize < config.MIN_PAGE_SIZE {
+		return fiber.NewError(http.StatusBadRequest, "page size number can not be zero or negative")
+	}
+
+	// Ensuring the max page size
+	pageSize = int(math.Min(float64(pageSize), config.MAX_PAGE_SIZE))
+
+	response, err := database.GetNegativeCommentsPage(page, pageSize, accountEmail, videoId)
+	if err != nil {
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
 	return c.Status(http.StatusOK).JSON(response)

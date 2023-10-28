@@ -24,6 +24,7 @@ import type {
   ModelsYoutubePreAnalyzerReqBody,
   ModelsYoutubePreAnalyzerRespBody,
   ModelsYoutubeVideoAnalyzed,
+  ModelsYoutubeVideoNegativeCommentsRespBody,
   ModelsYoutubeVideosRespBody,
   UtilsHandleErrorErrorResponse,
 } from '../models/index';
@@ -46,6 +47,8 @@ import {
     ModelsYoutubePreAnalyzerRespBodyToJSON,
     ModelsYoutubeVideoAnalyzedFromJSON,
     ModelsYoutubeVideoAnalyzedToJSON,
+    ModelsYoutubeVideoNegativeCommentsRespBodyFromJSON,
+    ModelsYoutubeVideoNegativeCommentsRespBodyToJSON,
     ModelsYoutubeVideosRespBodyFromJSON,
     ModelsYoutubeVideosRespBodyToJSON,
     UtilsHandleErrorErrorResponseFromJSON,
@@ -71,8 +74,15 @@ export interface ApiYoutubeVideosGetRequest {
 }
 
 export interface ApiYoutubeVideosVideoIdGetRequest {
-    accountEmail: string;
     videoId: string;
+    accountEmail: string;
+}
+
+export interface ApiYoutubeVideosVideoIdNegativeCommentsGetRequest {
+    videoId: string;
+    accountEmail: string;
+    page?: number;
+    pageSize?: number;
 }
 
 /**
@@ -262,12 +272,12 @@ export class DefaultApi extends runtime.BaseAPI {
      * Get the analysis results and data for a video
      */
     async apiYoutubeVideosVideoIdGetRaw(requestParameters: ApiYoutubeVideosVideoIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeVideoAnalyzed>> {
-        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
-            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdGet.');
-        }
-
         if (requestParameters.videoId === null || requestParameters.videoId === undefined) {
             throw new runtime.RequiredError('videoId','Required parameter requestParameters.videoId was null or undefined when calling apiYoutubeVideosVideoIdGet.');
+        }
+
+        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
+            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdGet.');
         }
 
         const queryParameters: any = {};
@@ -294,6 +304,54 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async apiYoutubeVideosVideoIdGet(requestParameters: ApiYoutubeVideosVideoIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeVideoAnalyzed> {
         const response = await this.apiYoutubeVideosVideoIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * An endpoint to retrieve the data for a video and its analysis results.
+     * Get the analysis results and data for a video
+     */
+    async apiYoutubeVideosVideoIdNegativeCommentsGetRaw(requestParameters: ApiYoutubeVideosVideoIdNegativeCommentsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeVideoNegativeCommentsRespBody>> {
+        if (requestParameters.videoId === null || requestParameters.videoId === undefined) {
+            throw new runtime.RequiredError('videoId','Required parameter requestParameters.videoId was null or undefined when calling apiYoutubeVideosVideoIdNegativeCommentsGet.');
+        }
+
+        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
+            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdNegativeCommentsGet.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.accountEmail !== undefined) {
+            queryParameters['account_email'] = requestParameters.accountEmail;
+        }
+
+        if (requestParameters.page !== undefined) {
+            queryParameters['page'] = requestParameters.page;
+        }
+
+        if (requestParameters.pageSize !== undefined) {
+            queryParameters['page_size'] = requestParameters.pageSize;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/youtube/videos/{videoId}/negative-comments`.replace(`{${"videoId"}}`, encodeURIComponent(String(requestParameters.videoId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ModelsYoutubeVideoNegativeCommentsRespBodyFromJSON(jsonValue));
+    }
+
+    /**
+     * An endpoint to retrieve the data for a video and its analysis results.
+     * Get the analysis results and data for a video
+     */
+    async apiYoutubeVideosVideoIdNegativeCommentsGet(requestParameters: ApiYoutubeVideosVideoIdNegativeCommentsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ModelsYoutubeVideoNegativeCommentsRespBody> {
+        const response = await this.apiYoutubeVideosVideoIdNegativeCommentsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

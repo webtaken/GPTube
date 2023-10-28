@@ -6,7 +6,6 @@ import (
 	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	firebase "firebase.google.com/go"
-	"google.golang.org/api/iterator"
 )
 
 func CountCollection(collection *firestore.CollectionRef) (int, error) {
@@ -35,31 +34,56 @@ func GetClient() (*firestore.Client, error) {
 	return client, nil
 }
 
-func RetrieveSubscriptions(email string) (*[]map[string]interface{}, error) {
-	app, err := firebase.NewApp(Ctx, nil, Sa)
-	if err != nil {
-		return nil, err
+func GetPageFromCollection(
+	page int,
+	pageSize int,
+	collection *firestore.CollectionRef,
+	queryPath string,
+	order firestore.Direction,
+) ([]*firestore.DocumentSnapshot, int, error) {
+	var query firestore.Query
+	if queryPath != "" {
+		query = collection.OrderBy(queryPath, order).Limit(pageSize)
+	} else {
+		// sorts by default by doc id
+		query = collection.Limit(pageSize)
 	}
 
-	client, err := app.Firestore(Ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	defer client.Close()
-
-	subscriptionsQuery := client.Collection("subscriptions").Where("user_email", "==", email)
-	subscriptions := subscriptionsQuery.Documents(Ctx)
-	results := make([]map[string]interface{}, 0)
-	for {
-		doc, err := subscriptions.Next()
-		if err == iterator.Done {
-			break
-		}
+	if page > 1 && queryPath != "" {
+		prevPageSnapshot, err := collection.OrderBy(queryPath, order).
+			Limit(pageSize * (page - 1)).Documents(Ctx).GetAll()
 		if err != nil {
-			return nil, err
+			return nil, 0, errors.New("error while retrieving the page")
 		}
-		results = append(results, doc.Data())
+		lastDoc := prevPageSnapshot[len(prevPageSnapshot)-1]
+		query = collection.OrderBy(queryPath, order).
+			StartAfter(lastDoc.Data()[queryPath]).Limit(pageSize)
 	}
-	return &results, nil
+
+	if page > 1 && queryPath == "" {
+		prevPageSnapshot, err := collection.Limit(pageSize * (page - 1)).
+			Documents(Ctx).GetAll()
+		if err != nil {
+			return nil, 0, errors.New("error while retrieving the page")
+		}
+		lastDoc := prevPageSnapshot[len(prevPageSnapshot)-1]
+		query = collection.StartAfter(lastDoc).Limit(pageSize)
+	}
+	pageSnapshot, err := query.Documents(Ctx).GetAll()
+	if err != nil {
+		return nil, 0, errors.New("error while retrieving the page")
+	}
+
+	// Did not received any page
+	if len(pageSnapshot) == 0 {
+		return nil, 0, errors.New("did not receive any result")
+	}
+
+	// Count all the docs in the collection
+	count, err := CountCollection(collection)
+	if err != nil {
+		return nil, 0, errors.New("error while counting the documents")
+	}
+
+	return pageSnapshot, count, nil
 }

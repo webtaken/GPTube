@@ -203,13 +203,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -225,16 +225,16 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "the account email",
-                        "name": "account_email",
-                        "in": "query",
+                        "description": "the video id to be queried",
+                        "name": "videoId",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "the video id to be queried",
-                        "name": "videoId",
-                        "in": "path",
+                        "description": "the account email",
+                        "name": "account_email",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -243,6 +243,63 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.YoutubeVideoAnalyzed"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/youtube/videos/{videoId}/negative-comments": {
+            "get": {
+                "description": "An endpoint to retrieve the data for a video and its analysis results.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the analysis results and data for a video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the video id to be queried",
+                        "name": "videoId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the account email",
+                        "name": "account_email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the queried page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page size for the results (default: 10, max: 50)",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.YoutubeVideoNegativeCommentsRespBody"
                         }
                     },
                     "400": {
@@ -496,6 +553,29 @@
                 }
             }
         },
+        "models.YoutubeVideoNegativeCommentsRespBody": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "next": {
+                    "type": "string",
+                    "example": "http://example.com"
+                },
+                "previous": {
+                    "type": "string",
+                    "example": "http://example.com"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/youtube.Comment"
+                    }
+                }
+            }
+        },
         "models.YoutubeVideosRespBody": {
             "type": "object",
             "properties": {
@@ -525,6 +605,103 @@
                 "error": {
                     "type": "string",
                     "example": "an error ocurred"
+                }
+            }
+        },
+        "youtube.Comment": {
+            "type": "object",
+            "properties": {
+                "etag": {
+                    "description": "Etag: Etag of this resource.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Id: The ID that YouTube uses to uniquely identify the comment.",
+                    "type": "string"
+                },
+                "kind": {
+                    "description": "Kind: Identifies what kind of resource this is. Value: the fixed\nstring \"youtube#comment\".",
+                    "type": "string"
+                },
+                "snippet": {
+                    "description": "Snippet: The snippet object contains basic details about the comment.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/youtube.CommentSnippet"
+                        }
+                    ]
+                }
+            }
+        },
+        "youtube.CommentSnippet": {
+            "type": "object",
+            "properties": {
+                "authorChannelId": {
+                    "$ref": "#/definitions/youtube.CommentSnippetAuthorChannelId"
+                },
+                "authorChannelUrl": {
+                    "description": "AuthorChannelUrl: Link to the author's YouTube channel, if any.",
+                    "type": "string"
+                },
+                "authorDisplayName": {
+                    "description": "AuthorDisplayName: The name of the user who posted the comment.",
+                    "type": "string"
+                },
+                "authorProfileImageUrl": {
+                    "description": "AuthorProfileImageUrl: The URL for the avatar of the user who posted\nthe comment.",
+                    "type": "string"
+                },
+                "canRate": {
+                    "description": "CanRate: Whether the current viewer can rate this comment.",
+                    "type": "boolean"
+                },
+                "channelId": {
+                    "description": "ChannelId: The id of the corresponding YouTube channel. In case of a\nchannel comment this is the channel the comment refers to. In case of\na video comment it's the video's channel.",
+                    "type": "string"
+                },
+                "likeCount": {
+                    "description": "LikeCount: The total number of likes this comment has received.",
+                    "type": "integer"
+                },
+                "moderationStatus": {
+                    "description": "ModerationStatus: The comment's moderation status. Will not be set if\nthe comments were requested through the id filter.\n\nPossible values:\n  \"published\" - The comment is available for public display.\n  \"heldForReview\" - The comment is awaiting review by a moderator.\n  \"likelySpam\"\n  \"rejected\" - The comment is unfit for display.",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "ParentId: The unique id of the parent comment, only set for replies.",
+                    "type": "string"
+                },
+                "publishedAt": {
+                    "description": "PublishedAt: The date and time when the comment was originally\npublished.",
+                    "type": "string"
+                },
+                "textDisplay": {
+                    "description": "TextDisplay: The comment's text. The format is either plain text or\nHTML dependent on what has been requested. Even the plain text\nrepresentation may differ from the text originally posted in that it\nmay replace video links with video titles etc.",
+                    "type": "string"
+                },
+                "textOriginal": {
+                    "description": "TextOriginal: The comment's original raw text as initially posted or\nlast updated. The original text will only be returned if it is\naccessible to the viewer, which is only guaranteed if the viewer is\nthe comment's author.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt: The date and time when the comment was last updated.",
+                    "type": "string"
+                },
+                "videoId": {
+                    "description": "VideoId: The ID of the video the comment refers to, if any.",
+                    "type": "string"
+                },
+                "viewerRating": {
+                    "description": "ViewerRating: The rating the viewer has given to this comment. For\nthe time being this will never return RATE_TYPE_DISLIKE and instead\nreturn RATE_TYPE_NONE. This may change in the future.\n\nPossible values:\n  \"none\"\n  \"like\" - The entity is liked.\n  \"dislike\" - The entity is disliked.",
+                    "type": "string"
+                }
+            }
+        },
+        "youtube.CommentSnippetAuthorChannelId": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
                 }
             }
         },

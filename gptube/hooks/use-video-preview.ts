@@ -19,6 +19,7 @@ export function useVideoPreview(videoURL: string) {
     isLoading: videoQuery.isFetching,
     isError: videoQuery.isError,
     isSuccess: videoQuery.isSuccess,
+    isIdle: videoQuery.fetchStatus === 'idle' && videoQuery.data === undefined,
     video: videoQuery.data,
   }
 }

@@ -4,13 +4,12 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   useDisclosure,
   Divider,
-  ScrollShadow,
 } from '@nextui-org/react'
 import { useDebounce } from 'use-debounce'
+import { Video } from 'lucide-react'
 
 import { useVideoPreview } from '@/hooks/use-video-preview'
 import { isValidEmail, isValidYoutubeUrl } from '@/utils/validations.utils'
@@ -51,10 +50,13 @@ export function ButtonNewAnalysis() {
         <ModalContent>
           {onClose => (
             <>
-              <ModalHeader>New video analysis</ModalHeader>
-              <ModalBody className="text-sm">
+              <ModalHeader className="w-full justify-center flex-col gap-1 items-center p-5 border-b-2">
+                <Video className="w-8 h-8 text-gray-500" />
+                <span className="text-gray-500 text-sm font-medium">New video analysis</span>
+              </ModalHeader>
+              <ModalBody className="text-sm p-0">
                 <section className="grid grid-cols-[300px_10px_1fr] gap-6">
-                  <aside className="flex flex-col gap-3">
+                  <aside className="flex flex-col gap-5 p-6">
                     <Input
                       color={isInvalidUrl || videoPreviewQuery.isError ? 'danger' : 'success'}
                       errorMessage={
@@ -115,30 +117,24 @@ export function ButtonNewAnalysis() {
                         }}
                       />
                     ) : null}
+                    <Button
+                      className={`${
+                        videoPreviewQuery.isSuccess ? 'hover:!bg-opacity-60' : ''
+                      } font-medium text-white disabled:cursor-not-allowed transition-opacity`}
+                      color="success"
+                      disabled={isInvalidUrl || isInvalidEmail || url.length === 0}
+                      radius="sm"
+                      onPress={onClose}
+                    >
+                      Start analysis
+                    </Button>
                   </aside>
                   <Divider orientation="vertical" />
-                  <ScrollShadow className="w-full max-h-96" offset={0} size={0}>
+                  <aside className="p-6 w-full h-full">
                     <VideoPreview {...videoPreviewQuery} />
-                  </ScrollShadow>
+                  </aside>
                 </section>
               </ModalBody>
-              <ModalFooter>
-                <Button
-                  className="font-medium text-success"
-                  color="success"
-                  variant="light"
-                  onPress={onClose}
-                >
-                  Close
-                </Button>
-                <Button
-                  className="font-medium text-white hover:!bg-success-400"
-                  color="success"
-                  onPress={onClose}
-                >
-                  Start
-                </Button>
-              </ModalFooter>
             </>
           )}
         </ModalContent>

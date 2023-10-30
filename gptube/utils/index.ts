@@ -2,11 +2,9 @@ export const extractYTVideoID = (youtubeURL: string) => {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
   const match = regExp.exec(youtubeURL)
 
-  if (match && match[2].length == 11) {
-    return match[2]
-  } else {
-    return ''
-  }
+  if (match && match[2].length == 11) return match[2]
+
+  return undefined
 }
 
 export const paramValToString = (str: string | string[] | undefined): string => {

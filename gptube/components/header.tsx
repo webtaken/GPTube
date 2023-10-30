@@ -2,12 +2,11 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navb
 import Link from 'next/link'
 import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import { LogIn } from 'lucide-react'
-import Image from 'next/image'
 
-import gptube_logo from '@/assets/icons/gptube_logo.svg'
 import { useAuth, useAuthActions } from '@/hooks/use-auth'
 
 import { Button } from './Common/button'
+import { LogoGPTube } from './gptube-logo'
 
 export function Header() {
   const { user } = useAuth()
@@ -16,8 +15,7 @@ export function Header() {
   return (
     <Navbar isBordered maxWidth="lg">
       <NavbarBrand className="gap-2">
-        {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */},
-        <Image alt="GPTube logo" className="w-10 h-10" src={gptube_logo} />
+        <LogoGPTube className="w-10 h-10" />
         <p className="text-2xl font-bold">GPTube</p>
       </NavbarBrand>
       <NavbarContent justify="end">

@@ -11,6 +11,149 @@ definitions:
       message:
         type: string
     type: object
+  lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount:
+    properties:
+      data:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount'
+      jsonapi:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseJSONAPI'
+      links:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseSelfLink'
+    type: object
+  lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount:
+    properties:
+      attributes:
+        $ref: '#/definitions/lemonsqueezy.CheckoutAttributes'
+      id:
+        type: string
+      links:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseSelfLink'
+      relationships:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseRelationshipsDiscount'
+      type:
+        type: string
+    type: object
+  lemonsqueezy.ApiResponseJSONAPI:
+    properties:
+      version:
+        type: string
+    type: object
+  lemonsqueezy.ApiResponseLink:
+    properties:
+      related:
+        type: string
+      self:
+        type: string
+    type: object
+  lemonsqueezy.ApiResponseLinks:
+    properties:
+      links:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseLink'
+    type: object
+  lemonsqueezy.ApiResponseRelationshipsDiscount:
+    properties:
+      discount-redemptions:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseLinks'
+      store:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseLinks'
+      variants:
+        $ref: '#/definitions/lemonsqueezy.ApiResponseLinks'
+    type: object
+  lemonsqueezy.ApiResponseSelfLink:
+    properties:
+      self:
+        type: string
+    type: object
+  lemonsqueezy.BillingAddress:
+    properties:
+      country:
+        type: string
+      zip:
+        type: string
+    type: object
+  lemonsqueezy.CheckoutAttributes:
+    properties:
+      checkout_data:
+        $ref: '#/definitions/lemonsqueezy.CheckoutData'
+      checkout_options:
+        $ref: '#/definitions/lemonsqueezy.CheckoutOptions'
+      created_at:
+        type: string
+      custom_price: {}
+      expires_at:
+        type: string
+      product_options:
+        $ref: '#/definitions/lemonsqueezy.CheckoutProductOptions'
+      store_id:
+        type: integer
+      test_mode:
+        type: boolean
+      updated_at:
+        type: string
+      url:
+        type: string
+      variant_id:
+        type: integer
+    type: object
+  lemonsqueezy.CheckoutData:
+    properties:
+      billing_address:
+        items:
+          $ref: '#/definitions/lemonsqueezy.BillingAddress'
+        type: array
+      custom:
+        additionalProperties: {}
+        type: object
+      discount_code:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      tax_number:
+        type: string
+    type: object
+  lemonsqueezy.CheckoutOptions:
+    properties:
+      button_color:
+        type: string
+      dark:
+        type: boolean
+      desc:
+        type: boolean
+      discount:
+        type: boolean
+      embed:
+        type: boolean
+      logo:
+        type: boolean
+      media:
+        type: boolean
+      subscription_preview:
+        type: boolean
+    type: object
+  lemonsqueezy.CheckoutProductOptions:
+    properties:
+      description:
+        type: string
+      enabled_variants:
+        items:
+          type: integer
+        type: array
+      media:
+        items: {}
+        type: array
+      name:
+        type: string
+      receipt_button_text:
+        type: string
+      receipt_link_url:
+        type: string
+      receipt_thank_you_note:
+        type: string
+      redirect_url:
+        type: string
+    type: object
   models.BertAIResults:
     properties:
       errors_count:
@@ -41,6 +184,53 @@ definitions:
       success_count:
         type: integer
     type: object
+  models.SubscriptionPlan:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      features:
+        items:
+          type: string
+        type: array
+      href_monthly:
+        type: string
+      href_yearly:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      most_popular:
+        type: boolean
+      name:
+        type: string
+      price_monthly:
+        type: number
+      price_yearly:
+        type: number
+      product_id:
+        type: string
+      slug:
+        $ref: '#/definitions/models.SubscriptionPlanSlug'
+      updated_at:
+        type: string
+      variants:
+        items:
+          type: string
+        type: array
+    type: object
+  models.SubscriptionPlanSlug:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - FREE
+    - HOBBY
+    - POPULAR
   models.YoutubeAnalysisLandingResults:
     properties:
       bert_results:
@@ -652,4 +842,54 @@ paths:
           schema:
             $ref: '#/definitions/handlers.helloApiMessage'
       summary: Hello message from the billing api
+  /billing/checkout:
+    get:
+      description: |-
+        An endpoint to retrieve the URL for a subscription plan sending
+        the account email as well.
+      parameters:
+      - description: the variant id of the subscription plan
+        in: query
+        name: variant_id
+        required: true
+        type: string
+      - description: the account email
+        in: query
+        name: account_email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Error'
+      summary: Get the checkout URL for a subscription plan
+  /billing/subscription-plans:
+    get:
+      description: An endpoint to retrieve the subscription plan offered by GPTube
+        with its price, features, etc.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SubscriptionPlan'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Error'
+      summary: Get the subscription plans offered by GPTube
 swagger: "2.0"

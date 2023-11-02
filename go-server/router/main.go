@@ -14,8 +14,11 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	billing := app.Group("/billing")
+	// documented
 	billing.Get("", handlers.BillingHandler)
-	billing.Get("/products", handlers.BillingProducts)
+	// documented
+	billing.Get("/subscription-plans", handlers.BillingSubscriptionPlans)
+	// documented
 	billing.Get("/checkout", handlers.BillingCheckout)
 	billing.Post("/invoices", handlers.BillingSubscriptionInvoices)
 	billing.Get("/subscriptions", handlers.BillingSubscriptions)
@@ -27,6 +30,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api := app.Group("/api")
 	api.Get("", handlers.ApiHandler)
+	// documented
 	youtubeRoutes := api.Group("/youtube")
 	// documented
 	youtubeRoutes.Get("/videos", handlers.YoutubeListVideosHandler)

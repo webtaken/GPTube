@@ -333,6 +333,77 @@
                     }
                 }
             }
+        },
+        "/billing/checkout": {
+            "get": {
+                "description": "An endpoint to retrieve the URL for a subscription plan sending\nthe account email as well.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the checkout URL for a subscription plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the variant id of the subscription plan",
+                        "name": "variant_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the account email",
+                        "name": "account_email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/subscription-plans": {
+            "get": {
+                "description": "An endpoint to retrieve the subscription plan offered by GPTube with its price, features, etc.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the subscription plans offered by GPTube",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SubscriptionPlan"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -351,6 +422,225 @@
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount"
+                },
+                "jsonapi": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseJSONAPI"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "attributes": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutAttributes"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                },
+                "relationships": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseRelationshipsDiscount"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseJSONAPI": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseLink": {
+            "type": "object",
+            "properties": {
+                "related": {
+                    "type": "string"
+                },
+                "self": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseLinks": {
+            "type": "object",
+            "properties": {
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLink"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "discount-redemptions": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "store": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "variants": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseSelfLink": {
+            "type": "object",
+            "properties": {
+                "self": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.BillingAddress": {
+            "type": "object",
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutAttributes": {
+            "type": "object",
+            "properties": {
+                "checkout_data": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutData"
+                },
+                "checkout_options": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutOptions"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "custom_price": {},
+                "expires_at": {
+                    "type": "string"
+                },
+                "product_options": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutProductOptions"
+                },
+                "store_id": {
+                    "type": "integer"
+                },
+                "test_mode": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "variant_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutData": {
+            "type": "object",
+            "properties": {
+                "billing_address": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lemonsqueezy.BillingAddress"
+                    }
+                },
+                "custom": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "discount_code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tax_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutOptions": {
+            "type": "object",
+            "properties": {
+                "button_color": {
+                    "type": "string"
+                },
+                "dark": {
+                    "type": "boolean"
+                },
+                "desc": {
+                    "type": "boolean"
+                },
+                "discount": {
+                    "type": "boolean"
+                },
+                "embed": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "boolean"
+                },
+                "media": {
+                    "type": "boolean"
+                },
+                "subscription_preview": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutProductOptions": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "enabled_variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "media": {
+                    "type": "array",
+                    "items": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "receipt_button_text": {
+                    "type": "string"
+                },
+                "receipt_link_url": {
+                    "type": "string"
+                },
+                "receipt_thank_you_note": {
+                    "type": "string"
+                },
+                "redirect_url": {
                     "type": "string"
                 }
             }
@@ -400,6 +690,75 @@
                     "type": "integer"
                 }
             }
+        },
+        "models.SubscriptionPlan": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "href_monthly": {
+                    "type": "string"
+                },
+                "href_yearly": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "most_popular": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_monthly": {
+                    "type": "number"
+                },
+                "price_yearly": {
+                    "type": "number"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "slug": {
+                    "$ref": "#/definitions/models.SubscriptionPlanSlug"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.SubscriptionPlanSlug": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "FREE",
+                "HOBBY",
+                "POPULAR"
+            ]
         },
         "models.YoutubeAnalysisLandingResults": {
             "type": "object",

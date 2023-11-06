@@ -9,6 +9,7 @@ import (
 	"gptube/models"
 	"gptube/services"
 	"gptube/utils"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -370,7 +371,9 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 			})
 		}
 
-		fmt.Printf("[BillingSubscriptionsWebhooks]\npayload body: %s\n", string(prettyJSON))
+		if config.Config("ENV_MODE") == config.ENV_DEVELOPMENT {
+			log.Printf("[BillingSubscriptionsWebhooks]\npayload body: %s\n", string(prettyJSON))
+		}
 		eventHandlers["subscription_created"] = billingCreateSubscriptionWebhookHandler
 		eventHandlers["subscription_updated"] = billingUpdateSubscriptionWebhookHandler
 

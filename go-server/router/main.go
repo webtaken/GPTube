@@ -14,19 +14,28 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	billing := app.Group("/billing")
+	// documented
 	billing.Get("", handlers.BillingHandler)
-	billing.Get("/products", handlers.BillingProducts)
+	// documented
+	billing.Get("/subscription-plans", handlers.BillingSubscriptionPlans)
+	// documented
 	billing.Get("/checkout", handlers.BillingCheckout)
-	billing.Post("/invoices", handlers.BillingSubscriptionInvoices)
+	// documented
+	billing.Get("/invoices", handlers.BillingSubscriptionInvoices)
+	// documented
 	billing.Get("/subscriptions", handlers.BillingSubscriptions)
+	// documented
 	billing.Get("/update-payment-method", handlers.BillingUpdatePaymentMethod)
+	// documented
 	billing.Get("/cancel-subscription", handlers.BillingCancelSubscription)
+	// documented
 	billing.Get("/resume-subscription", handlers.BillingResumeSubscription)
 	// This is a special endpoint for receiving subscriptions webhooks on LemonSqueezy
 	billing.Post("/webhooks", handlers.BillingSubscriptionsWebhooks)
 
 	api := app.Group("/api")
 	api.Get("", handlers.ApiHandler)
+	// documented
 	youtubeRoutes := api.Group("/youtube")
 	// documented
 	youtubeRoutes.Get("/videos", handlers.YoutubeListVideosHandler)

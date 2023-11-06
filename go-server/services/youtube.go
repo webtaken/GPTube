@@ -20,10 +20,12 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
+const MAX_WORKERS = 200
+
 var Service *youtube.Service
 
 // The hole system will have a max of 200 concurrent workers
-var Workers = make(chan struct{}, 200)
+var Workers = make(chan struct{}, MAX_WORKERS)
 
 var commentsPerSubscription = map[string]int{
 	"landing": 250,

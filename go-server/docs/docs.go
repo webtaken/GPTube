@@ -340,6 +340,282 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/billing/cancel-subscription": {
+            "get": {
+                "description": "An endpoint to cancel a subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Cancel a subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription id",
+                        "name": "subscription_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/checkout": {
+            "get": {
+                "description": "An endpoint to retrieve the URL for a subscription plan sending\nthe account email as well.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the checkout URL for a subscription plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the variant id of the subscription plan",
+                        "name": "variant_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/invoices": {
+            "get": {
+                "description": "An endpoint to retrieve the invoices from a user's subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the latest Invoices from a subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription id",
+                        "name": "subscription_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the queried page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page size for the results (default: 10, max: 50)",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/lemonsqueezy.ApiResponseList-lemonsqueezy_SubscriptionInvoiceAttributes-lemonsqueezy_ApiResponseRelationshipsSubscriptionInvoice"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/resume-subscription": {
+            "get": {
+                "description": "An endpoint to resume a cancelled subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Resume a subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription id",
+                        "name": "subscription_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/subscription-plans": {
+            "get": {
+                "description": "An endpoint to retrieve the subscription plan offered by GPTube with its price, features, etc.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the subscription plans offered by GPTube",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SubscriptionPlan"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/subscriptions": {
+            "get": {
+                "description": "An endpoint to retrieve all the subscriptions belonging to an account",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the subscribed subscriptions of an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the user id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Subscription"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/update-payment-method": {
+            "get": {
+                "description": "An endpoint to retrieve the URL to update the payment method for a subscription",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the update payment method URL for a subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the subscription id",
+                        "name": "subscription_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/lemonsqueezy.ApiResponse-lemonsqueezy_Subscription-lemonsqueezy_ApiResponseRelationshipsSubscription"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -358,6 +634,600 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponse-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount"
+                },
+                "jsonapi": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseJSONAPI"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponse-lemonsqueezy_Subscription-lemonsqueezy_ApiResponseRelationshipsSubscription": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseData-lemonsqueezy_Subscription-lemonsqueezy_ApiResponseRelationshipsSubscription"
+                },
+                "jsonapi": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseJSONAPI"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseData-lemonsqueezy_CheckoutAttributes-lemonsqueezy_ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "attributes": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutAttributes"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                },
+                "relationships": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseRelationshipsDiscount"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseData-lemonsqueezy_Subscription-lemonsqueezy_ApiResponseRelationshipsSubscription": {
+            "type": "object",
+            "properties": {
+                "attributes": {
+                    "$ref": "#/definitions/lemonsqueezy.Subscription"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                },
+                "relationships": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseRelationshipsSubscription"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseData-lemonsqueezy_SubscriptionInvoiceAttributes-lemonsqueezy_ApiResponseRelationshipsSubscriptionInvoice": {
+            "type": "object",
+            "properties": {
+                "attributes": {
+                    "$ref": "#/definitions/lemonsqueezy.SubscriptionInvoiceAttributes"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseSelfLink"
+                },
+                "relationships": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseRelationshipsSubscriptionInvoice"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseJSONAPI": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseLink": {
+            "type": "object",
+            "properties": {
+                "related": {
+                    "type": "string"
+                },
+                "self": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseLinks": {
+            "type": "object",
+            "properties": {
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLink"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseList-lemonsqueezy_SubscriptionInvoiceAttributes-lemonsqueezy_ApiResponseRelationshipsSubscriptionInvoice": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lemonsqueezy.ApiResponseData-lemonsqueezy_SubscriptionInvoiceAttributes-lemonsqueezy_ApiResponseRelationshipsSubscriptionInvoice"
+                    }
+                },
+                "jsonapi": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseJSONAPI"
+                },
+                "links": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseListLink"
+                },
+                "meta": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseListMeta"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseListLink": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "string"
+                },
+                "last": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseListMeta": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseListMetaPage"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseListMetaPage": {
+            "type": "object",
+            "properties": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "from": {
+                    "type": "integer"
+                },
+                "lastPage": {
+                    "type": "integer"
+                },
+                "perPage": {
+                    "type": "integer"
+                },
+                "to": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseRelationshipsDiscount": {
+            "type": "object",
+            "properties": {
+                "discount-redemptions": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "store": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "variants": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseRelationshipsSubscription": {
+            "type": "object",
+            "properties": {
+                "customer": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "order": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "order-item": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "product": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "store": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "subscription-invoices": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "subscription-items": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "variant": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseRelationshipsSubscriptionInvoice": {
+            "type": "object",
+            "properties": {
+                "store": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                },
+                "subscription": {
+                    "$ref": "#/definitions/lemonsqueezy.ApiResponseLinks"
+                }
+            }
+        },
+        "lemonsqueezy.ApiResponseSelfLink": {
+            "type": "object",
+            "properties": {
+                "self": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.BillingAddress": {
+            "type": "object",
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "zip": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutAttributes": {
+            "type": "object",
+            "properties": {
+                "checkout_data": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutData"
+                },
+                "checkout_options": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutOptions"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "custom_price": {},
+                "expires_at": {
+                    "type": "string"
+                },
+                "product_options": {
+                    "$ref": "#/definitions/lemonsqueezy.CheckoutProductOptions"
+                },
+                "store_id": {
+                    "type": "integer"
+                },
+                "test_mode": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "variant_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutData": {
+            "type": "object",
+            "properties": {
+                "billing_address": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lemonsqueezy.BillingAddress"
+                    }
+                },
+                "custom": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "discount_code": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tax_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutOptions": {
+            "type": "object",
+            "properties": {
+                "button_color": {
+                    "type": "string"
+                },
+                "dark": {
+                    "type": "boolean"
+                },
+                "desc": {
+                    "type": "boolean"
+                },
+                "discount": {
+                    "type": "boolean"
+                },
+                "embed": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "boolean"
+                },
+                "media": {
+                    "type": "boolean"
+                },
+                "subscription_preview": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "lemonsqueezy.CheckoutProductOptions": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "enabled_variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "media": {
+                    "type": "array",
+                    "items": {}
+                },
+                "name": {
+                    "type": "string"
+                },
+                "receipt_button_text": {
+                    "type": "string"
+                },
+                "receipt_link_url": {
+                    "type": "string"
+                },
+                "receipt_thank_you_note": {
+                    "type": "string"
+                },
+                "redirect_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.Subscription": {
+            "type": "object",
+            "properties": {
+                "billing_anchor": {
+                    "type": "integer"
+                },
+                "cancelled": {
+                    "type": "boolean"
+                },
+                "card_brand": {
+                    "type": "string"
+                },
+                "card_last_four": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "ends_at": {
+                    "type": "string"
+                },
+                "first_subscription_item": {
+                    "$ref": "#/definitions/lemonsqueezy.SubscriptionItem"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "order_item_id": {
+                    "type": "integer"
+                },
+                "pause": {
+                    "$ref": "#/definitions/lemonsqueezy.SubscriptionPause"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "renews_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_formatted": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "integer"
+                },
+                "test_mode": {
+                    "type": "boolean"
+                },
+                "trial_ends_at": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "urls": {
+                    "$ref": "#/definitions/lemonsqueezy.SubscriptionURLs"
+                },
+                "user_email": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "variant_id": {
+                    "type": "integer"
+                },
+                "variant_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.SubscriptionInvoiceAttributes": {
+            "type": "object",
+            "properties": {
+                "billing_reason": {
+                    "type": "string"
+                },
+                "card_brand": {
+                    "type": "string"
+                },
+                "card_last_four": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "currency_rate": {
+                    "type": "string"
+                },
+                "discount_total": {
+                    "type": "integer"
+                },
+                "discount_total_formatted": {
+                    "type": "string"
+                },
+                "discount_total_usd": {
+                    "type": "integer"
+                },
+                "refunded": {
+                    "type": "boolean"
+                },
+                "refunded_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_formatted": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "integer"
+                },
+                "subscription_id": {
+                    "type": "integer"
+                },
+                "subtotal": {
+                    "type": "integer"
+                },
+                "subtotal_formatted": {
+                    "type": "string"
+                },
+                "subtotal_usd": {
+                    "type": "integer"
+                },
+                "tax": {
+                    "type": "integer"
+                },
+                "tax_formatted": {
+                    "type": "string"
+                },
+                "tax_usd": {
+                    "type": "integer"
+                },
+                "test_mode": {
+                    "type": "boolean"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_formatted": {
+                    "type": "string"
+                },
+                "total_usd": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "urls": {
+                    "type": "object",
+                    "properties": {
+                        "invoice_url": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "lemonsqueezy.SubscriptionItem": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_usage_based": {
+                    "type": "boolean"
+                },
+                "price_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "subscription_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.SubscriptionPause": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string"
+                },
+                "resumes_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.SubscriptionURLs": {
+            "type": "object",
+            "properties": {
+                "update_payment_method": {
                     "type": "string"
                 }
             }
@@ -407,6 +1277,141 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "models.Subscription": {
+            "type": "object",
+            "properties": {
+                "card_brand": {
+                    "type": "string"
+                },
+                "card_last_four": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "ends_at": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "renews_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_formatted": {
+                    "type": "string"
+                },
+                "subscription_id": {
+                    "description": "PK",
+                    "type": "string"
+                },
+                "subscription_plan_slug": {
+                    "description": "FK SubscriptionPlan",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SubscriptionPlanSlug"
+                        }
+                    ]
+                },
+                "trial_ends_at": {
+                    "type": "string"
+                },
+                "update_payment_method": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_email": {
+                    "type": "string"
+                },
+                "variant_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SubscriptionPlan": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "href_monthly": {
+                    "type": "string"
+                },
+                "href_yearly": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "PK",
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "most_popular": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_monthly": {
+                    "type": "number"
+                },
+                "price_yearly": {
+                    "type": "number"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "slug": {
+                    "$ref": "#/definitions/models.SubscriptionPlanSlug"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.SubscriptionPlanSlug": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "FREE",
+                "HOBBY",
+                "POPULAR"
+            ]
         },
         "models.YoutubeAnalysisLandingResults": {
             "type": "object",

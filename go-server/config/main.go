@@ -13,6 +13,8 @@ const (
 	DEFAULT_PAGE_SIZE = 10
 	MIN_PAGE_SIZE     = 1
 	MAX_PAGE_SIZE     = 50
+	ENV_DEVELOPMENT   = "development"
+	ENV_PRODUCTION    = "production"
 )
 
 // use godot package to load/read the .env file and

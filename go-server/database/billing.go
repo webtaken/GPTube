@@ -2,19 +2,26 @@ package database
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"gptube/config"
 	"gptube/models"
 
-	firebase "firebase.google.com/go"
+	"cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"
 )
 
-const (
-	SUBSCRIPTION_PLANS_COLLECTION = "SubscriptionPlans"
-)
+func GetSubscriptionPlans() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
+	envMode := config.Config("ENV_MODE")
+	if envMode == config.ENV_DEVELOPMENT {
+		return getSubscriptionPlansDevelopment()
+	} else if envMode == config.ENV_PRODUCTION {
+		return getSubscriptionPlansProduction()
+	}
+	return nil, errors.New("no valid env mode in env vars")
+}
 
-func GetSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
-
+func getSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
 	freePlan := models.SubscriptionPlan{}
 	err := json.Unmarshal(
 		[]byte(config.Config("LEMON_SQUEEZY_TEST_FREE_PLAN_DATA")),
@@ -49,8 +56,7 @@ func GetSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.
 	return subscriptionPlans, nil
 }
 
-func GetSubscriptionPlansProduction() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
-
+func getSubscriptionPlansProduction() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
 	freePlan := models.SubscriptionPlan{}
 	err := json.Unmarshal(
 		[]byte(config.Config("LEMON_SQUEEZY_MAIN_FREE_PLAN_DATA")),
@@ -85,31 +91,64 @@ func GetSubscriptionPlansProduction() (map[models.SubscriptionPlanSlug]*models.S
 	return subscriptionPlans, nil
 }
 
-func RetrieveSubscriptions(email string) (*[]map[string]interface{}, error) {
-	app, err := firebase.NewApp(Ctx, nil, Sa)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := app.Firestore(Ctx)
+func GetAllSubscriptions(userId string) ([]models.Subscription, error) {
+	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
 
 	defer client.Close()
-
-	subscriptionsQuery := client.Collection("subscriptions").Where("user_email", "==", email)
-	subscriptions := subscriptionsQuery.Documents(Ctx)
-	results := make([]map[string]interface{}, 0)
+	userDoc := client.Collection(USERS_COLLECTION).Doc(userId)
+	iter := userDoc.Collection(SUBSCRIPTIONS_COLLECTION).
+		OrderBy("subscription_id", firestore.Desc).Documents(Ctx)
+	results := make([]models.Subscription, 0)
 	for {
-		doc, err := subscriptions.Next()
+		doc, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, doc.Data())
+		subscription := models.Subscription{}
+		err = doc.DataTo(&subscription)
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
+		results = append(results, subscription)
 	}
-	return &results, nil
+	return results, nil
+}
+
+func CreateSubscription(userId string, subscription *models.Subscription) error {
+	client, err := GetClient()
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	userDoc := client.Collection(USERS_COLLECTION).Doc(userId)
+	subscriptionDoc := userDoc.Collection(SUBSCRIPTIONS_COLLECTION).Doc(subscription.SubscriptionId)
+	_, err = subscriptionDoc.Set(Ctx, subscription)
+	if err != nil {
+		return fmt.Errorf("error while creating subscription: %s", err)
+	}
+	return nil
+}
+
+func UpdateSubscription(userId string, subscription *models.Subscription) error {
+	client, err := GetClient()
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	userDoc := client.Collection(USERS_COLLECTION).Doc(userId)
+	subscriptionDoc := userDoc.Collection(SUBSCRIPTIONS_COLLECTION).Doc(subscription.SubscriptionId)
+	_, err = subscriptionDoc.Set(Ctx, subscription)
+	if err != nil {
+		return fmt.Errorf("error while creating subscription: %s", err)
+	}
+	return nil
 }

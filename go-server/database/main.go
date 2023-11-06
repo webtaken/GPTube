@@ -8,6 +8,17 @@ import (
 	"google.golang.org/api/option"
 )
 
+const (
+	USERS_COLLECTION = "Users"
+	// Billing collection names
+	SUBSCRIPTION_PLANS_COLLECTION = "SubscriptionPlans"
+	SUBSCRIPTIONS_COLLECTION      = "Subscriptions"
+	// Youtube Analyses Collections
+	YOUTUBE_ANALYSES_COLLECTION          = "YoutubeAnalyses"
+	YOUTUBE_NEGATIVE_COMMENTS_COLLECTION = "NegativeComments"
+	YOUTUBE_VIDEOS_COLLECTION            = "Videos"
+)
+
 var Ctx context.Context
 var Sa option.ClientOption
 

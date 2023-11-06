@@ -9,12 +9,19 @@ import (
 	"gptube/models"
 	"gptube/services"
 	"gptube/utils"
+	"math"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/NdoleStudio/lemonsqueezy-go"
 	"github.com/gofiber/fiber/v2"
+)
+
+const (
+	USER_ID_META_TAG                = "user_id"
+	SUBSCRIPTION_PLAN_SLUG_META_TAG = "subscription_plan_slug"
 )
 
 // @Summary		Get the subscription plans offered by GPTube
@@ -24,15 +31,7 @@ import (
 // @Failure		500	{object}	fiber.Error
 // @Router			/billing/subscription-plans [get]
 func BillingSubscriptionPlans(c *fiber.Ctx) error {
-	var subscriptionPlans map[models.SubscriptionPlanSlug]*models.SubscriptionPlan
-	var err error
-	if config.Config("ENV_MODE") == "production" {
-		subscriptionPlans, err = database.GetSubscriptionPlansProduction()
-	} else if config.Config("ENV_MODE") == "development" {
-		subscriptionPlans, err = database.GetSubscriptionPlansDevelopment()
-	} else {
-		return fiber.NewError(http.StatusInternalServerError, "error while retrieving subscription plans")
-	}
+	subscriptionPlans, err := database.GetSubscriptionPlans()
 	if err != nil {
 		return fiber.NewError(http.StatusInternalServerError, "error while retrieving subscription plans")
 	}
@@ -47,18 +46,36 @@ func BillingSubscriptionPlans(c *fiber.Ctx) error {
 // @Description	An endpoint to retrieve the URL for a subscription plan sending
 // @Description	the account email as well.
 // @Produce		json
-// @Param			variant_id		query		string	true	"the variant id of the subscription plan"
-// @Param			account_email	query		string	true	"the account email"
-// @Success		200				{object}	lemonsqueezy.ApiResponse[lemonsqueezy.CheckoutAttributes, lemonsqueezy.ApiResponseRelationshipsDiscount]
-// @Failure		400				{object}	fiber.Error
-// @Failure		500				{object}	fiber.Error
+// @Param			variant_id	query		string	true	"the variant id of the subscription plan"
+// @Param			user_id		query		string	true	"the user id"
+// @Success		200			{object}	lemonsqueezy.ApiResponse[lemonsqueezy.CheckoutAttributes, lemonsqueezy.ApiResponseRelationshipsDiscount]
+// @Failure		400			{object}	fiber.Error
+// @Failure		500			{object}	fiber.Error
 // @Router			/billing/checkout [get]
 func BillingCheckout(c *fiber.Ctx) error {
 	variantId := strings.TrimSpace(c.Query("variant_id", ""))
-	userEmail := strings.TrimSpace(c.Query("account_email", ""))
+	userId := strings.TrimSpace(c.Query("user_id", ""))
 
-	if variantId == "" || userEmail == "" {
-		return fiber.NewError(http.StatusBadRequest, "please provide a variant id and an account email")
+	if variantId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide a variant id")
+	}
+	if userId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide a user id")
+	}
+
+	subscriptionPlans, err := database.GetSubscriptionPlans()
+	if err != nil {
+		return fiber.NewError(http.StatusInternalServerError, "try again later")
+	}
+
+	subscriptionPlanSlug := models.FREE
+	for _, subscriptionPlan := range subscriptionPlans {
+		for _, variant := range subscriptionPlan.Variants {
+			if variant == variantId {
+				subscriptionPlanSlug = subscriptionPlan.Slug
+				break
+			}
+		}
 	}
 
 	checkoutParams := &lemonsqueezy.CheckoutCreateParams{
@@ -68,7 +85,8 @@ func BillingCheckout(c *fiber.Ctx) error {
 		EnabledVariants: make([]int, 0),
 		ButtonColor:     "#81F7AC",
 		CustomData: map[string]string{
-			"gptube_account_email": userEmail,
+			SUBSCRIPTION_PLAN_SLUG_META_TAG: fmt.Sprint(subscriptionPlanSlug),
+			USER_ID_META_TAG:                userId,
 		},
 	}
 	checkout, _, err := services.LemonClient.Checkouts.Create(context.Background(), checkoutParams)
@@ -79,36 +97,60 @@ func BillingCheckout(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(checkout)
 }
 
+// @Summary		Get the subscribed subscriptions of an account
+// @Description	An endpoint to retrieve all the subscriptions belonging to an account
+// @Produce		json
+// @Param			user_id	query		string	true	"the user id"
+// @Success		200		{array}		models.Subscription
+// @Failure		400		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
+// @Router			/billing/subscriptions [get]
 func BillingSubscriptions(c *fiber.Ctx) error {
-	userEmail := c.Query("user_email", "")
-	if userEmail == "" {
-		err := fmt.Errorf("please add the 'user_email' query param")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+	userId := strings.TrimSpace(c.Query("user_id", ""))
+	if userId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please add a non-empty user_id parameter")
 	}
-	subscriptions, err := database.RetrieveSubscriptions(userEmail)
+	subscriptions, err := database.GetAllSubscriptions(userId)
 	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "could fetch any subscription, try again later")
 	}
-	return c.JSON(fiber.Map{
-		"count":         len(*subscriptions),
-		"subscriptions": *subscriptions,
-	})
+	return c.Status(http.StatusOK).JSON(subscriptions)
 }
 
 // @Summary		Get the latest Invoices from a subscription
 // @Description	An endpoint to retrieve the invoices from a user's subscription
 // @Produce		json
-// @Param			variant_id		query		string	true	"the variant id of the subscription plan"
-// @Param			account_email	query		string	true	"the account email"
-// @Success		200				{object}	lemonsqueezy.ApiResponse[lemonsqueezy.CheckoutAttributes, lemonsqueezy.ApiResponseRelationshipsDiscount]
+// @Param			subscription_id	query		string	true	"the subscription id"
+// @Param			page			query		int		false	"the queried page"
+// @Param			page_size		query		int		false	"page size for the results (default: 10, max: 50)"
+// @Success		200				{object}	lemonsqueezy.ApiResponseList[lemonsqueezy.SubscriptionInvoiceAttributes, lemonsqueezy.ApiResponseRelationshipsSubscriptionInvoice]
 // @Failure		400				{object}	fiber.Error
 // @Failure		500				{object}	fiber.Error
-// @Router			/billing/checkout [get]
+// @Router			/billing/invoices [get]
 func BillingSubscriptionInvoices(c *fiber.Ctx) error {
-	var body models.InvoicesRequest
-	if err := c.BodyParser(&body); err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+	subscriptionId := strings.TrimSpace(c.Query("subscription_id", ""))
+	if subscriptionId == "" {
+		return fiber.NewError(http.StatusBadRequest, "please provide a subscription id")
 	}
+
+	page, err := strconv.Atoi(c.Query("page", fmt.Sprintf("%d", config.DEFAULT_PAGE_NUM)))
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page number")
+	}
+	if page < config.MIN_PAGE_NUM {
+		return fiber.NewError(http.StatusBadRequest, "page number can not be zero or negative")
+	}
+
+	pageSize, err := strconv.Atoi(c.Query("page_size", fmt.Sprintf("%d", config.DEFAULT_PAGE_SIZE)))
+
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid page size number")
+	}
+	if pageSize < config.MIN_PAGE_SIZE {
+		return fiber.NewError(http.StatusBadRequest, "page size number can not be zero or negative")
+	}
+	// Ensuring the max page size
+	pageSize = int(math.Min(float64(pageSize), config.MAX_PAGE_SIZE))
 
 	var invoices lemonsqueezy.SubscriptionInvoicesApiResponse
 	agent := fiber.AcquireAgent()
@@ -119,52 +161,74 @@ func BillingSubscriptionInvoices(c *fiber.Ctx) error {
 	req.SetRequestURI(fmt.Sprintf("%s/subscription-invoices", config.Config("LEMON_SQUEEZY_API_URL")))
 	agent.QueryString(
 		fmt.Sprintf("filter[subscription_id]=%v&page[number]=%v&page[size]=%v",
-			body.SubscriptionId, body.Page, body.PageSize),
+			subscriptionId, page, pageSize),
 	)
 
 	if err := agent.Parse(); err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "couldn't fetch the the invoices please try again later")
 	}
 
 	statusCode, _, errs := agent.Struct(&invoices)
 	if statusCode != http.StatusOK && len(errs) > 0 {
-		return utils.HandleError(errs[0], http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "couldn't fetch the the invoices please try again later")
 	}
 
-	return c.JSON(invoices)
+	return c.Status(http.StatusOK).JSON(invoices)
 }
 
+// @Summary		Get the update payment method URL for a subscription
+// @Description	An endpoint to retrieve the URL to update the payment method for a subscription
+// @Produce		json
+// @Param			subscription_id	query		string	true	"the subscription id"
+// @Success		200				{object}	lemonsqueezy.ApiResponse[lemonsqueezy.Subscription, lemonsqueezy.ApiResponseRelationshipsSubscription]
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
+// @Router			/billing/update-payment-method [get]
 func BillingUpdatePaymentMethod(c *fiber.Ctx) error {
-	subscriptionId := c.Query("subscription_id", "")
+	subscriptionId := strings.TrimSpace(c.Query("subscription_id", ""))
 	if subscriptionId == "" {
-		err := fmt.Errorf("please add the 'subscription_id' query param")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please add a non-empty 'subscription_id' query param")
 	}
 	subscription, _, err := services.LemonClient.Subscriptions.Get(context.Background(), subscriptionId)
 	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError,
+			"an error while trying to retrieve the URL. Check the subscription_id exists")
 	}
-	return c.JSON(subscription)
+	return c.Status(http.StatusOK).JSON(subscription)
 }
 
+// @Summary		Cancel a subscription
+// @Description	An endpoint to cancel a subscription
+// @Produce		json
+// @Param			subscription_id	query		string	true	"the subscription id"
+// @Success		200				{string}	string	"OK"
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
+// @Router			/billing/cancel-subscription [get]
 func BillingCancelSubscription(c *fiber.Ctx) error {
-	subscriptionId := c.Query("subscription_id", "")
+	subscriptionId := strings.TrimSpace(c.Query("subscription_id", ""))
 	if subscriptionId == "" {
-		err := fmt.Errorf("please add the 'subscription_id' query param")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please add the 'subscription_id' query param")
 	}
 	_, _, err := services.LemonClient.Subscriptions.Cancel(context.Background(), subscriptionId)
 	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "could not cancel the subscription, try again later")
 	}
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).SendString("OK")
 }
 
+// @Summary		Resume a subscription
+// @Description	An endpoint to resume a cancelled subscription
+// @Produce		json
+// @Param			subscription_id	query		string	true	"the subscription id"
+// @Success		200				{string}	string	"OK"
+// @Failure		400				{object}	fiber.Error
+// @Failure		500				{object}	fiber.Error
+// @Router			/billing/resume-subscription [get]
 func BillingResumeSubscription(c *fiber.Ctx) error {
-	subscriptionId := c.Query("subscription_id", "")
+	subscriptionId := strings.TrimSpace(c.Query("subscription_id", ""))
 	if subscriptionId == "" {
-		err := fmt.Errorf("please add the 'subscription_id' query param")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "please add the 'subscription_id' query param")
 	}
 	subscriptionParams := &lemonsqueezy.SubscriptionUpdateParams{
 		ID: subscriptionId,
@@ -174,101 +238,96 @@ func BillingResumeSubscription(c *fiber.Ctx) error {
 	}
 	_, _, err := services.LemonClient.Subscriptions.Update(context.Background(), subscriptionParams)
 	if err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "an error ocurred while resuming your subscription, try again later")
 	}
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).SendString("OK")
 }
 
 func billingCreateSubscriptionWebhookHandler(
-	subscription *lemonsqueezy.WebhookRequest[lemonsqueezy.Subscription,
-		lemonsqueezy.ApiResponseRelationshipsSubscription]) error {
-	client, err := database.GetClient()
+	subscription *lemonsqueezy.WebhookRequest[
+		lemonsqueezy.Subscription,
+		lemonsqueezy.ApiResponseRelationshipsSubscription,
+	],
+) error {
+	subscriptionPlanSlugMeta := subscription.Meta.CustomData[SUBSCRIPTION_PLAN_SLUG_META_TAG]
+	userId := subscription.Meta.CustomData[USER_ID_META_TAG].(string)
+	if subscriptionPlanSlugMeta == nil {
+		subscriptionPlanSlugMeta = fmt.Sprint(models.FREE) // by default free plan
+	}
+	subscriptionPlanSlug, err := strconv.Atoi(subscriptionPlanSlugMeta.(string))
 	if err != nil {
 		return err
 	}
 
-	defer client.Close()
-
-	gptubeAccountEmail := subscription.Meta.CustomData["gptube_account_email"]
-	if gptubeAccountEmail == nil {
-		gptubeAccountEmail = subscription.Data.Attributes.UserEmail
-	}
-	newSubscriptionFirestore := models.Subscription{
-		UserEmail:           subscription.Data.Attributes.UserEmail,
-		SubscriptionId:      subscription.Data.ID,
-		OrderId:             subscription.Data.Attributes.OrderID,
-		ProductId:           subscription.Data.Attributes.ProductID,
-		VariantId:           subscription.Data.Attributes.VariantID,
-		CustomerId:          subscription.Data.Attributes.CustomerID,
-		ProductName:         subscription.Data.Attributes.ProductName,
-		Status:              subscription.Data.Attributes.Status,
-		StatusFormatted:     subscription.Data.Attributes.StatusFormatted,
-		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt,
-		RenewsAt:            subscription.Data.Attributes.RenewsAt,
-		EndsAt:              subscription.Data.Attributes.EndsAt,
-		CreatedAt:           subscription.Data.Attributes.CreatedAt,
-		UpdatedAt:           subscription.Data.Attributes.UpdatedAt,
-		CardBrand:           subscription.Data.Attributes.CardBrand,
-		CardLastFour:        subscription.Data.Attributes.CardLastFour,
-		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
+	newSubscription := models.Subscription{
+		SubscriptionId:       subscription.Data.ID,
+		SubscriptionPlanSlug: models.SubscriptionPlanSlug(subscriptionPlanSlug),
+		UserEmail:            subscription.Data.Attributes.UserEmail,
+		OrderId:              subscription.Data.Attributes.OrderID,
+		ProductId:            subscription.Data.Attributes.ProductID,
+		VariantId:            subscription.Data.Attributes.VariantID,
+		CustomerId:           subscription.Data.Attributes.CustomerID,
+		ProductName:          subscription.Data.Attributes.ProductName,
+		Status:               subscription.Data.Attributes.Status,
+		StatusFormatted:      subscription.Data.Attributes.StatusFormatted,
+		TrialEndsAt:          subscription.Data.Attributes.TrialEndsAt,
+		RenewsAt:             subscription.Data.Attributes.RenewsAt,
+		EndsAt:               subscription.Data.Attributes.EndsAt,
+		CreatedAt:            subscription.Data.Attributes.CreatedAt,
+		UpdatedAt:            subscription.Data.Attributes.UpdatedAt,
+		CardBrand:            subscription.Data.Attributes.CardBrand,
+		CardLastFour:         subscription.Data.Attributes.CardLastFour,
+		UpdatePaymentMethod:  subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
-	fmt.Printf("[billingCreateSubscriptionWebhookHandler] creating subscription %s for user %s\n",
-		subscription.Data.ID, gptubeAccountEmail)
-	userDoc := client.Collection("users").Doc(gptubeAccountEmail.(string))
-	_, err = userDoc.Collection("subscriptions").Doc(subscription.Data.ID).
-		Set(database.Ctx, newSubscriptionFirestore)
-	if err != nil {
-		return fmt.Errorf("an error has occurred: %s", err)
-	}
+	fmt.Printf("[billingCreateSubscriptionWebhookHandler] creating subscription %s for user with Id %s\n",
+		subscription.Data.ID, userId)
 
-	return nil
+	err = database.CreateSubscription(userId, &newSubscription)
+	return err
 }
 
 func billingUpdateSubscriptionWebhookHandler(
 	subscription *lemonsqueezy.WebhookRequest[
 		lemonsqueezy.Subscription,
-		lemonsqueezy.ApiResponseRelationshipsSubscription]) error {
-	client, err := database.GetClient()
+		lemonsqueezy.ApiResponseRelationshipsSubscription,
+	],
+) error {
+	subscriptionPlanSlugMeta := subscription.Meta.CustomData[SUBSCRIPTION_PLAN_SLUG_META_TAG]
+	userId := subscription.Meta.CustomData[USER_ID_META_TAG].(string)
+	if subscriptionPlanSlugMeta == nil {
+		subscriptionPlanSlugMeta = fmt.Sprint(models.FREE) // by default free plan
+	}
+	subscriptionPlanSlug, err := strconv.Atoi(subscriptionPlanSlugMeta.(string))
 	if err != nil {
 		return err
 	}
-	defer client.Close()
 
-	gptubeAccountEmail := subscription.Meta.CustomData["gptube_account_email"]
-	if gptubeAccountEmail == nil {
-		gptubeAccountEmail = subscription.Data.Attributes.UserEmail
-	}
-	updatedSubscriptionFirestore := models.Subscription{
-		UserEmail:           subscription.Data.Attributes.UserEmail,
-		SubscriptionId:      subscription.Data.ID,
-		OrderId:             subscription.Data.Attributes.OrderID,
-		ProductId:           subscription.Data.Attributes.ProductID,
-		VariantId:           subscription.Data.Attributes.VariantID,
-		CustomerId:          subscription.Data.Attributes.CustomerID,
-		ProductName:         subscription.Data.Attributes.ProductName,
-		Status:              subscription.Data.Attributes.Status,
-		StatusFormatted:     subscription.Data.Attributes.StatusFormatted,
-		TrialEndsAt:         subscription.Data.Attributes.TrialEndsAt,
-		RenewsAt:            subscription.Data.Attributes.RenewsAt,
-		EndsAt:              subscription.Data.Attributes.EndsAt,
-		CreatedAt:           subscription.Data.Attributes.CreatedAt,
-		UpdatedAt:           subscription.Data.Attributes.UpdatedAt,
-		CardBrand:           subscription.Data.Attributes.CardBrand,
-		CardLastFour:        subscription.Data.Attributes.CardLastFour,
-		UpdatePaymentMethod: subscription.Data.Attributes.Urls.UpdatePaymentMethod,
+	updatedSubscription := models.Subscription{
+		SubscriptionId:       subscription.Data.ID,
+		SubscriptionPlanSlug: models.SubscriptionPlanSlug(subscriptionPlanSlug),
+		UserEmail:            subscription.Data.Attributes.UserEmail,
+		OrderId:              subscription.Data.Attributes.OrderID,
+		ProductId:            subscription.Data.Attributes.ProductID,
+		VariantId:            subscription.Data.Attributes.VariantID,
+		CustomerId:           subscription.Data.Attributes.CustomerID,
+		ProductName:          subscription.Data.Attributes.ProductName,
+		Status:               subscription.Data.Attributes.Status,
+		StatusFormatted:      subscription.Data.Attributes.StatusFormatted,
+		TrialEndsAt:          subscription.Data.Attributes.TrialEndsAt,
+		RenewsAt:             subscription.Data.Attributes.RenewsAt,
+		EndsAt:               subscription.Data.Attributes.EndsAt,
+		CreatedAt:            subscription.Data.Attributes.CreatedAt,
+		UpdatedAt:            subscription.Data.Attributes.UpdatedAt,
+		CardBrand:            subscription.Data.Attributes.CardBrand,
+		CardLastFour:         subscription.Data.Attributes.CardLastFour,
+		UpdatePaymentMethod:  subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
-	fmt.Printf("[billingUpdateSubscriptionWebhookHandler] updating subscription %s for user %s\n",
-		subscription.Data.ID, gptubeAccountEmail)
-	userDoc := client.Collection("users").Doc(gptubeAccountEmail.(string))
-	_, err = userDoc.Collection("subscriptions").Doc(subscription.Data.ID).
-		Set(database.Ctx, updatedSubscriptionFirestore)
-	if err != nil {
-		return fmt.Errorf("an error has occurred: %s", err)
-	}
-
-	return nil
+	fmt.Printf("[billingUpdateSubscriptionWebhookHandler] updating subscription %s for user with id %s\n",
+		subscription.Data.ID, userId)
+	err = database.UpdateSubscription(userId, &updatedSubscription)
+	return err
 }
 
 func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
@@ -305,8 +364,9 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 			"subscription_payment_recovered",
 			"subscription_cancelled",
 			"subscription_expired":
+			fmt.Printf("%s\n", webhookBody.Meta.EventName)
 			return c.Status(http.StatusOK).JSON(fiber.Map{
-				"message": "webhook received correctly",
+				"message": fmt.Sprintf("webhook for event %s handled", webhookBody.Meta.EventName),
 			})
 		}
 

@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { Card, CardHeader, CardFooter } from '@nextui-org/card'
-import { Divider } from '@nextui-org/divider'
-import Link from 'next/link'
-import { LogIn } from 'lucide-react'
+import { Card, CardHeader, CardFooter } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+import Link from "next/link";
+import { LogIn } from "lucide-react";
 
-import { Button } from '@/components/Common/button'
-import { GoogleIcon } from '@/assets/icons/google-icon'
-import { Input } from '@/components/Common/input'
-import { useAuthActions } from '@/hooks/use-auth'
+import { Button } from "@/components/Common/button";
+import { GoogleIcon } from "@/assets/icons/google-icon";
+import { Input } from "@/components/Common/input";
+import { useAuthActions } from "@/hooks/use-auth";
 
 export default function Login() {
-  const { loginWithGoogleHandler, loginWithCredentialsHandler } = useAuthActions()
+  const { loginWithGoogleHandler, loginWithCredentialsHandler } = useAuthActions();
 
   return (
     <main className="w-[100dvw] h-[100dvh] flex justify-center items-center">
       <Card className="w-full max-w-md py-8" radius="sm">
         <CardHeader className="flex flex-col items-center gap-2 p-5 text-center">
-          <h2 className="text-lg font-medium ">Sign in to GPTube</h2>
+          <h2 className="text-lg font-medium">Sign in to GPTube</h2>
           <small className="text-neutral-500">Most powerful analyzer to Youtube content</small>
         </CardHeader>
         <Divider />
@@ -62,7 +62,7 @@ export default function Login() {
             Continue with Google
           </Button>
           <small className="text-neutral-500">
-            Don&apos;t have an account?{' '}
+            Don&apos;t have an account?{" "}
             <Link className="font-semibold hover:underline" href="/register">
               Sign up.
             </Link>
@@ -70,5 +70,5 @@ export default function Login() {
         </CardFooter>
       </Card>
     </main>
-  )
+  );
 }

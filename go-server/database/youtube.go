@@ -13,20 +13,14 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-const (
-	usersCollName            = "users"
-	youtubeCollName          = "youtube"
-	negativeCommentsCollName = "NegativeComments"
-)
-
-func GetYoutubeResult(emailUser string, videoId string) (*models.YoutubeVideoAnalyzed, error) {
+func GetYoutubeAnalysisResult(userId string, videoId string) (*models.YoutubeVideoAnalyzed, error) {
 	client, err := GetClient()
 	if err != nil {
 		return nil, err
 	}
 	defer client.Close()
-	snap, err := client.Collection("users").
-		Doc(emailUser).Collection("youtube").Doc(videoId).Get(Ctx)
+	snap, err := client.Collection(YOUTUBE_ANALYSES_COLLECTION).
+		Doc(userId).Collection(YOUTUBE_VIDEOS_COLLECTION).Doc(videoId).Get(Ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -38,21 +32,6 @@ func GetYoutubeResult(emailUser string, videoId string) (*models.YoutubeVideoAna
 	return &result, nil
 }
 
-func GetYoutubeLandingResult(videoID string) (*models.YoutubeAnalyzerLandingRespBody, error) {
-	client, err := GetClient()
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
-	snap, err := client.Collection("landing").Doc(videoID).Get(Ctx)
-	if err != nil {
-		return nil, err
-	}
-	var result models.YoutubeAnalyzerLandingRespBody
-	snap.DataTo(&result)
-	return &result, nil
-}
-
 func AddYoutubeResult(analysis *models.YoutubeAnalyzerRespBody) error {
 	client, err := GetClient()
 	if err != nil {
@@ -61,7 +40,7 @@ func AddYoutubeResult(analysis *models.YoutubeAnalyzerRespBody) error {
 	defer client.Close()
 
 	currentTime := time.Now().UTC()
-	existingResult, err := GetYoutubeResult(analysis.AccountEmail, analysis.VideoId)
+	existingResult, err := GetYoutubeAnalysisResult(analysis.UserId, analysis.VideoId)
 	if err != nil {
 		analysis.VideoResults.CreatedAt = currentTime
 	} else {
@@ -69,32 +48,33 @@ func AddYoutubeResult(analysis *models.YoutubeAnalyzerRespBody) error {
 	}
 	analysis.VideoResults.LastUpdate = currentTime
 
-	userDoc := client.Collection("users").Doc(analysis.AccountEmail)
+	analysisDoc := client.Collection(YOUTUBE_ANALYSES_COLLECTION).Doc(analysis.UserId)
 	if existingResult != nil {
-		_, err = userDoc.Update(Ctx, []firestore.Update{
+		_, err = analysisDoc.Update(Ctx, []firestore.Update{
 			{
-				Path:  "usageLimitYoutube",
+				Path:  "usage_count",
 				Value: firestore.Increment(1),
 			},
 		})
 	} else {
-		_, err = userDoc.Set(Ctx, map[string]interface{}{
-			"email":             analysis.AccountEmail,
-			"usageLimitYoutube": 1,
-		})
+		initialAnalysisDoc := models.YoutubeAnalysis{
+			UserId:     analysis.UserId,
+			UsageCount: 1,
+		}
+		_, err = analysisDoc.Set(Ctx, initialAnalysisDoc)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	youtubeDoc := userDoc.Collection("youtube").Doc(analysis.VideoId)
-	_, err = youtubeDoc.Set(Ctx, analysis.VideoResults)
+	youtubeVideoDoc := analysisDoc.Collection(YOUTUBE_VIDEOS_COLLECTION).Doc(analysis.VideoId)
+	_, err = youtubeVideoDoc.Set(Ctx, analysis.VideoResults)
 	if err != nil {
 		return err
 	}
 
-	negativeCommentsColl := youtubeDoc.Collection("NegativeComments")
+	negativeCommentsColl := youtubeVideoDoc.Collection(YOUTUBE_NEGATIVE_COMMENTS_COLLECTION)
 	for _, comment := range analysis.VideoResults.NegativeComments {
 		_, err = negativeCommentsColl.Doc(comment.Id).Get(Ctx)
 		if err != nil {
@@ -112,7 +92,7 @@ func AddYoutubeResult(analysis *models.YoutubeAnalyzerRespBody) error {
 	return nil
 }
 
-func GetYoutubeVideosPage(page int, pageSize int, accountEmail string) (*models.YoutubeVideosRespBody, error) {
+func GetYoutubeVideosPage(page int, pageSize int, userId string) (*models.YoutubeVideosRespBody, error) {
 	client, err := GetClient()
 	if err != nil {
 		return nil, err
@@ -126,10 +106,10 @@ func GetYoutubeVideosPage(page int, pageSize int, accountEmail string) (*models.
 		Results:  make([]models.YoutubeVideoDashboard, 0),
 	}
 
-	userDoc := client.Collection("users").Doc(accountEmail)
-	youtubeColl := userDoc.Collection("youtube")
+	analyzesDoc := client.Collection(YOUTUBE_ANALYSES_COLLECTION).Doc(userId)
+	videosColl := analyzesDoc.Collection(YOUTUBE_VIDEOS_COLLECTION)
 
-	pageVideos, totalVideos, err := GetPageFromCollection(page, pageSize, youtubeColl, "last_update", firestore.Desc)
+	pageVideos, totalVideos, err := GetPageFromCollection(page, pageSize, videosColl, "last_update", firestore.Desc)
 
 	if err != nil {
 		return nil, err
@@ -141,10 +121,10 @@ func GetYoutubeVideosPage(page int, pageSize int, accountEmail string) (*models.
 	// Filling the next and previous fields
 	totalPages := int(math.Ceil(float64(response.Count) / float64(pageSize)))
 	baseURL := config.Config("APP_BASE_URL")
-	prevPageVal := fmt.Sprintf("%s/api/youtube/videos?account_email=%s&page=%v&page_size=%v",
-		baseURL, accountEmail, page-1, pageSize)
-	nextPageVal := fmt.Sprintf("%s/api/youtube/videos?account_email=%s&page=%v&page_size=%v",
-		baseURL, accountEmail, page+1, pageSize)
+	prevPageVal := fmt.Sprintf("%s/api/youtube/videos?user_id=%s&page=%v&page_size=%v",
+		baseURL, userId, page-1, pageSize)
+	nextPageVal := fmt.Sprintf("%s/api/youtube/videos?user_id=%s&page=%v&page_size=%v",
+		baseURL, userId, page+1, pageSize)
 
 	if 1 <= page && page <= totalPages {
 		response.Previous = &prevPageVal
@@ -169,7 +149,7 @@ func GetYoutubeVideosPage(page int, pageSize int, accountEmail string) (*models.
 	return response, nil
 }
 
-func GetNegativeCommentsPage(page int, pageSize int, accountEmail string, videoId string) (*models.YoutubeVideoNegativeCommentsRespBody, error) {
+func GetNegativeCommentsPage(page int, pageSize int, userId string, videoId string) (*models.YoutubeVideoNegativeCommentsRespBody, error) {
 	client, err := GetClient()
 	if err != nil {
 		return nil, err
@@ -183,9 +163,9 @@ func GetNegativeCommentsPage(page int, pageSize int, accountEmail string, videoI
 		Results:  make([]*youtube.Comment, 0),
 	}
 
-	userDoc := client.Collection(usersCollName).Doc(accountEmail)
-	videoDoc := userDoc.Collection(youtubeCollName).Doc(videoId)
-	negativeCommentsColl := videoDoc.Collection(negativeCommentsCollName)
+	analysisDoc := client.Collection(YOUTUBE_ANALYSES_COLLECTION).Doc(userId)
+	videoDoc := analysisDoc.Collection(YOUTUBE_VIDEOS_COLLECTION).Doc(videoId)
+	negativeCommentsColl := videoDoc.Collection(YOUTUBE_NEGATIVE_COMMENTS_COLLECTION)
 
 	pageComments, totalComments, err := GetPageFromCollection(page, pageSize, negativeCommentsColl, "", firestore.Asc)
 
@@ -199,10 +179,10 @@ func GetNegativeCommentsPage(page int, pageSize int, accountEmail string, videoI
 	// Filling the next and previous fields
 	totalPages := int(math.Ceil(float64(response.Count) / float64(pageSize)))
 	baseURL := config.Config("APP_BASE_URL")
-	prevPageVal := fmt.Sprintf("%s/api/youtube/videos/%s/negative-comments?account_email=%s&page=%v&page_size=%v",
-		baseURL, videoId, accountEmail, page-1, pageSize)
-	nextPageVal := fmt.Sprintf("%s/api/youtube/videos/%s/negative-comments?account_email=%s&page=%v&page_size=%v",
-		baseURL, videoId, accountEmail, page+1, pageSize)
+	prevPageVal := fmt.Sprintf("%s/api/youtube/videos/%s/negative-comments?user_id=%s&page=%v&page_size=%v",
+		baseURL, videoId, userId, page-1, pageSize)
+	nextPageVal := fmt.Sprintf("%s/api/youtube/videos/%s/negative-comments?user_id=%s&page=%v&page_size=%v",
+		baseURL, videoId, userId, page+1, pageSize)
 
 	if 1 <= page && page <= totalPages {
 		response.Previous = &prevPageVal

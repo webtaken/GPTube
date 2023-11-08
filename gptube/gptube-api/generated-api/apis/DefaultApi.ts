@@ -83,19 +83,19 @@ export interface ApiYoutubePreAnalysisPostRequest {
 }
 
 export interface ApiYoutubeVideosGetRequest {
-    accountEmail: string;
+    userId: string;
     page?: number;
     pageSize?: number;
 }
 
 export interface ApiYoutubeVideosVideoIdGetRequest {
     videoId: string;
-    accountEmail: string;
+    userId: string;
 }
 
 export interface ApiYoutubeVideosVideoIdNegativeCommentsGetRequest {
     videoId: string;
-    accountEmail: string;
+    userId: string;
     page?: number;
     pageSize?: number;
 }
@@ -270,14 +270,14 @@ export class DefaultApi extends runtime.BaseAPI {
      * Get all the videos related to a user in paginated mode
      */
     async apiYoutubeVideosGetRaw(requestParameters: ApiYoutubeVideosGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ModelsYoutubeVideosRespBody>> {
-        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
-            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosGet.');
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling apiYoutubeVideosGet.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.accountEmail !== undefined) {
-            queryParameters['account_email'] = requestParameters.accountEmail;
+        if (requestParameters.userId !== undefined) {
+            queryParameters['user_id'] = requestParameters.userId;
         }
 
         if (requestParameters.page !== undefined) {
@@ -318,14 +318,14 @@ export class DefaultApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('videoId','Required parameter requestParameters.videoId was null or undefined when calling apiYoutubeVideosVideoIdGet.');
         }
 
-        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
-            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdGet.');
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling apiYoutubeVideosVideoIdGet.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.accountEmail !== undefined) {
-            queryParameters['account_email'] = requestParameters.accountEmail;
+        if (requestParameters.userId !== undefined) {
+            queryParameters['user_id'] = requestParameters.userId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -358,14 +358,14 @@ export class DefaultApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('videoId','Required parameter requestParameters.videoId was null or undefined when calling apiYoutubeVideosVideoIdNegativeCommentsGet.');
         }
 
-        if (requestParameters.accountEmail === null || requestParameters.accountEmail === undefined) {
-            throw new runtime.RequiredError('accountEmail','Required parameter requestParameters.accountEmail was null or undefined when calling apiYoutubeVideosVideoIdNegativeCommentsGet.');
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling apiYoutubeVideosVideoIdNegativeCommentsGet.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.accountEmail !== undefined) {
-            queryParameters['account_email'] = requestParameters.accountEmail;
+        if (requestParameters.userId !== undefined) {
+            queryParameters['user_id'] = requestParameters.userId;
         }
 
         if (requestParameters.page !== undefined) {

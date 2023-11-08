@@ -182,8 +182,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "the account email",
-                        "name": "account_email",
+                        "description": "the user id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     },
@@ -239,8 +239,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "the account email",
-                        "name": "account_email",
+                        "description": "the user id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -284,8 +284,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "the account email",
-                        "name": "account_email",
+                        "description": "the user_id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     },
@@ -1473,15 +1473,16 @@ const docTemplate = `{
         "models.YoutubeAnalyzerReqBody": {
             "type": "object",
             "properties": {
-                "account_email": {
-                    "description": "The email of the account sending the request",
+                "email": {
+                    "description": "the email to send the results",
                     "type": "string"
                 },
-                "email": {
-                    "description": "The email that will be used to send the results",
+                "user_id": {
+                    "description": "The account user id",
                     "type": "string"
                 },
                 "video_id": {
+                    "description": "the video id to analyze",
                     "type": "string"
                 }
             }
@@ -1489,10 +1490,10 @@ const docTemplate = `{
         "models.YoutubeAnalyzerRespBody": {
             "type": "object",
             "properties": {
-                "account_email": {
+                "email": {
                     "type": "string"
                 },
-                "email": {
+                "user_id": {
                     "type": "string"
                 },
                 "video_id": {

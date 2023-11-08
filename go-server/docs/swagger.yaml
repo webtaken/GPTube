@@ -558,20 +558,21 @@ definitions:
     type: object
   models.YoutubeAnalyzerReqBody:
     properties:
-      account_email:
-        description: The email of the account sending the request
-        type: string
       email:
-        description: The email that will be used to send the results
+        description: the email to send the results
+        type: string
+      user_id:
+        description: The account user id
         type: string
       video_id:
+        description: the video id to analyze
         type: string
     type: object
   models.YoutubeAnalyzerRespBody:
     properties:
-      account_email:
-        type: string
       email:
+        type: string
+      user_id:
         type: string
       video_id:
         type: string
@@ -1022,9 +1023,9 @@ paths:
       description: An endpoint to retrieve all the youtube videos that a user has
         analyzed, results are sorted by last_update field.
       parameters:
-      - description: the account email
+      - description: the user id
         in: query
-        name: account_email
+        name: user_id
         required: true
         type: string
       - description: the queried page
@@ -1060,9 +1061,9 @@ paths:
         name: videoId
         required: true
         type: string
-      - description: the account email
+      - description: the user id
         in: query
-        name: account_email
+        name: user_id
         required: true
         type: string
       produces:
@@ -1090,9 +1091,9 @@ paths:
         name: videoId
         required: true
         type: string
-      - description: the account email
+      - description: the user_id
         in: query
-        name: account_email
+        name: user_id
         required: true
         type: string
       - description: the queried page

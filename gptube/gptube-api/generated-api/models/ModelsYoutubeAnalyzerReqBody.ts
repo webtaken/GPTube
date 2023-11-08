@@ -20,19 +20,19 @@ import { exists, mapValues } from '../runtime';
  */
 export interface ModelsYoutubeAnalyzerReqBody {
     /**
-     * The email of the account sending the request
-     * @type {string}
-     * @memberof ModelsYoutubeAnalyzerReqBody
-     */
-    accountEmail?: string;
-    /**
-     * The email that will be used to send the results
+     * the email to send the results
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerReqBody
      */
     email?: string;
     /**
-     * 
+     * The account user id
+     * @type {string}
+     * @memberof ModelsYoutubeAnalyzerReqBody
+     */
+    userId?: string;
+    /**
+     * the video id to analyze
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerReqBody
      */
@@ -58,8 +58,8 @@ export function ModelsYoutubeAnalyzerReqBodyFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'accountEmail': !exists(json, 'account_email') ? undefined : json['account_email'],
         'email': !exists(json, 'email') ? undefined : json['email'],
+        'userId': !exists(json, 'user_id') ? undefined : json['user_id'],
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
     };
 }
@@ -73,8 +73,8 @@ export function ModelsYoutubeAnalyzerReqBodyToJSON(value?: ModelsYoutubeAnalyzer
     }
     return {
         
-        'account_email': value.accountEmail,
         'email': value.email,
+        'user_id': value.userId,
         'video_id': value.videoId,
     };
 }

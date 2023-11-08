@@ -7,6 +7,11 @@ import (
 )
 
 // GENERAL MODELS
+type YoutubeAnalysis struct {
+	UserId     string `json:"user_id" firestore:"user_id"`
+	UsageCount int    `json:"usage_count" firestore:"usage_count"`
+}
+
 type YoutubeAnalysisResults struct {
 	BertResults           *BertAIResults    `json:"bert_results,omitempty" firestore:"bert_results"`
 	RobertaResults        *RobertaAIResults `json:"roberta_results,omitempty" firestore:"roberta_results"`
@@ -78,16 +83,14 @@ type YoutubeAnalysisLandingResults struct {
 
 // Models for the youtube analysis
 type YoutubeAnalyzerReqBody struct {
-	VideoId string `json:"video_id,omitempty"`
-	// The email of the account sending the request
-	AccountEmail string `json:"account_email"`
-	// The email that will be used to send the results
-	Email string `json:"email,omitempty"`
+	VideoId string `json:"video_id"` // the video id to analyze
+	UserId  string `json:"user_id"`  // The account user id
+	Email   string `json:"email"`    // the email to send the results
 }
 
 type YoutubeAnalyzerRespBody struct {
 	VideoId      string                `json:"video_id"`
-	AccountEmail string                `json:"account_email"`
+	UserId       string                `json:"user_id"`
 	Email        string                `json:"email"`
 	VideoResults *YoutubeVideoAnalyzed `json:"video_results"`
 }

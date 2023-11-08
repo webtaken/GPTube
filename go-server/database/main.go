@@ -8,6 +8,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+// RELATIONS MODEL: https://excalidraw.com/#json=El2YZ_1cylEftfyJ0op57,kWn7gvhTzWNN__wxXBJcHA
 const (
 	USERS_COLLECTION = "Users"
 	// Billing collection names

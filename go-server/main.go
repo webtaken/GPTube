@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 // Important!!! forget to add things like: example("param example") after a Param API definition
@@ -27,6 +28,9 @@ func main() {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: handlers.CustomErrorHandler,
 	})
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+	}))
 	app.Use(cors.New())
 	router.SetupRoutes(app)
 	appPort := config.Config("PORT")

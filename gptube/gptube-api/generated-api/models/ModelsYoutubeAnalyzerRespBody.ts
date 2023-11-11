@@ -31,13 +31,13 @@ export interface ModelsYoutubeAnalyzerRespBody {
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerRespBody
      */
-    accountEmail?: string;
+    email?: string;
     /**
      * 
      * @type {string}
      * @memberof ModelsYoutubeAnalyzerRespBody
      */
-    email?: string;
+    userId?: string;
     /**
      * 
      * @type {string}
@@ -71,8 +71,8 @@ export function ModelsYoutubeAnalyzerRespBodyFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'accountEmail': !exists(json, 'account_email') ? undefined : json['account_email'],
         'email': !exists(json, 'email') ? undefined : json['email'],
+        'userId': !exists(json, 'user_id') ? undefined : json['user_id'],
         'videoId': !exists(json, 'video_id') ? undefined : json['video_id'],
         'videoResults': !exists(json, 'video_results') ? undefined : ModelsYoutubeVideoAnalyzedFromJSON(json['video_results']),
     };
@@ -87,8 +87,8 @@ export function ModelsYoutubeAnalyzerRespBodyToJSON(value?: ModelsYoutubeAnalyze
     }
     return {
         
-        'account_email': value.accountEmail,
         'email': value.email,
+        'user_id': value.userId,
         'video_id': value.videoId,
         'video_results': ModelsYoutubeVideoAnalyzedToJSON(value.videoResults),
     };

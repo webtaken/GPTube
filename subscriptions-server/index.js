@@ -1,7 +1,7 @@
 require("dotenv").config({ path: ".env.development" });
 const express = require("express");
-const webhook_events = require("./handlers/index.js");
-const { validateSignature } = require("./utils.js");
+const webhook_events = require("./handlers/index");
+const { validateSignature } = require("./utils");
 const app = express();
 
 const port = process.env.PORT || 8001;
@@ -13,16 +13,15 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.get("/", (_req, res) => {
+app.get("/api", (_req, res) => {
   return res.status(200).send("GPTUBE-subscriptions server");
 });
 
-app.post("/billing/webhooks", async (req, res) => {
+app.post("/api/billing/webhooks", async (req, res) => {
   try {
     validateSignature(req);
     const body = JSON.parse(req.body);
     const event_type = body["meta"]["event_name"];
-    console.log(`Entry event: ${event_type}`);
     const handler = webhook_events[`${event_type}`];
     handler && (await handler(body));
     res.status(200).json({ message: "webhook handled" });

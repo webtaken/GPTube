@@ -288,21 +288,21 @@ func Analyze(body models.YoutubeAnalyzerReqBody, plan string) (*models.YoutubeVi
 	failedComments := AnalyzeComments(body.VideoId, maxNumComments, analyzer)
 	wg.Wait()
 
-	fmt.Printf("[Analyze] Number of failed comments because of youtube API %d\n", failedComments)
+	log.Printf("[Analyze] Number of failed comments because of youtube API %d\n", failedComments)
 	analysis.Results.BertResults.ErrorsCount += failedComments
 	analysis.Results.RobertaResults.ErrorsCount += failedComments
 
 	// Averaging results for RoBERTa model
 	analysis.Results.RobertaResults.AverageResults()
 
-	fmt.Printf("[Analyze] Number of most negative comments before 30%% handling: %d\n",
+	log.Printf("[Analyze] Number of most negative comments before 30%% handling: %d\n",
 		len(analysis.NegativeComments))
 	// We will handle the 30% of all the negative comments
 	maxPercentageNegativeComments := 0.3
 	negCommentsLimit = int(math.Ceil(float64(
 		len(analysis.NegativeComments)) * maxPercentageNegativeComments))
 	analysis.NegativeComments = analysis.NegativeComments[:negCommentsLimit]
-	fmt.Printf("[Analyze] Number of most negative comments after 30%% handling: %d\n",
+	log.Printf("[Analyze] Number of most negative comments after 30%% handling: %d\n",
 		len(analysis.NegativeComments))
 	if negCommentsLimit > 0 {
 		recommendation, err := GetRecommendation(analysis)

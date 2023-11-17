@@ -24,6 +24,12 @@ export interface LemonsqueezySubscriptionURLs {
      * @type {string}
      * @memberof LemonsqueezySubscriptionURLs
      */
+    customerPortal?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LemonsqueezySubscriptionURLs
+     */
     updatePaymentMethod?: string;
 }
 
@@ -46,6 +52,7 @@ export function LemonsqueezySubscriptionURLsFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
+        'customerPortal': !exists(json, 'customer_portal') ? undefined : json['customer_portal'],
         'updatePaymentMethod': !exists(json, 'update_payment_method') ? undefined : json['update_payment_method'],
     };
 }
@@ -59,6 +66,7 @@ export function LemonsqueezySubscriptionURLsToJSON(value?: LemonsqueezySubscript
     }
     return {
         
+        'customer_portal': value.customerPortal,
         'update_payment_method': value.updatePaymentMethod,
     };
 }

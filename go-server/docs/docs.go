@@ -1041,7 +1041,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "first_subscription_item": {
-                    "$ref": "#/definitions/lemonsqueezy.SubscriptionItem"
+                    "$ref": "#/definitions/lemonsqueezy.SubscriptionFirstSubscriptionItem"
                 },
                 "order_id": {
                     "type": "integer"
@@ -1092,6 +1092,32 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "variant_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "lemonsqueezy.SubscriptionFirstSubscriptionItem": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_usage_based": {
+                    "type": "boolean"
+                },
+                "price_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "subscription_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1187,32 +1213,6 @@ const docTemplate = `{
                 }
             }
         },
-        "lemonsqueezy.SubscriptionItem": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_usage_based": {
-                    "type": "boolean"
-                },
-                "price_id": {
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "subscription_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "lemonsqueezy.SubscriptionPause": {
             "type": "object",
             "properties": {
@@ -1227,6 +1227,9 @@ const docTemplate = `{
         "lemonsqueezy.SubscriptionURLs": {
             "type": "object",
             "properties": {
+                "customer_portal": {
+                    "type": "string"
+                },
                 "update_payment_method": {
                     "type": "string"
                 }

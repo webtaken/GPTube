@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { LemonsqueezySubscriptionItem } from './LemonsqueezySubscriptionItem';
+import type { LemonsqueezySubscriptionFirstSubscriptionItem } from './LemonsqueezySubscriptionFirstSubscriptionItem';
 import {
-    LemonsqueezySubscriptionItemFromJSON,
-    LemonsqueezySubscriptionItemFromJSONTyped,
-    LemonsqueezySubscriptionItemToJSON,
-} from './LemonsqueezySubscriptionItem';
+    LemonsqueezySubscriptionFirstSubscriptionItemFromJSON,
+    LemonsqueezySubscriptionFirstSubscriptionItemFromJSONTyped,
+    LemonsqueezySubscriptionFirstSubscriptionItemToJSON,
+} from './LemonsqueezySubscriptionFirstSubscriptionItem';
 import type { LemonsqueezySubscriptionPause } from './LemonsqueezySubscriptionPause';
 import {
     LemonsqueezySubscriptionPauseFromJSON,
@@ -82,10 +82,10 @@ export interface LemonsqueezySubscription {
     endsAt?: string;
     /**
      * 
-     * @type {LemonsqueezySubscriptionItem}
+     * @type {LemonsqueezySubscriptionFirstSubscriptionItem}
      * @memberof LemonsqueezySubscription
      */
-    firstSubscriptionItem?: LemonsqueezySubscriptionItem;
+    firstSubscriptionItem?: LemonsqueezySubscriptionFirstSubscriptionItem;
     /**
      * 
      * @type {number}
@@ -216,7 +216,7 @@ export function LemonsqueezySubscriptionFromJSONTyped(json: any, ignoreDiscrimin
         'createdAt': !exists(json, 'created_at') ? undefined : json['created_at'],
         'customerId': !exists(json, 'customer_id') ? undefined : json['customer_id'],
         'endsAt': !exists(json, 'ends_at') ? undefined : json['ends_at'],
-        'firstSubscriptionItem': !exists(json, 'first_subscription_item') ? undefined : LemonsqueezySubscriptionItemFromJSON(json['first_subscription_item']),
+        'firstSubscriptionItem': !exists(json, 'first_subscription_item') ? undefined : LemonsqueezySubscriptionFirstSubscriptionItemFromJSON(json['first_subscription_item']),
         'orderId': !exists(json, 'order_id') ? undefined : json['order_id'],
         'orderItemId': !exists(json, 'order_item_id') ? undefined : json['order_item_id'],
         'pause': !exists(json, 'pause') ? undefined : LemonsqueezySubscriptionPauseFromJSON(json['pause']),
@@ -253,7 +253,7 @@ export function LemonsqueezySubscriptionToJSON(value?: LemonsqueezySubscription 
         'created_at': value.createdAt,
         'customer_id': value.customerId,
         'ends_at': value.endsAt,
-        'first_subscription_item': LemonsqueezySubscriptionItemToJSON(value.firstSubscriptionItem),
+        'first_subscription_item': LemonsqueezySubscriptionFirstSubscriptionItemToJSON(value.firstSubscriptionItem),
         'order_id': value.orderId,
         'order_item_id': value.orderItemId,
         'pause': LemonsqueezySubscriptionPauseToJSON(value.pause),

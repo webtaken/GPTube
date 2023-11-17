@@ -5,7 +5,7 @@ go 1.21
 require (
 	cloud.google.com/go/firestore v1.12.0
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/NdoleStudio/lemonsqueezy-go v1.0.3
+	github.com/NdoleStudio/lemonsqueezy-go v1.0.4
 	github.com/forPelevin/gomoji v1.1.8
 	github.com/gofiber/fiber/v2 v2.49.1
 	github.com/joho/godotenv v1.5.1

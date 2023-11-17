@@ -2,7 +2,6 @@ package database
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"gptube/config"
 	"gptube/models"
@@ -12,19 +11,9 @@ import (
 )
 
 func GetSubscriptionPlans() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
-	envMode := config.Config("ENV_MODE")
-	if envMode == config.ENV_DEVELOPMENT {
-		return getSubscriptionPlansDevelopment()
-	} else if envMode == config.ENV_PRODUCTION {
-		return getSubscriptionPlansProduction()
-	}
-	return nil, errors.New("no valid env mode in env vars")
-}
-
-func getSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
 	freePlan := models.SubscriptionPlan{}
 	err := json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_TEST_FREE_PLAN_DATA")),
+		[]byte(config.Config("LEMON_SQUEEZY_FREE_PLAN_DATA")),
 		&freePlan,
 	)
 	if err != nil {
@@ -33,7 +22,7 @@ func getSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.
 
 	hobbyPlan := models.SubscriptionPlan{}
 	err = json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_TEST_HOBBY_PLAN_DATA")),
+		[]byte(config.Config("LEMON_SQUEEZY_HOBBY_PLAN_DATA")),
 		&hobbyPlan,
 	)
 	if err != nil {
@@ -42,42 +31,7 @@ func getSubscriptionPlansDevelopment() (map[models.SubscriptionPlanSlug]*models.
 
 	popularPlan := models.SubscriptionPlan{}
 	err = json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_TEST_POPULAR_PLAN_DATA")),
-		&popularPlan,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	subscriptionPlans := make(map[models.SubscriptionPlanSlug]*models.SubscriptionPlan)
-	subscriptionPlans[models.FREE] = &freePlan
-	subscriptionPlans[models.HOBBY] = &hobbyPlan
-	subscriptionPlans[models.POPULAR] = &popularPlan
-	return subscriptionPlans, nil
-}
-
-func getSubscriptionPlansProduction() (map[models.SubscriptionPlanSlug]*models.SubscriptionPlan, error) {
-	freePlan := models.SubscriptionPlan{}
-	err := json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_MAIN_FREE_PLAN_DATA")),
-		&freePlan,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	hobbyPlan := models.SubscriptionPlan{}
-	err = json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_MAIN_HOBBY_PLAN_DATA")),
-		&hobbyPlan,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	popularPlan := models.SubscriptionPlan{}
-	err = json.Unmarshal(
-		[]byte(config.Config("LEMON_SQUEEZY_MAIN_POPULAR_PLAN_DATA")),
+		[]byte(config.Config("LEMON_SQUEEZY_POPULAR_PLAN_DATA")),
 		&popularPlan,
 	)
 	if err != nil {

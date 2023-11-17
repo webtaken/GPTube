@@ -20,6 +20,8 @@ github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/NdoleStudio/lemonsqueezy-go v1.0.3 h1:WAENkeTfKDyE83jIP1+HWoF54lV5/ryadREnlMLDs7Y=
 github.com/NdoleStudio/lemonsqueezy-go v1.0.3/go.mod h1:yRYTtU1RyapMDPTFKypIEKLEjPAbWq9a5PGqqvIn6/Y=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.4 h1:RiG1Yj+VLT4MM77mp97e/2CFtXYTlEC/HJFSEcBFa5A=
+github.com/NdoleStudio/lemonsqueezy-go v1.0.4/go.mod h1:yRYTtU1RyapMDPTFKypIEKLEjPAbWq9a5PGqqvIn6/Y=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/purell v1.2.0 h1:/Jdm5QfyM8zdlqT6WVZU4cfP23sot6CEHA4CS49Ezig=
 github.com/PuerkitoBio/purell v1.2.0/go.mod h1:OhLRTaaIzhvIyofkJfB24gokC7tM42Px5UhoT32THBk=

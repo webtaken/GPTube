@@ -16,67 +16,67 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface LemonsqueezySubscriptionItem
+ * @interface LemonsqueezySubscriptionFirstSubscriptionItem
  */
-export interface LemonsqueezySubscriptionItem {
+export interface LemonsqueezySubscriptionFirstSubscriptionItem {
     /**
      * 
      * @type {string}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     createdAt?: string;
     /**
      * 
      * @type {number}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     id?: number;
     /**
      * 
      * @type {boolean}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     isUsageBased?: boolean;
     /**
      * 
      * @type {number}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     priceId?: number;
     /**
      * 
      * @type {number}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     quantity?: number;
     /**
      * 
      * @type {number}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     subscriptionId?: number;
     /**
      * 
      * @type {string}
-     * @memberof LemonsqueezySubscriptionItem
+     * @memberof LemonsqueezySubscriptionFirstSubscriptionItem
      */
     updatedAt?: string;
 }
 
 /**
- * Check if a given object implements the LemonsqueezySubscriptionItem interface.
+ * Check if a given object implements the LemonsqueezySubscriptionFirstSubscriptionItem interface.
  */
-export function instanceOfLemonsqueezySubscriptionItem(value: object): boolean {
+export function instanceOfLemonsqueezySubscriptionFirstSubscriptionItem(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function LemonsqueezySubscriptionItemFromJSON(json: any): LemonsqueezySubscriptionItem {
-    return LemonsqueezySubscriptionItemFromJSONTyped(json, false);
+export function LemonsqueezySubscriptionFirstSubscriptionItemFromJSON(json: any): LemonsqueezySubscriptionFirstSubscriptionItem {
+    return LemonsqueezySubscriptionFirstSubscriptionItemFromJSONTyped(json, false);
 }
 
-export function LemonsqueezySubscriptionItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): LemonsqueezySubscriptionItem {
+export function LemonsqueezySubscriptionFirstSubscriptionItemFromJSONTyped(json: any, ignoreDiscriminator: boolean): LemonsqueezySubscriptionFirstSubscriptionItem {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -92,7 +92,7 @@ export function LemonsqueezySubscriptionItemFromJSONTyped(json: any, ignoreDiscr
     };
 }
 
-export function LemonsqueezySubscriptionItemToJSON(value?: LemonsqueezySubscriptionItem | null): any {
+export function LemonsqueezySubscriptionFirstSubscriptionItemToJSON(value?: LemonsqueezySubscriptionFirstSubscriptionItem | null): any {
     if (value === undefined) {
         return undefined;
     }

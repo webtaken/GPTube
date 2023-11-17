@@ -19,30 +19,30 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-//	@Summary		Get all the videos related to a user in paginated mode
-//	@Description	An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.
-//	@Produce		json
-//	@Param			user_id		query		string	true	"the user id"
-//	@Param			page		query		int		false	"the queried page"
-//	@Param			page_size	query		int		false	"page size for the results (default: 10, max: 50)"
-//	@Success		200			{object}	models.YoutubeVideosRespBody
-//	@Failure		400			{object}	fiber.Error
-//	@Failure		500			{object}	fiber.Error
-//	@Router			/api/youtube/videos [get]
+// @Summary		Get all the videos related to a user in paginated mode
+// @Description	An endpoint to retrieve all the youtube videos that a user has analyzed, results are sorted by last_update field.
+// @Produce		json
+// @Param			user_id		query		string	true	"the user id"
+// @Param			page		query		int		false	"the queried page"
+// @Param			page_size	query		int		false	"page size for the results (default: 10, max: 50)"
+// @Success		200			{object}	models.YoutubeVideosRespBody
+// @Failure		400			{object}	fiber.Error
+// @Failure		500			{object}	fiber.Error
+// @Router			/api/youtube/videos [get]
 func YoutubeListVideosHandler(c *fiber.Ctx) error {
 	userId := strings.TrimSpace(c.Query("user_id", ""))
 
 	if userId == "" {
-		return fiber.NewError(http.StatusBadRequest, "please provide an account email")
+		return fiber.NewError(http.StatusBadRequest, "please provide the 'user_id' param")
 	}
 
 	page, err := strconv.Atoi(c.Query("page", fmt.Sprintf("%d", config.DEFAULT_PAGE_NUM)))
 
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "please provide a valid page number")
+		return fiber.NewError(http.StatusBadRequest, "please provide a valid (number) 'page' param")
 	}
 	if page < config.MIN_PAGE_NUM {
-		return fiber.NewError(http.StatusBadRequest, "page number can not be zero or negative")
+		return fiber.NewError(http.StatusBadRequest, "'page' param can not be zero or negative")
 	}
 
 	pageSize, err := strconv.Atoi(c.Query("page_size", fmt.Sprintf("%d", config.DEFAULT_PAGE_SIZE)))
@@ -66,15 +66,15 @@ func YoutubeListVideosHandler(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(successResp)
 }
 
-//	@Summary		Get the analysis results and data for a video
-//	@Description	An endpoint to retrieve the data for a video and its analysis results.
-//	@Produce		json
-//	@Param			videoId	path		string	true	"the video id to be queried"
-//	@Param			user_id	query		string	true	"the user id"
-//	@Success		200		{object}	models.YoutubeVideoAnalyzed
-//	@Failure		400		{object}	fiber.Error
-//	@Failure		500		{object}	fiber.Error
-//	@Router			/api/youtube/videos/{videoId} [get]
+// @Summary		Get the analysis results and data for a video
+// @Description	An endpoint to retrieve the data for a video and its analysis results.
+// @Produce		json
+// @Param			videoId	path		string	true	"the video id to be queried"
+// @Param			user_id	query		string	true	"the user id"
+// @Success		200		{object}	models.YoutubeVideoAnalyzed
+// @Failure		400		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
+// @Router			/api/youtube/videos/{videoId} [get]
 func YoutubeGetVideoHandler(c *fiber.Ctx) error {
 	userId := strings.TrimSpace(c.Query("user_id", ""))
 	if userId == "" {
@@ -95,17 +95,17 @@ func YoutubeGetVideoHandler(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(response)
 }
 
-//	@Summary		Get the analysis results and data for a video
-//	@Description	An endpoint to retrieve the data for a video and its analysis results.
-//	@Produce		json
-//	@Param			videoId		path		string	true	"the video id to be queried"
-//	@Param			user_id		query		string	true	"the user_id"
-//	@Param			page		query		int		false	"the queried page"
-//	@Param			page_size	query		int		false	"page size for the results (default: 10, max: 50)"
-//	@Success		200			{object}	models.YoutubeVideoNegativeCommentsRespBody
-//	@Failure		400			{object}	fiber.Error
-//	@Failure		500			{object}	fiber.Error
-//	@Router			/api/youtube/videos/{videoId}/negative-comments [get]
+// @Summary		Get the analysis results and data for a video
+// @Description	An endpoint to retrieve the data for a video and its analysis results.
+// @Produce		json
+// @Param			videoId		path		string	true	"the video id to be queried"
+// @Param			user_id		query		string	true	"the user_id"
+// @Param			page		query		int		false	"the queried page"
+// @Param			page_size	query		int		false	"page size for the results (default: 10, max: 50)"
+// @Success		200			{object}	models.YoutubeVideoNegativeCommentsRespBody
+// @Failure		400			{object}	fiber.Error
+// @Failure		500			{object}	fiber.Error
+// @Router			/api/youtube/videos/{videoId}/negative-comments [get]
 func YoutubeGetNegativeCommentsHandler(c *fiber.Ctx) error {
 	userId := strings.TrimSpace(c.Query("user_id", ""))
 	if userId == "" {
@@ -146,14 +146,14 @@ func YoutubeGetNegativeCommentsHandler(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(response)
 }
 
-//	@Summary		Basic information about the youtube video
-//	@Description	An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
-//	@Produce		json
-//	@Param			video	body		models.YoutubePreAnalyzerReqBody	true	"Youtube video id"
-//	@Success		200		{object}	models.YoutubePreAnalyzerRespBody
-//	@Failure		400		{object}	fiber.Error
-//	@Failure		500		{object}	fiber.Error
-//	@Router			/api/youtube/pre-analysis [post]
+// @Summary		Basic information about the youtube video
+// @Description	An endpoint used to retrieve basic information about the youtube video such as title, description, etc.
+// @Produce		json
+// @Param			video	body		models.YoutubePreAnalyzerReqBody	true	"Youtube video id"
+// @Success		200		{object}	models.YoutubePreAnalyzerRespBody
+// @Failure		400		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
+// @Router			/api/youtube/pre-analysis [post]
 func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubePreAnalyzerReqBody
 
@@ -181,15 +181,15 @@ func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(successResp)
 }
 
-//	@Summary		Performs the analysis of the youtube video
-//	@Description	An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.
-//	@Produce		json
-//	@Param			video	body		models.YoutubeAnalyzerReqBody	true	"Youtube video analysis request body"
-//	@Success		200		{object}	models.YoutubeAnalyzerRespBody
-//	@Failure		204		{object}	utils.HandleError.errorResponse
-//	@Failure		400		{object}	utils.HandleError.errorResponse
-//	@Failure		500		{object}	utils.HandleError.errorResponse
-//	@Router			/api/youtube/analysis [post]
+// @Summary		Performs the analysis of the youtube video
+// @Description	An endpoint used to analyze the content of a video using BERT and RoBERTa model and ChatGPT.
+// @Produce		json
+// @Param			video	body		models.YoutubeAnalyzerReqBody	true	"Youtube video analysis request body"
+// @Success		200		{object}	models.YoutubeAnalyzerRespBody
+// @Failure		204		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	utils.HandleError.errorResponse
+// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/analysis [post]
 func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerReqBody
 
@@ -353,15 +353,15 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-//	@Summary		Simple analysis with BERT model for the landing page
-//	@Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
-//	@Produce		json
-//	@Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
-//	@Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
-//	@Failure		204		{object}	utils.HandleError.errorResponse
-//	@Failure		400		{object}	utils.HandleError.errorResponse
-//	@Failure		500		{object}	utils.HandleError.errorResponse
-//	@Router			/api/youtube/analysis-landing [post]
+// @Summary		Simple analysis with BERT model for the landing page
+// @Description	An endpoint used to do a simple analysis with the BERT model to show a result in the landing
+// @Produce		json
+// @Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
+// @Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
+// @Failure		204		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	utils.HandleError.errorResponse
+// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerLandingReqBody
 

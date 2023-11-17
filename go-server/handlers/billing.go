@@ -281,7 +281,7 @@ func billingCreateSubscriptionWebhookHandler(
 		UpdatePaymentMethod:  subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
-	fmt.Printf("[billingCreateSubscriptionWebhookHandler] creating subscription %s for user with Id %s\n",
+	log.Printf("[billingCreateSubscriptionWebhookHandler] creating subscription %s for user with Id %s\n",
 		subscription.Data.ID, userId)
 
 	err = database.CreateSubscription(userId, &newSubscription)
@@ -325,7 +325,7 @@ func billingUpdateSubscriptionWebhookHandler(
 		UpdatePaymentMethod:  subscription.Data.Attributes.Urls.UpdatePaymentMethod,
 	}
 
-	fmt.Printf("[billingUpdateSubscriptionWebhookHandler] updating subscription %s for user with id %s\n",
+	log.Printf("[billingUpdateSubscriptionWebhookHandler] updating subscription %s for user with id %s\n",
 		subscription.Data.ID, userId)
 	err = database.UpdateSubscription(userId, &updatedSubscription)
 	return err
@@ -346,7 +346,7 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 		}
 
 		defer func() {
-			fmt.Printf("[BillingSubscriptionsWebhooks] event %s handled correctly\n", webhookBody.Meta.EventName)
+			log.Printf("[BillingSubscriptionsWebhooks] event %s handled correctly\n", webhookBody.Meta.EventName)
 		}()
 
 		prettyJSON, err := json.MarshalIndent(webhookBody, "", "  ")
@@ -365,7 +365,7 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 			"subscription_payment_recovered",
 			"subscription_cancelled",
 			"subscription_expired":
-			fmt.Printf("%s\n", webhookBody.Meta.EventName)
+			log.Printf("%s\n", webhookBody.Meta.EventName)
 			return c.Status(http.StatusOK).JSON(fiber.Map{
 				"message": fmt.Sprintf("webhook for event %s handled", webhookBody.Meta.EventName),
 			})

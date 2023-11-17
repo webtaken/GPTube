@@ -274,7 +274,7 @@ definitions:
       ends_at:
         type: string
       first_subscription_item:
-        $ref: '#/definitions/lemonsqueezy.SubscriptionItem'
+        $ref: '#/definitions/lemonsqueezy.SubscriptionFirstSubscriptionItem'
       order_id:
         type: integer
       order_item_id:
@@ -308,6 +308,23 @@ definitions:
       variant_id:
         type: integer
       variant_name:
+        type: string
+    type: object
+  lemonsqueezy.SubscriptionFirstSubscriptionItem:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_usage_based:
+        type: boolean
+      price_id:
+        type: integer
+      quantity:
+        type: integer
+      subscription_id:
+        type: integer
+      updated_at:
         type: string
     type: object
   lemonsqueezy.SubscriptionInvoiceAttributes:
@@ -370,23 +387,6 @@ definitions:
             type: string
         type: object
     type: object
-  lemonsqueezy.SubscriptionItem:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      is_usage_based:
-        type: boolean
-      price_id:
-        type: integer
-      quantity:
-        type: integer
-      subscription_id:
-        type: integer
-      updated_at:
-        type: string
-    type: object
   lemonsqueezy.SubscriptionPause:
     properties:
       mode:
@@ -396,6 +396,8 @@ definitions:
     type: object
   lemonsqueezy.SubscriptionURLs:
     properties:
+      customer_portal:
+        type: string
       update_payment_method:
         type: string
     type: object

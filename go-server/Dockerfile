@@ -23,10 +23,12 @@ FROM alpine:latest
 
 WORKDIR /home
 
+ENV ENV_MODE=development
 COPY --from=builder /gptube_build /gptube_build
 COPY .env.example ./.env
 COPY templates/ ./templates
 # COPY gptube-firebase-sdk-prod.json ./
+
 
 EXPOSE 8000
 

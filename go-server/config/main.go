@@ -20,12 +20,16 @@ const (
 // use godot package to load/read the .env file and
 // return the value of the key
 func Config(key string) string {
-	// load .env file
-	err := godotenv.Load(".env")
+	env := os.Getenv("ENV_MODE")
+	if env == "" {
+		env = "development"
+	}
+	err := godotenv.Load(".env." + env + ".local")
 
 	if err != nil {
 		log.Printf("Error loading env file: %s", err.Error())
 	}
+
 	val, ok := os.LookupEnv(key)
 	if !ok {
 		log.Printf("Error loading env var %q", key)

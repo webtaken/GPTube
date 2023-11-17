@@ -26,9 +26,9 @@ models/LemonsqueezyCheckoutData.ts
 models/LemonsqueezyCheckoutOptions.ts
 models/LemonsqueezyCheckoutProductOptions.ts
 models/LemonsqueezySubscription.ts
+models/LemonsqueezySubscriptionFirstSubscriptionItem.ts
 models/LemonsqueezySubscriptionInvoiceAttributes.ts
 models/LemonsqueezySubscriptionInvoiceAttributesUrls.ts
-models/LemonsqueezySubscriptionItem.ts
 models/LemonsqueezySubscriptionPause.ts
 models/LemonsqueezySubscriptionURLs.ts
 models/ModelsBertAIResults.ts

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import { nextui } from "@nextui-org/theme";
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   content: [
@@ -20,6 +21,9 @@ module.exports = {
         typo: "#EDEDED",
         "white-full": "#EDEDED",
         "white-low": "#A1A1A1"
+      },
+      fontFamily: {
+        sans: ['var(--font-geist-sans)', ...defaultTheme.fontFamily.sans],
       },
     },
   },

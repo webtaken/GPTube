@@ -7,7 +7,4 @@ const createCustomError = function (name: string, defaultMessage?: string) {
   }
 }
 
-export const InternalServerError = createCustomError(
-  'InternalServerError',
-  'Error interno del servidor',
-)
+export const InternalServerError = createCustomError('InternalServerError', 'Internal Server Error')

@@ -2,20 +2,28 @@ import { apiClient } from '@/gptube-api'
 import { handleError } from '@/utils/errors/handle-error'
 
 export async function getVideosAnalyzed({
-  email,
+  userId,
   page,
   pageSize,
 }: {
-  email: string
+  userId: string
   page: number
-  pageSize?: number
+  pageSize: number
 }) {
   try {
-    return await apiClient.apiYoutubeVideosGet({
-      accountEmail: email,
+    console.log({
+      userId,
       page,
       pageSize,
     })
+
+    const data = await apiClient.apiYoutubeVideosGet({
+      userId,
+      page,
+      pageSize,
+    })
+
+    return data
   } catch (error) {
     handleError(error)
   }

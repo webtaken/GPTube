@@ -89,7 +89,7 @@ function VideoSkeleton({ showSkeleton }: { showSkeleton: boolean }) {
     >
       <ScrollShadow className="w-full h-full" offset={0} size={0}>
         {showSkeleton ? (
-          <div className="space-y-5 w-full h-full">
+          <div className="w-full h-full space-y-5">
             <Skeleton className="rounded-lg">
               <div className="h-24 rounded-lg bg-default-300" />
             </Skeleton>
@@ -106,7 +106,7 @@ function VideoSkeleton({ showSkeleton }: { showSkeleton: boolean }) {
             </div>
           </div>
         ) : (
-          <div className="flex items-center flex-col gap-1 justify-center h-full w-full">
+          <div className="flex flex-col items-center justify-center w-full h-full gap-1">
             <Video className="w-6 h-6 text-gray-500" />
             <span className="font-medium text-gray-500">No video selected</span>
           </div>

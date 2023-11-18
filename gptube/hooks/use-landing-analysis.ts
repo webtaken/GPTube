@@ -9,6 +9,8 @@ import { apiClient } from '@/gptube-api'
 import { getAnalysisLandingFromCache } from '@/services/get-analysis-landing-from-cache.service'
 import { extractYTVideoID } from '@/utils'
 
+import { videoQueryKeys } from './video-query-keys'
+
 export function useHandleLandingAnalysis() {
   const mutation = useMutation({
     mutationFn: (data: ModelsYoutubeAnalyzerLandingReqBody) => {
@@ -50,7 +52,7 @@ export function useHandleLandingAnalysis() {
 
 export function useLandingAnalysisFromCache() {
   const query = useQuery({
-    queryKey: ['landing-analysis'],
+    queryKey: videoQueryKeys.videoLanding(),
     queryFn: getAnalysisLandingFromCache,
   })
 

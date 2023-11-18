@@ -13,8 +13,6 @@ import {
 
 import { useLandingAnalysisFromCache } from '@/hooks/use-landing-analysis'
 
-import { rubikFont } from '../Common/fonts'
-
 import { ContentLandingAnalysis } from './content-landing-analysis'
 
 export function AnalysisLanding({
@@ -69,12 +67,7 @@ export function AnalysisLanding({
           </>
         )}
       </Card>
-      <Modal
-        className={rubikFont.className}
-        isOpen={isOpen}
-        radius="sm"
-        onOpenChange={onOpenChange}
-      >
+      <Modal isOpen={isOpen} radius="sm" onOpenChange={onOpenChange}>
         <ModalContent className="p-2">
           {() => (
             <>

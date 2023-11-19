@@ -1,16 +1,16 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navbar'
-import Link from 'next/link'
-import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
-import { LogIn } from 'lucide-react'
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
+import Link from "next/link";
+import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { LogIn, LayoutDashboard } from "lucide-react";
 
-import { useAuth, useAuthActions } from '@/hooks/use-auth'
+import { useAuth, useAuthActions } from "@/hooks/use-auth";
 
-import { Button } from './Common/button'
-import { LogoGPTube } from './gptube-logo'
+import { Button } from "./Common/button";
+import { LogoGPTube } from "./gptube-logo";
 
 export function Header() {
-  const { user } = useAuth()
-  const { logoutHandler } = useAuthActions()
+  const { user } = useAuth();
+  const { logoutHandler } = useAuthActions();
 
   return (
     <Navbar isBordered maxWidth="lg">
@@ -32,15 +32,23 @@ export function Header() {
               </DropdownTrigger>
               <DropdownMenu
                 variant="light"
-                onAction={key => {
-                  if (key === 'logout') {
-                    logoutHandler()
+                onAction={(key) => {
+                  if (key === "logout") {
+                    logoutHandler();
                   }
                 }}
               >
                 <DropdownItem key="profile" disableAnimation className="gap-2 h-14">
                   <p className="font-medium">{user.displayName}</p>
                   <p className="text-neutral-500">{user.email}</p>
+                </DropdownItem>
+                <DropdownItem
+                  key="dashboard"
+                  disableAnimation
+                  className="font-medium gap-2 h-14"
+                  startContent={<LayoutDashboard className="w-4 h-4" />}
+                >
+                  <Link href="/dashboard">Go to dashboard</Link>
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
@@ -62,5 +70,5 @@ export function Header() {
         )}
       </NavbarContent>
     </Navbar>
-  )
+  );
 }

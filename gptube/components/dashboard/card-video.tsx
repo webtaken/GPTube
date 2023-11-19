@@ -1,20 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
-import type { ModelsYoutubeVideoDashboard } from '@/gptube-api'
+import type { ModelsYoutubeVideoDashboard } from "@/gptube-api";
 
-import { Avatar } from '@nextui-org/react'
-import { Dot, MoreVertical } from 'lucide-react'
+import { Avatar } from "@nextui-org/react";
+import { Dot, MoreVertical } from "lucide-react";
 
-import { useAuth } from '@/hooks/use-auth'
-import { formatDate } from '@/utils/date.utils'
-
-import { Button } from '../Common/button'
+import { useAuth } from "@/hooks/use-auth";
+import { formatDate } from "@/utils/date.utils";
 
 export function CardVideo({ snippet, createdAt }: ModelsYoutubeVideoDashboard) {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
-  const { title, thumbnails, tags } = snippet ?? {}
+  const { title, thumbnails, tags } = snippet ?? {};
 
-  const imgCard = thumbnails?._default?.url
+  const imgCard = thumbnails?._default?.url;
 
   return (
     <article className="flex items-center gap-4 p-4 border rounded-md shadow">
@@ -23,7 +21,7 @@ export function CardVideo({ snippet, createdAt }: ModelsYoutubeVideoDashboard) {
           <img alt={title} className="object-cover object-center w-32 rounded" src={imgCard} />
         ) : null}
       </section>
-      <section className="flex items-center justify-between gap-2">
+      <section className="flex items-center justify-between gap-2 w-full">
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{title}</h3>
           <div className="flex items-center">
@@ -41,5 +39,5 @@ export function CardVideo({ snippet, createdAt }: ModelsYoutubeVideoDashboard) {
         </div>
       </section>
     </article>
-  )
+  );
 }

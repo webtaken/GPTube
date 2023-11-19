@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import Script from "next/script";
 import { GeistSans } from "geist/font/sans";
 
 import { Providers } from "./providers";

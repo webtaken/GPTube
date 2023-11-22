@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { ModelsYoutubeVideoAnalyzed } from "@/gptube-api";
-import { Tooltip } from "@nextui-org/react";
-import { HelpCircle } from "lucide-react";
+import BertStats from "./BertStats";
+import RobertaStats from "./RobertaStats";
 
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate } from "@/utils/date.utils";
@@ -26,53 +26,9 @@ export function MainStatistics({ results }: ModelsYoutubeVideoAnalyzed) {
           </p>
         </section>
       </section>
-      <div className="grid grid-cols-2 gap-4">
-        <section className="px-8 py-4 border shadow-sm w-full rounded">
-          <h1 className="text-xl font-bold flex gap-2 items-center">
-            BERT model results{" "}
-            <Tooltip
-              content={
-                <div className="px-1 py-2">
-                  <div className="text-tiny">
-                    Visit{" "}
-                    <a
-                      className="font-bold underline"
-                      target="_blank"
-                      href="https://huggingface.co/nlptown/bert-base-multilingual-uncased-sentiment"
-                    >
-                      model
-                    </a>
-                  </div>
-                </div>
-              }
-            >
-              <HelpCircle className="w-4 h-4" />
-            </Tooltip>
-          </h1>
-        </section>
-        <section className="px-8 py-4 border shadow-sm w-full rounded">
-          <h1 className="text-xl font-bold flex gap-2 items-center">
-            RoBERTa model results{" "}
-            <Tooltip
-              content={
-                <div className="px-1 py-2">
-                  <div className="text-tiny">
-                    Visit{" "}
-                    <a
-                      className="font-bold underline"
-                      target="_blank"
-                      href="https://huggingface.co/nlptown/bert-base-multilingual-uncased-sentiment"
-                    >
-                      model
-                    </a>
-                  </div>
-                </div>
-              }
-            >
-              <HelpCircle className="w-4 h-4" />
-            </Tooltip>
-          </h1>
-        </section>
+      <div className="grid grid-cols-2 gap-4 pb-4">
+        <BertStats results={results} />
+        <RobertaStats results={results} />
       </div>
     </>
   );

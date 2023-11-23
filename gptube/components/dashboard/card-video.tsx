@@ -7,12 +7,10 @@ import { Dot, MoreVertical } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { formatDate } from '@/utils/date.utils'
 
-import { Button } from '../Common/button'
-
 export function CardVideo({ snippet, createdAt }: ModelsYoutubeVideoDashboard) {
   const { user } = useAuth()
 
-  const { title, thumbnails, tags } = snippet ?? {}
+  const { title, thumbnails } = snippet ?? {}
 
   const imgCard = thumbnails?._default?.url
 

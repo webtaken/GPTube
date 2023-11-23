@@ -19,8 +19,6 @@ export function DashboardUI() {
     isFetching,
   } = useVideosAnalyzed()
 
-  console.log(videos)
-
   return (
     <main className="max-w-screen-lg px-6 py-6 mx-auto space-y-6">
       <header className="flex justify-end">

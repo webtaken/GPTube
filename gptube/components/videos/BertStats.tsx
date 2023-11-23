@@ -12,9 +12,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ReTooltip,
-  Legend,
-  Label,
-  Rectangle,
   ResponsiveContainer,
 } from "recharts";
 
@@ -45,12 +42,15 @@ export default function BertStats({ results }: ModelsYoutubeVideoAnalyzed) {
       status: ModelScores.POSITIVE,
       name: "😃",
     },
-    {
+  ];
+
+  if ((results?.bertResults?.errorsCount || 0) > 0) {
+    data.push({
       total: results?.bertResults?.errorsCount || 0,
       status: ModelScores.ERROR,
       name: "Errors ❌",
-    },
-  ];
+    });
+  }
 
   return (
     <section className="py-4 border shadow-sm w-full rounded">
@@ -89,7 +89,42 @@ export default function BertStats({ results }: ModelsYoutubeVideoAnalyzed) {
           <XAxis axisLine={false} dataKey="name" fontSize={12} stroke="#000a0a" tickLine={false} />
           <YAxis axisLine={false} fontSize={12} stroke="#000a0a" tickLine={false} />
           <CartesianGrid strokeDasharray="3 3" />
-          <ReTooltip />
+          <ReTooltip
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                const { payload: data } = payload[0];
+                let label = "";
+                switch (data.status) {
+                  case ModelScores.NEGATIVE:
+                    label = "Score 1";
+                    break;
+                  case ModelScores.BAD:
+                    label = "Score 2";
+                    break;
+                  case ModelScores.NEUTRAL:
+                    label = "Score 3";
+                    break;
+                  case ModelScores.FAIR:
+                    label = "Score 4";
+                    break;
+                  case ModelScores.ERROR:
+                    label = "Errors";
+                    break;
+                  default:
+                    label = "Score 5";
+                }
+                return (
+                  <div className="rounded-md text-base bg-foreground-50 p-2">
+                    <p className="font-semibold">{label}</p>
+                    <p className="text-sm">
+                      {data.total} of {results?.bertResults?.successCount || 0} comments
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            }}
+          />
           <Bar dataKey="total" fill="black" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => {
               if (entry.status === ModelScores.ERROR && entry.total === 0) {
@@ -99,12 +134,18 @@ export default function BertStats({ results }: ModelsYoutubeVideoAnalyzed) {
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.status === ModelScores.ERROR ? "#f31260" : "#5CB85C"}
+                  fillOpacity={0.8}
                 />
               );
             })}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      <p className="text-sm text-center px-8">
+        <span className="font-bold">BERT</span> is our rate model that ranks the overall
+        satisfaction of your users in a scale from <span className="font-bold">1 to 5</span>, where
+        5 is an excellent opinion of your content and 1 is a bad opinion.
+      </p>
     </section>
   );
 }

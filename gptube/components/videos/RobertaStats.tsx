@@ -3,33 +3,40 @@ import type { ModelsYoutubeVideoAnalyzed } from "@/gptube-api";
 import { Tooltip } from "@nextui-org/react";
 import { HelpCircle } from "lucide-react";
 import { ModelScores } from "@/constants/ai-models";
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+import {
+  PieChart,
+  Pie,
+  Sector,
+  Cell,
+  ResponsiveContainer,
+  Tooltip as ReTooltip,
+  Legend,
+} from "recharts";
 
 const RADIAN = Math.PI / 180;
 
 export default function RobertaStats({ results }: ModelsYoutubeVideoAnalyzed) {
   const data = [
     {
-      total: results?.robertaResults?.negative || 0,
+      percentageFormatted: Math.round(100 * (results?.robertaResults?.negative || 0)),
+      percentage: results?.robertaResults?.negative || 0,
       status: ModelScores.NEGATIVE,
-      name: "😠",
+      color: "#f5a524",
+      name: "negative 😠",
     },
     {
-      total: results?.robertaResults?.neutral || 0,
+      percentageFormatted: Math.round(100 * (results?.robertaResults?.neutral || 0)),
+      percentage: results?.robertaResults?.neutral || 0,
       status: ModelScores.NEUTRAL,
-      name: "😐",
+      color: "#006FEE",
+      name: "neutral 😐",
     },
     {
-      total: results?.robertaResults?.positive || 0,
+      percentageFormatted: Math.round(100 * (results?.robertaResults?.positive || 0)),
+      percentage: results?.robertaResults?.positive || 0,
       status: ModelScores.POSITIVE,
-      name: "😃",
-    },
-    {
-      total: results?.robertaResults?.errorsCount || 0,
-      status: ModelScores.ERROR,
-      name: "Errors ❌",
+      color: "#17c964",
+      name: "positive 😃",
     },
   ];
 
@@ -57,7 +64,37 @@ export default function RobertaStats({ results }: ModelsYoutubeVideoAnalyzed) {
         </Tooltip>
       </h1>
       <ResponsiveContainer width="100%" height={345}>
-        <PieChart width={500} height={500}>
+        <PieChart width={600} height={600}>
+          <ReTooltip
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                const { payload: data } = payload[0];
+                let label = "";
+                const comments = Math.ceil(
+                  data.percentage * (results?.robertaResults?.successCount || 0),
+                );
+                switch (data.status) {
+                  case ModelScores.NEGATIVE:
+                    label = "Negative";
+                    break;
+                  case ModelScores.NEUTRAL:
+                    label = "Neutral";
+                    break;
+                  default:
+                    label = "Positive";
+                }
+                return (
+                  <div className="rounded-md text-base bg-foreground-50 p-2">
+                    <p className="font-semibold">{label}</p>
+                    <p className="text-sm">
+                      {comments} of {results?.robertaResults?.successCount || 0} comments
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            }}
+          />
           <Pie
             data={data}
             cx="50%"
@@ -82,14 +119,28 @@ export default function RobertaStats({ results }: ModelsYoutubeVideoAnalyzed) {
             }}
             outerRadius={80}
             fill="#8884d8"
-            dataKey="total"
+            dataKey="percentageFormatted"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
+          <Legend />
         </PieChart>
       </ResponsiveContainer>
+      <p className="text-sm text-center px-8">
+        <span className="font-bold">RoBERTa</span> model classifies the sentiment of the comments in
+        negative, neutral or positive, this is the average perception about your video.
+        <br />
+        {(results?.robertaResults?.errorsCount || 0) > 0 && (
+          <span className="text-sm font-medium">
+            <span className="font-bold text-red-600">
+              {results?.robertaResults?.errorsCount} comments
+            </span>{" "}
+            could not be analyzed.
+          </span>
+        )}
+      </p>
     </section>
   );
 }

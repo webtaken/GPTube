@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next'
 
-import { GeistSans } from "geist/font/sans";
+import { GeistSans } from 'geist/font/sans'
 
-import { Providers } from "./providers";
+import { Providers } from './providers'
 
-import "../styles/globals.css";
+import '../styles/globals.css'
 
 export const metadata: Metadata = {
-  title: "GPTube",
-  description: "Welcome to a AI powered YouTube video analysis tool",
-};
+  title: 'GPTube',
+  description: 'Welcome to a AI powered YouTube video analysis tool',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,5 +18,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }

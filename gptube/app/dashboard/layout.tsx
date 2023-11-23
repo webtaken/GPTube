@@ -1,5 +1,5 @@
-"use client";
-import { Header } from "@/components/header";
+'use client'
+import { Header } from '@/components/header'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,5 +7,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Header />
       {children}
     </>
-  );
+  )
 }

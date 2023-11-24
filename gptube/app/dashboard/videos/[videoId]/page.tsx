@@ -8,11 +8,11 @@ import { MainStatistics } from '@/components/videos/MainStatistics'
 
 // TODO: Set this page as protected route for new users
 function Video() {
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()!
   const { videoData, isLoading } = useVideoStats(videoId)
 
   return (
-    <main className="h-screen max-w-screen-lg w-full px-6 py-6 mx-auto space-y-6">
+    <main className="w-full h-screen max-w-screen-lg px-6 py-6 mx-auto space-y-6">
       <VideoTopActions
         createdAt={videoData?.createdAt}
         isLoading={isLoading}

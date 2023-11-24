@@ -11,12 +11,6 @@ export async function getVideosAnalyzed({
   pageSize: number
 }) {
   try {
-    console.log({
-      userId,
-      page,
-      pageSize,
-    })
-
     const data = await apiClient.apiYoutubeVideosGet({
       userId,
       page,

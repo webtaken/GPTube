@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
 
 import { Providers } from './providers'
@@ -18,7 +17,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Providers>{children}</Providers>
       </body>
-      <Script defer src="https://assets.lemonsqueezy.com/lemon.js" />
     </html>
   )
 }

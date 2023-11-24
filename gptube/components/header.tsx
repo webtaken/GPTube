@@ -1,7 +1,7 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/navbar'
 import Link from 'next/link'
 import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
-import { LogIn } from 'lucide-react'
+import { LogIn, LayoutDashboard } from 'lucide-react'
 
 import { useAuth, useAuthActions } from '@/hooks/use-auth'
 
@@ -41,6 +41,14 @@ export function Header() {
                 <DropdownItem key="profile" disableAnimation className="gap-2 h-14">
                   <p className="font-medium">{user.displayName}</p>
                   <p className="text-neutral-500">{user.email}</p>
+                </DropdownItem>
+                <DropdownItem
+                  key="dashboard"
+                  disableAnimation
+                  className="gap-2 font-medium h-14"
+                  startContent={<LayoutDashboard className="w-4 h-4" />}
+                >
+                  <Link href="/dashboard">Go to dashboard</Link>
                 </DropdownItem>
                 <DropdownItem
                   key="logout"

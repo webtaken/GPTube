@@ -17,7 +17,7 @@ export default function Login() {
     <main className="w-[100dvw] h-[100dvh] flex justify-center items-center">
       <Card className="w-full max-w-md py-8" radius="sm">
         <CardHeader className="flex flex-col items-center gap-2 p-5 text-center">
-          <h2 className="text-lg font-medium ">Sign in to GPTube</h2>
+          <h2 className="text-lg font-medium">Sign in to GPTube</h2>
           <small className="text-neutral-500">Most powerful analyzer to Youtube content</small>
         </CardHeader>
         <Divider />

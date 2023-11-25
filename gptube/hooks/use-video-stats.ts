@@ -17,7 +17,6 @@ export function useVideoStats(videoId: string) {
       videoId: videoId,
     }),
     enabled: user !== null,
-    staleTime: 5000,
     keepPreviousData: true,
   })
 

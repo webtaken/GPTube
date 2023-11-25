@@ -1,14 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import type { ModelsYoutubeVideoAnalyzed } from '@/gptube-api'
 
+import Link from 'next/link'
 import { Youtube } from 'lucide-react'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import { Tooltip, Skeleton } from '@nextui-org/react'
+import { Skeleton } from '@nextui-org/react'
+
+import { formatDateRelative, formatDate } from '@/utils/date.utils'
 
 import { Button } from '../Common/button'
-
-dayjs.extend(relativeTime)
 
 interface VideoTopActionsProps extends ModelsYoutubeVideoAnalyzed {
   isLoading: boolean
@@ -43,31 +42,28 @@ export function VideoTopActions({
             </a>
             <p className="text-sm">
               Created at:{' '}
-              <Tooltip
-                closeDelay={200}
-                content={<p>{dayjs(createdAt).format('DD MMM, YYYY (HH:mm)')}</p>}
-              >
-                <span className="font-medium">{dayjs(createdAt).fromNow()}</span>
-              </Tooltip>
+              <span className="font-medium" title={formatDate(createdAt, 'DD MMM, YYYY (HH:mm A)')}>
+                {formatDateRelative(createdAt)}
+              </span>
             </p>
             <p className="text-sm">
               Last update:{' '}
-              <Tooltip
-                closeDelay={200}
-                content={<p>{dayjs(lastUpdate).format('DD MMM, YYYY (HH:mm)')}</p>}
+              <span
+                className="font-medium"
+                title={formatDate(lastUpdate, 'DD MMM, YYYY (HH:mm A)')}
               >
-                <span className="font-medium">{dayjs(lastUpdate).fromNow()}</span>
-              </Tooltip>
+                {formatDateRelative(lastUpdate)}
+              </span>
             </p>
           </>
         )}
       </section>
       {!isLoading && (
-        <section>
+        <Link href={`/dashboard/videos/${videoId}/negative-comments`}>
           <Button className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg">
             See negative comments
           </Button>
-        </section>
+        </Link>
       )}
     </div>
   )

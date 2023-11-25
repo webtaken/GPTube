@@ -12,7 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@headlessui/react": "^1.7.14",
-    "@nextui-org/react": "^2.1.10",
+    "@nextui-org/react": "^2.2.9",
     "@tanstack/react-query": "^4.35.7",
     "@tanstack/react-query-devtools": "^4.35.7",
     "antd": "^5.4.0",

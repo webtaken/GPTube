@@ -1,5 +1,5 @@
 import { Card, CardBody } from '@nextui-org/card'
-import { Pagination } from '@nextui-org/react'
+import { Pagination, Spinner } from '@nextui-org/react'
 
 import { useVideosAnalyzed } from '@/hooks/use-videos-analyzed'
 
@@ -19,8 +19,6 @@ export function DashboardUI() {
     isFetching,
   } = useVideosAnalyzed()
 
-  console.log(videos)
-
   return (
     <main className="max-w-screen-lg px-6 py-6 mx-auto space-y-6">
       <header className="flex justify-end">
@@ -35,20 +33,19 @@ export function DashboardUI() {
           </Card>
         </aside>
         <aside className="flex-1">
-          <Card className="min-h-[66.5dvh]" radius="sm" shadow="sm">
+          <Card className="min-h-[66.5dvh]" radius="sm">
             <CardBody className="space-y-6">
               <section>
                 {isLoadingVideos ? (
-                  <div>Loading...</div>
+                  <div className="flex">
+                    <Spinner className="mx-auto" color="default" />
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {!videos || videos.length === 0 ? <NotVideoFound /> : null}
                     <section className="space-y-4">
                       {videos?.map(video => <CardVideo key={video.videoId} {...video} />)}
                     </section>
-                    <p className={`text-center ${isFetching ? 'visible' : 'invisible'}`}>
-                      Loading more data...
-                    </p>
                   </div>
                 )}
               </section>

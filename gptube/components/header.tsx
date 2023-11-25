@@ -16,7 +16,9 @@ export function Header() {
     <Navbar isBordered maxWidth="lg">
       <NavbarBrand className="gap-2">
         <LogoGPTube className="w-10 h-10" />
-        <p className="text-2xl font-bold">GPTube</p>
+        <Link className="text-2xl font-bold" href={user ? '/dashboard' : '/'}>
+          GPTube
+        </Link>
       </NavbarBrand>
       <NavbarContent justify="end">
         {user ? (

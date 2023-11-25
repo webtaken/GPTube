@@ -1,3 +1,0 @@
-export const INITIAL_PAGE_VIDEOS_ANALYZED = 1
-
-export const PAGE_SIZE_VIDEOS_ANALYZED = 10

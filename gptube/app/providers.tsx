@@ -4,11 +4,14 @@ import { NextUIProvider } from '@nextui-org/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Toaster } from 'react-hot-toast'
 
 import { AuthProvider } from '@/context/AuthContext/AuthContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+
   // eslint-disable-next-line react/hook-use-state
   const [queryClient] = useState(
     () =>
@@ -28,7 +31,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <NextUIProvider>{children}</NextUIProvider>
+        <NextUIProvider navigate={() => router.push.bind(router)}>{children}</NextUIProvider>
         <ReactQueryDevtools initialIsOpen={false} />
         <Toaster />
       </QueryClientProvider>

@@ -4,17 +4,17 @@ import toast from 'react-hot-toast'
 
 import { getVideosAnalyzed } from '@/services/get-videos-analyzed.service'
 import {
-  INITIAL_PAGE_VIDEOS_ANALYZED,
-  PAGE_SIZE_VIDEOS_ANALYZED,
-} from '@/constants/videos-analyzed.constants'
+  DEFAULT_PAGE_PAGINATION,
+  DEFAULT_PAGE_SIZE_PAGINATION,
+} from '@/constants/general.constants'
 
 import { videoQueryKeys } from './video-query-keys'
 import { useAuth } from './use-auth'
 
 export function useVideosAnalyzed() {
   const { user } = useAuth()
-  const [page, setPage] = useState(INITIAL_PAGE_VIDEOS_ANALYZED)
-  const [pageSize, setPageSize] = useState(PAGE_SIZE_VIDEOS_ANALYZED)
+  const [page, setPage] = useState(DEFAULT_PAGE_PAGINATION)
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_PAGINATION)
 
   const query = useQuery({
     queryFn: () => getVideosAnalyzed({ userId: '1', page, pageSize }),

@@ -1,55 +1,59 @@
-import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 
-import { getVideoNegativeComments } from "@/services/get-video-negative-comments.service";
-import {
-  INITIAL_PAGE_VIDEOS_ANALYZED,
-  PAGE_SIZE_VIDEOS_ANALYZED,
-} from "@/constants/videos-analyzed.constants";
-import { videoQueryKeys } from "./video-query-keys";
-import { useAuth } from "./use-auth";
+import { getVideoNegativeComments } from '@/services/get-video-negative-comments.service'
 
-export function useNegativeComments(videoId: string) {
-  const { user } = useAuth();
-  const [page, setPage] = useState(INITIAL_PAGE_VIDEOS_ANALYZED);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE_VIDEOS_ANALYZED);
+import { videoQueryKeys } from './video-query-keys'
+import { useAuth } from './use-auth'
+
+export function useNegativeComments(videoId: string, initPage: number, initPageSize: number) {
+  const { user } = useAuth()
+  const [page, setPage] = useState(initPage)
+  const [pageSize, setPageSize] = useState(initPageSize)
 
   const query = useQuery({
-    queryFn: () => getVideoNegativeComments({ userId: "1", videoId, page, pageSize }),
+    queryFn: () => getVideoNegativeComments({ userId: '1', videoId, page, pageSize }),
     queryKey: videoQueryKeys.videoNegativeComments({
-      userId: "1",
+      userId: '1',
       videoId,
       page,
       pageSize,
     }),
     enabled: user !== null,
     keepPreviousData: true,
-  });
+  })
 
-  const totalComments = query.data?.count ?? 0;
-  const totalPages = totalComments / pageSize;
+  const totalComments = query.data?.count ?? 0
+  const totalPages = Math.ceil(totalComments / pageSize)
 
   useEffect(() => {
     if (query.error instanceof Error) {
-      toast.error(query.error.message);
+      toast.error(query.error.message)
     }
-  }, [query.error, query.isError]);
+  }, [query.error, query.isError])
 
-  const handleChangePage = (currentPage: number) => {
-    setPage(+currentPage);
+  const pageChangeHandler = (currentPage: number) => {
+    setPage(+currentPage)
     // if (!query.data?.next) return
 
     // const { page: pageSearch, page_size } = extractSearchParamsVideo(query.data.next)
 
     // setPageSize(+page_size)
-  };
+  }
+
+  const pageSizeChangeHandler = (newPageSize: number) => {
+    setPage(1) // restart the initial page
+    setPageSize(newPageSize)
+  }
 
   return {
-    comments: query.data?.results,
-    handleChangePage,
+    commentsPage: query.data,
+    pageChangeHandler,
+    pageSizeChangeHandler,
     totalPages,
     page,
+    pageSize,
     ...query,
-  };
+  }
 }

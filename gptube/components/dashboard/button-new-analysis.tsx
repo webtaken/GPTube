@@ -15,6 +15,8 @@ import { useVideoPreview } from '@/hooks/use-video-preview'
 import { isValidEmail, isValidYoutubeUrl } from '@/utils/validations.utils'
 import { useForm } from '@/hooks/use-form'
 import { useAuth } from '@/hooks/use-auth'
+import { extractYTVideoID } from '@/utils'
+import { useDashboardAnalysis } from '@/hooks/use-dashboard-analysis'
 
 import { Button } from '../Common/button'
 
@@ -22,11 +24,13 @@ import { VideoPreview } from './video-preview'
 
 export function ButtonNewAnalysis() {
   const { user } = useAuth()
-  const { handleChange, email, showEmail, url } = useForm({
+  let { handleChange, email, showEmail, url } = useForm({
     url: '',
     email: user?.email || '',
-    showEmail: true,
+    showEmail: false,
   })
+
+  const { handleAnalysis, isLoading, dataAnalysis } = useDashboardAnalysis()
 
   const [debouncedUrl] = useDebounce(url, 500)
   const modalAnalysis = useDisclosure()
@@ -34,6 +38,8 @@ export function ButtonNewAnalysis() {
 
   const isInvalidUrl = !isValidYoutubeUrl(url)
   const isInvalidEmail = email === '' || !isValidEmail(email)
+  const isInvalid = isInvalidUrl || (showEmail && isInvalidEmail)
+  const videoId = extractYTVideoID(debouncedUrl) || ''
 
   return (
     <>
@@ -122,9 +128,20 @@ export function ButtonNewAnalysis() {
                         videoPreviewQuery.isSuccess ? 'hover:!bg-opacity-60' : ''
                       } font-medium text-white disabled:cursor-not-allowed transition-opacity`}
                       color="success"
-                      disabled={isInvalidUrl || isInvalidEmail || url.length === 0}
+                      isDisabled={isInvalid}
+                      isLoading={isLoading}
                       radius="sm"
-                      onPress={onClose}
+                      onPress={async () => {
+                        if (!showEmail) {
+                          email = ''
+                          await handleAnalysis('1', videoId, email)
+                          onClose()
+
+                          return
+                        }
+                        handleAnalysis('1', videoId, email)
+                        onClose()
+                      }}
                     >
                       Start analysis
                     </Button>

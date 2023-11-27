@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
-import type { ModelsYoutubeVideoAnalyzed } from '@/gptube-api'
+import type { ModelsYoutubeVideoAnalyzed } from "@/gptube-api";
 
-import Link from 'next/link'
-import { Youtube } from 'lucide-react'
-import { Skeleton } from '@nextui-org/react'
+import Link from "next/link";
+import { Youtube, RefreshCcw } from "lucide-react";
+import { Skeleton } from "@nextui-org/react";
 
-import { formatDateRelative, formatDate } from '@/utils/date.utils'
+import { formatDateRelative, formatDate } from "@/utils/date.utils";
 
-import { Button } from '../Common/button'
+import { Button } from "../Common/button";
 
 interface VideoTopActionsProps extends ModelsYoutubeVideoAnalyzed {
-  isLoading: boolean
+  isLoading: boolean;
 }
 
 export function VideoTopActions({
@@ -21,7 +21,7 @@ export function VideoTopActions({
   isLoading,
 }: VideoTopActionsProps) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4">
+    <div className="flex items-start justify-between gap-4 py-4">
       <section>
         {isLoading ? (
           <div className="space-y-1">
@@ -41,16 +41,16 @@ export function VideoTopActions({
               {snippet?.title}
             </a>
             <p className="text-sm">
-              Created at:{' '}
-              <span className="font-medium" title={formatDate(createdAt, 'DD MMM, YYYY (HH:mm A)')}>
+              Created at:{" "}
+              <span className="font-medium" title={formatDate(createdAt, "DD MMM, YYYY (HH:mm A)")}>
                 {formatDateRelative(createdAt)}
               </span>
             </p>
             <p className="text-sm">
-              Last update:{' '}
+              Last update:{" "}
               <span
                 className="font-medium"
-                title={formatDate(lastUpdate, 'DD MMM, YYYY (HH:mm A)')}
+                title={formatDate(lastUpdate, "DD MMM, YYYY (HH:mm A)")}
               >
                 {formatDateRelative(lastUpdate)}
               </span>
@@ -59,12 +59,20 @@ export function VideoTopActions({
         )}
       </section>
       {!isLoading && (
-        <Link href={`/dashboard/videos/${videoId}/negative-comments`}>
-          <Button className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg">
-            See negative comments
+        <div className="flex items-center gap-2">
+          <Button
+            className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg"
+            endContent={<RefreshCcw className="w-4 h-4" />}
+          >
+            Re-Analyze
           </Button>
-        </Link>
+          <Link href={`/dashboard/videos/${videoId}/negative-comments`}>
+            <Button className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg">
+              See negative comments
+            </Button>
+          </Link>
+        </div>
       )}
     </div>
-  )
+  );
 }

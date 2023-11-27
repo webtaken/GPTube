@@ -15,7 +15,7 @@ export function CardVideo({ snippet, createdAt, videoId }: ModelsYoutubeVideoDas
   const imgCard = thumbnails?._default?.url
 
   return (
-    <article className="flex items-center gap-4 p-4 rounded-md shadow-sm">
+    <article className="flex items-center gap-4 p-4 rounded-md shadow-sm border">
       <section>
         {imgCard ? (
           <img alt={title} className="object-cover object-center w-32 rounded" src={imgCard} />
@@ -29,7 +29,9 @@ export function CardVideo({ snippet, createdAt, videoId }: ModelsYoutubeVideoDas
             {createdAt ? (
               <>
                 <Dot />
-                <small>{formatDate(createdAt, 'MMM/DD')}</small>
+                <small title={formatDate(createdAt, 'DD MMM, YYYY (HH:mm A)')}>
+                  {formatDate(createdAt, 'MMM/DD')}
+                </small>
               </>
             ) : null}
           </div>

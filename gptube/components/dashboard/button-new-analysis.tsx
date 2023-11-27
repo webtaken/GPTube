@@ -24,13 +24,14 @@ import { VideoPreview } from './video-preview'
 
 export function ButtonNewAnalysis() {
   const { user } = useAuth()
+  // eslint-disable-next-line prefer-const
   let { handleChange, email, showEmail, url } = useForm({
     url: '',
     email: user?.email || '',
     showEmail: false,
   })
 
-  const { handleAnalysis, isLoading, dataAnalysis } = useDashboardAnalysis()
+  const { handleAnalysis, isLoading } = useDashboardAnalysis()
 
   const [debouncedUrl] = useDebounce(url, 500)
   const modalAnalysis = useDisclosure()

@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
+import { useParams } from 'next/navigation'
 
 import {
   DEFAULT_PAGE_PAGINATION,
   DEFAULT_PAGE_SIZE_PAGINATION,
-} from "@/constants/general.constants";
-import { useNegativeComments } from "@/hooks/use-negative-comments";
-import { NegativeCommentsTopActions } from "@/components/videos/negative-comments/NegativeCommentsTopActions";
-import { NegativeComments } from "@/components/videos/negative-comments/NegativeComments";
+} from '@/constants/general.constants'
+import { useNegativeComments } from '@/hooks/use-negative-comments'
+import { NegativeCommentsTopActions } from '@/components/videos/negative-comments/NegativeCommentsTopActions'
+import { NegativeComments } from '@/components/videos/negative-comments/NegativeComments'
 
 // TODO: Set this page as protected route for new users
 function Video() {
-  const { videoId } = useParams<{ videoId: string }>()!;
+  const { videoId } = useParams<{ videoId: string }>()!
   const {
     commentsPage,
     isLoading: isLoadingComments,
@@ -23,7 +23,7 @@ function Video() {
     pageSize,
     totalPages,
     isFetching,
-  } = useNegativeComments(videoId, DEFAULT_PAGE_PAGINATION, DEFAULT_PAGE_SIZE_PAGINATION);
+  } = useNegativeComments(videoId, DEFAULT_PAGE_PAGINATION, DEFAULT_PAGE_SIZE_PAGINATION)
 
   return (
     <>
@@ -44,7 +44,7 @@ function Video() {
         results={commentsPage?.results}
       />
     </>
-  );
+  )
 }
 
-export default Video;
+export default Video

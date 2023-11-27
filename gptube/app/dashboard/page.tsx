@@ -1,15 +1,14 @@
-"use client";
+'use client'
 
-import { Card, CardBody } from "@nextui-org/card";
-import { Pagination, Spinner } from "@nextui-org/react";
+import { Card, CardBody } from '@nextui-org/card'
+import { Pagination, Spinner } from '@nextui-org/react'
 
-import { useVideosAnalyzed } from "@/hooks/use-videos-analyzed";
-import { DEFAULT_PAGE_PAGINATION } from "@/constants/general.constants";
-
-import { FilterVideoAnalysis } from "@/components/dashboard/filter-video-analysis";
-import { ButtonNewAnalysis } from "@/components/dashboard/button-new-analysis";
-import { NotVideoFound } from "@/components/dashboard/not-videos-found";
-import { CardVideo } from "@/components/dashboard/card-video";
+import { useVideosAnalyzed } from '@/hooks/use-videos-analyzed'
+import { DEFAULT_PAGE_PAGINATION } from '@/constants/general.constants'
+import { FilterVideoAnalysis } from '@/components/dashboard/filter-video-analysis'
+import { ButtonNewAnalysis } from '@/components/dashboard/button-new-analysis'
+import { NotVideoFound } from '@/components/dashboard/not-videos-found'
+import { CardVideo } from '@/components/dashboard/card-video'
 
 export default function Dashboard() {
   const {
@@ -20,7 +19,7 @@ export default function Dashboard() {
     handleChangePage,
     totalPages,
     isFetching,
-  } = useVideosAnalyzed();
+  } = useVideosAnalyzed()
 
   return (
     <>
@@ -50,7 +49,7 @@ export default function Dashboard() {
                   <div className="space-y-2">
                     {!videos || videos.length === 0 ? <NotVideoFound /> : null}
                     <section className="space-y-4">
-                      {videos?.map((video) => <CardVideo key={video.videoId} {...video} />)}
+                      {videos?.map(video => <CardVideo key={video.videoId} {...video} />)}
                     </section>
                   </div>
                 </div>
@@ -61,7 +60,7 @@ export default function Dashboard() {
                     isCompact
                     showControls
                     classNames={{
-                      cursor: "text-white",
+                      cursor: 'text-white',
                     }}
                     color="success"
                     initialPage={DEFAULT_PAGE_PAGINATION}
@@ -76,5 +75,5 @@ export default function Dashboard() {
         </aside>
       </section>
     </>
-  );
+  )
 }

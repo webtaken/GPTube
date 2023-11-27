@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
-import type { ModelsYoutubeVideoAnalyzed } from "@/gptube-api";
+import type { ModelsYoutubeVideoAnalyzed } from '@/gptube-api'
 
-import Link from "next/link";
-import { Youtube, RefreshCcw } from "lucide-react";
-import { Skeleton } from "@nextui-org/react";
+import Link from 'next/link'
+import { Youtube, RefreshCcw } from 'lucide-react'
+import { Skeleton } from '@nextui-org/react'
 
-import { formatDateRelative, formatDate } from "@/utils/date.utils";
+import { formatDateRelative, formatDate } from '@/utils/date.utils'
 
-import { Button } from "../Common/button";
+import { Button } from '../Common/button'
 
 interface VideoTopActionsProps extends ModelsYoutubeVideoAnalyzed {
-  isLoading: boolean;
+  isLoading: boolean
 }
 
 export function VideoTopActions({
@@ -41,16 +41,16 @@ export function VideoTopActions({
               {snippet?.title}
             </a>
             <p className="text-sm">
-              Created at:{" "}
-              <span className="font-medium" title={formatDate(createdAt, "DD MMM, YYYY (HH:mm A)")}>
+              Created at:{' '}
+              <span className="font-medium" title={formatDate(createdAt, 'DD MMM, YYYY (HH:mm A)')}>
                 {formatDateRelative(createdAt)}
               </span>
             </p>
             <p className="text-sm">
-              Last update:{" "}
+              Last update:{' '}
               <span
                 className="font-medium"
-                title={formatDate(lastUpdate, "DD MMM, YYYY (HH:mm A)")}
+                title={formatDate(lastUpdate, 'DD MMM, YYYY (HH:mm A)')}
               >
                 {formatDateRelative(lastUpdate)}
               </span>
@@ -74,5 +74,5 @@ export function VideoTopActions({
         </div>
       )}
     </div>
-  );
+  )
 }

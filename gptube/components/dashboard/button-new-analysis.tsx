@@ -12,11 +12,11 @@ import { useDebounce } from 'use-debounce'
 import { Video } from 'lucide-react'
 
 import { useVideoPreview } from '@/hooks/use-video-preview'
-import { isValidEmail, isValidYoutubeUrl } from '@/utils/validations.utils'
+import { isValidYoutubeUrl } from '@/utils/validations.utils'
 import { useForm } from '@/hooks/use-form'
 import { useAuth } from '@/hooks/use-auth'
 import { extractYTVideoID } from '@/utils'
-import { useDashboardAnalysis } from '@/hooks/use-dashboard-analysis'
+import { useVideoAnalysis } from '@/hooks/use-video-analysis'
 
 import { Button } from '../Common/button'
 
@@ -30,16 +30,13 @@ export function ButtonNewAnalysis() {
     email: user?.email || '',
     showEmail: false,
   })
-
-  const { handleAnalysis, isLoading } = useDashboardAnalysis()
+  const { handleAnalysis, isLoading } = useVideoAnalysis()
 
   const [debouncedUrl] = useDebounce(url, 500)
   const modalAnalysis = useDisclosure()
   const videoPreviewQuery = useVideoPreview(debouncedUrl)
 
   const isInvalidUrl = !isValidYoutubeUrl(url)
-  const isInvalidEmail = email === '' || !isValidEmail(email)
-  const isInvalid = isInvalidUrl || (showEmail && isInvalidEmail)
   const videoId = extractYTVideoID(debouncedUrl) || ''
 
   return (
@@ -103,33 +100,12 @@ export function ButtonNewAnalysis() {
                         })
                       }}
                     >
-                      Send to email
+                      Send results to my e-mail
                     </Checkbox>
-                    {showEmail ? (
-                      <Input
-                        color={isInvalidEmail ? 'danger' : 'success'}
-                        errorMessage={isInvalidEmail ? 'Please enter a valid E-mail' : null}
-                        isInvalid={isInvalidEmail}
-                        label="E-mail"
-                        name="email"
-                        placeholder="you@email.com"
-                        type="email"
-                        value={email}
-                        variant="underlined"
-                        onValueChange={value => {
-                          handleChange({
-                            name: 'email',
-                            value: value,
-                          })
-                        }}
-                      />
-                    ) : null}
                     <Button
-                      className={`${
-                        videoPreviewQuery.isSuccess ? 'hover:!bg-opacity-60' : ''
-                      } font-medium text-white disabled:cursor-not-allowed transition-opacity`}
+                      className="font-medium text-white disabled:cursor-not-allowed transition-opacity"
                       color="success"
-                      isDisabled={isInvalid}
+                      isDisabled={isInvalidUrl}
                       isLoading={isLoading}
                       radius="sm"
                       onPress={async () => {

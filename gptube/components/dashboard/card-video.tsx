@@ -2,7 +2,7 @@
 import type { ModelsYoutubeVideoDashboard } from '@/gptube-api'
 
 import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react'
-import { Dot, MoreVertical } from 'lucide-react'
+import { Dot, MoreVertical, ExternalLink, BarChart3, Trash2, MessagesSquare } from 'lucide-react'
 
 import { useAuth } from '@/hooks/use-auth'
 import { formatDate } from '@/utils/date.utils'
@@ -41,16 +41,34 @@ export function CardVideo({ snippet, createdAt, videoId }: ModelsYoutubeVideoDas
             <MoreVertical className="w-5 h-5 rounded hover:cursor-pointer" strokeWidth={2} />
           </DropdownTrigger>
           <DropdownMenu aria-label="Static Actions" disabledKeys={['delete']} variant="light">
-            <DropdownItem key="stats" href={`/dashboard/videos/${videoId}`}>
-              Stats
+            <DropdownItem
+              key="comment-link"
+              href={`https://youtu.be/${videoId}`}
+              startContent={<ExternalLink className="w-4 h-4" />}
+              target="_blank"
+            >
+              Go to video
+            </DropdownItem>
+            <DropdownItem
+              key="stats"
+              href={`/dashboard/videos/${videoId}`}
+              startContent={<BarChart3 className="w-4 h-4" />}
+            >
+              See Stats
             </DropdownItem>
             <DropdownItem
               key="negative-comments"
               href={`/dashboard/videos/${videoId}/negative-comments`}
+              startContent={<MessagesSquare className="w-4 h-4" />}
             >
-              Negative comments
+              Bad comments
             </DropdownItem>
-            <DropdownItem key="delete" className="text-danger" color="danger">
+            <DropdownItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              startContent={<Trash2 className="w-4 h-4" />}
+            >
               Delete analysis
             </DropdownItem>
           </DropdownMenu>

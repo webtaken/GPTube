@@ -6,6 +6,8 @@ import { Youtube, RefreshCcw } from 'lucide-react'
 import { Skeleton } from '@nextui-org/react'
 
 import { formatDateRelative, formatDate } from '@/utils/date.utils'
+import { useVideoAnalysis } from '@/hooks/use-video-analysis'
+import { useAuth } from '@/hooks/use-auth'
 
 import { Button } from '../Common/button'
 
@@ -20,6 +22,9 @@ export function VideoTopActions({
   videoId,
   isLoading,
 }: VideoTopActionsProps) {
+  const { user } = useAuth()
+  const { handleAnalysis } = useVideoAnalysis()
+
   return (
     <div className="flex items-start justify-between gap-4 py-4">
       <section>
@@ -63,6 +68,9 @@ export function VideoTopActions({
           <Button
             className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg"
             endContent={<RefreshCcw className="w-4 h-4" />}
+            onClick={() => {
+              handleAnalysis('1', videoId || '', user?.email || '')
+            }}
           >
             Re-Analyze
           </Button>

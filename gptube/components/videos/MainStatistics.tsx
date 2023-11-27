@@ -20,9 +20,8 @@ export function MainStatistics({ results, isLoading }: MainStatisticsProps) {
         <p className="py-4 text-base">
           This recommendation is based on the most negative comments you received in your video.
           Such comments may stem from discomfort with the discussed topic, disagreement with your
-          views, or simply the presence of detractors. Take it just as a recommendation, we
-          don&apos;t have the truth maybe your channel treats controversial topics so don&apos;t
-          take it to seriously 😉.
+          views, or simply the presence of detractors. We don&apos;t have the truth maybe your
+          channel treats controversial topics so don&apos;t take it to seriously 😉.
         </p>
         <section>
           <p className="h-56 py-2 pl-3 overflow-auto text-sm whitespace-pre-line rounded-lg bg-slate-50">

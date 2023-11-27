@@ -28,7 +28,7 @@ export function useVideosAnalyzed() {
   })
 
   const totalVideos = query.data?.count ?? 0
-  const totalPages = totalVideos / pageSize
+  const totalPages = Math.ceil(totalVideos / pageSize)
 
   useEffect(() => {
     if (query.error instanceof Error) {
@@ -46,6 +46,7 @@ export function useVideosAnalyzed() {
   }
 
   return {
+    count: query.data?.count,
     videos: query.data?.results,
     handleChangePage,
     totalPages,

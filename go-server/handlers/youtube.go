@@ -263,16 +263,15 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		}
 
 		////////////////////////////////////////////////
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
+		log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
 			analysis.Results.BertResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
+		log.Printf("[YoutubeAnalysisHandler] Number of comments failed Bert: %d\n",
 			analysis.Results.BertResults.ErrorsCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
+		log.Printf("[YoutubeAnalysisHandler] Number of comments success Roberta: %d\n",
 			analysis.Results.RobertaResults.SuccessCount)
-		fmt.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
+		log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
 			analysis.Results.RobertaResults.ErrorsCount)
-		c.JSON(successResp)
-		return c.SendStatus(http.StatusOK)
+		return c.Status(http.StatusOK).JSON(successResp)
 	}
 
 	// This means we have received email hence this video is large so we do all
@@ -350,7 +349,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			analysis.Results.RobertaResults.ErrorsCount)
 	}(videoData)
 
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(fiber.Map{})
 }
 
 // @Summary		Simple analysis with BERT model for the landing page
@@ -409,9 +408,8 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 		CreatedAt: time.Now().UTC(),
 	}
 
-	fmt.Printf("[YoutubeAnalysisLandingHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
-	fmt.Printf("[YoutubeAnalysisLandingHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
-	c.JSON(successResp)
+	log.Printf("[YoutubeAnalysisLandingHandler] Number of comments success Bert: %d\n", results.BertResults.SuccessCount)
+	log.Printf("[YoutubeAnalysisLandingHandler] Number of comments failed Bert: %d\n", results.BertResults.ErrorsCount)
 
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(successResp)
 }

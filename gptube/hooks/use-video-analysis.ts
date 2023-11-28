@@ -13,7 +13,7 @@ import {
 
 import { videoQueryKeys } from './video-query-keys'
 
-export function useDashboardAnalysis() {
+export function useVideoAnalysis() {
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationFn: (data: ModelsYoutubeAnalyzerReqBody) => {
@@ -27,16 +27,18 @@ export function useDashboardAnalysis() {
         video: data,
       })
     },
-    onSuccess: data => {
-      queryClient.invalidateQueries(
-        videoQueryKeys.videosAnalyzed({
-          // TODO: implement authentication
-          userId: '1',
-          page: DEFAULT_PAGE_PAGINATION,
-          pageSize: DEFAULT_PAGE_SIZE_PAGINATION,
-        }),
-        { exact: true },
-      )
+    onSuccess: (data, dataReq) => {
+      if (!dataReq.email) {
+        queryClient.invalidateQueries(
+          videoQueryKeys.videosAnalyzed({
+            // TODO: implement authentication
+            userId: '1',
+            page: DEFAULT_PAGE_PAGINATION,
+            pageSize: DEFAULT_PAGE_SIZE_PAGINATION,
+          }),
+          { exact: true },
+        )
+      }
       queryClient.setQueryData(videoQueryKeys.videoAnalysis(data.videoId || ''), data)
     },
     onError: error => {

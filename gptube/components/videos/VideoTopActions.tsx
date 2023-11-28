@@ -2,10 +2,12 @@
 import type { ModelsYoutubeVideoAnalyzed } from '@/gptube-api'
 
 import Link from 'next/link'
-import { Youtube } from 'lucide-react'
+import { Youtube, RefreshCcw } from 'lucide-react'
 import { Skeleton } from '@nextui-org/react'
 
 import { formatDateRelative, formatDate } from '@/utils/date.utils'
+import { useVideoAnalysis } from '@/hooks/use-video-analysis'
+import { useAuth } from '@/hooks/use-auth'
 
 import { Button } from '../Common/button'
 
@@ -20,8 +22,11 @@ export function VideoTopActions({
   videoId,
   isLoading,
 }: VideoTopActionsProps) {
+  const { user } = useAuth()
+  const { handleAnalysis } = useVideoAnalysis()
+
   return (
-    <div className="flex items-center justify-between gap-4 py-4">
+    <div className="flex items-start justify-between gap-4 py-4">
       <section>
         {isLoading ? (
           <div className="space-y-1">
@@ -59,11 +64,22 @@ export function VideoTopActions({
         )}
       </section>
       {!isLoading && (
-        <Link href={`/dashboard/videos/${videoId}/negative-comments`}>
-          <Button className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg">
-            See negative comments
+        <div className="flex items-center gap-2">
+          <Button
+            className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg"
+            endContent={<RefreshCcw className="w-4 h-4" />}
+            onClick={() => {
+              handleAnalysis('1', videoId || '', user?.email || '')
+            }}
+          >
+            Re-Analyze
           </Button>
-        </Link>
+          <Link href={`/dashboard/videos/${videoId}/negative-comments`}>
+            <Button className="text-sm font-medium bg-transparent border rounded-md shadow hover:shadow-lg">
+              See negative comments
+            </Button>
+          </Link>
+        </div>
       )}
     </div>
   )

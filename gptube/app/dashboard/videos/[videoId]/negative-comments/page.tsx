@@ -26,7 +26,7 @@ function Video() {
   } = useNegativeComments(videoId, DEFAULT_PAGE_PAGINATION, DEFAULT_PAGE_SIZE_PAGINATION)
 
   return (
-    <main className="w-full h-screen max-w-screen-lg px-6 py-6 mx-auto space-y-6">
+    <>
       <NegativeCommentsTopActions
         count={commentsPage?.count}
         isErrorComments={isErrorComments}
@@ -43,7 +43,7 @@ function Video() {
         isLoading={isLoadingComments}
         results={commentsPage?.results}
       />
-    </main>
+    </>
   )
 }
 

@@ -12,7 +12,7 @@ function Video() {
   const { videoData, isLoading } = useVideoStats(videoId)
 
   return (
-    <main className="w-full h-screen max-w-screen-lg px-6 py-6 mx-auto space-y-6">
+    <>
       <VideoTopActions
         createdAt={videoData?.createdAt}
         isLoading={isLoading}
@@ -21,7 +21,7 @@ function Video() {
         videoId={videoData?.videoId}
       />
       <MainStatistics isLoading={isLoading} results={videoData?.results} />
-    </main>
+    </>
   )
 }
 

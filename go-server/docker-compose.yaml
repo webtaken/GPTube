@@ -5,13 +5,13 @@ services:
     container_name: gptube-go
     image: gptube-go:latest
     ports:
-      - "8002:8002"
+      - "8002:8001"
     env_file:
-      - .env
+      - .env.development.local
   gptube-go-ci:
     container_name: gptube-go-ci
     image: gptube-go:ci
     ports:
       - "8001:8001"
     env_file:
-      - .env
+      - .env.development.local

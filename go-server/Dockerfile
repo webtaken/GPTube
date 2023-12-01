@@ -1,4 +1,4 @@
-FROM golang:1.21.1-alpine as builder
+FROM golang:1.21.4-alpine as builder
 
 # BUILD PROCESS
 # Working directory
@@ -30,6 +30,6 @@ COPY templates/ ./templates
 # COPY gptube-firebase-sdk-prod.json ./
 
 
-EXPOSE 8000
+EXPOSE 8001
 
 ENTRYPOINT [ "/gptube_build" ]

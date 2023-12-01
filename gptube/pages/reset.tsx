@@ -1,6 +1,6 @@
-import Link from 'next/link'
+import Link from "next/link";
 
-import ResetPasswordForm from '@/components/Auth/ResetPasswordForm'
+// import ResetPasswordForm from '@/components/Auth/ResetPasswordForm'
 
 function Reset() {
   return (
@@ -8,14 +8,12 @@ function Reset() {
       <h1 className="text-4xl text-center text-typo">
         <Link className="font-bold hover:text-primary" href="/">
           GPTube
-        </Link>{' '}
+        </Link>{" "}
         reset password
       </h1>
-      <div className="flex mt-10">
-        <ResetPasswordForm />
-      </div>
+      <div className="flex mt-10">{/* <ResetPasswordForm /> */}</div>
     </div>
-  )
+  );
 }
 
-export default Reset
+export default Reset;

@@ -1,4 +1,4 @@
-import PreAnalysis from '@/components/SocialMedia/Youtube/PreAnalysis'
+// import PreAnalysis from '@/components/SocialMedia/Youtube/PreAnalysis'
 
 function YoutubePanel() {
   return (
@@ -9,9 +9,9 @@ function YoutubePanel() {
       <p className="text-sm text-center text-typo">
         Remember: A max of 1000 comments are allowed per video
       </p>
-      <PreAnalysis />
+      {/* <PreAnalysis /> */}
     </div>
-  )
+  );
 }
 
-export default YoutubePanel
+export default YoutubePanel;

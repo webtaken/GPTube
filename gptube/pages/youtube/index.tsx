@@ -1,12 +1,12 @@
-import type { YoutubeRecord } from '@/types/youtube'
+import type { YoutubeRecord } from "@/types/youtube";
 
-import { useEffect, useState } from 'react'
-import dayjs from 'dayjs'
-import { Pagination } from 'antd'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import { AiOutlineSearch, AiOutlineLink } from 'react-icons/ai'
-import { BiLinkExternal } from 'react-icons/bi'
-import { toast, Toaster } from 'react-hot-toast'
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+// import { Pagination } from 'antd'
+import relativeTime from "dayjs/plugin/relativeTime";
+import { AiOutlineSearch, AiOutlineLink } from "react-icons/ai";
+import { BiLinkExternal } from "react-icons/bi";
+import { toast, Toaster } from "react-hot-toast";
 import {
   collection,
   getCountFromServer,
@@ -15,74 +15,74 @@ import {
   orderBy,
   query,
   startAfter,
-} from 'firebase/firestore'
-import Link from 'next/link'
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+} from "firebase/firestore";
+import Link from "next/link";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
-import { firestore } from '@/lib/firebase/config-firebase'
-import { useAuth } from '@/hooks/use-auth'
+import { firestore } from "@/lib/firebase/config-firebase";
+import { useAuth } from "@/hooks/use-auth";
 
-import Tooltip from '../../components/UI/Tooltip'
+import Tooltip from "../../components/UI/Tooltip";
 
-dayjs.extend(relativeTime)
+dayjs.extend(relativeTime);
 
 function YoutubePanel() {
-  const { user } = useAuth()
-  const [page, setPage] = useState(1)
-  const [totalRecords, setTotalRecords] = useState(0)
-  const [searchVal, setSearchVal] = useState('')
-  const [records, setRecords] = useState<YoutubeRecord[]>([])
-  const [loadedRecords, setLoadedRecords] = useState(false)
+  const { user } = useAuth();
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [searchVal, setSearchVal] = useState("");
+  const [records, setRecords] = useState<YoutubeRecord[]>([]);
+  const [loadedRecords, setLoadedRecords] = useState(false);
 
-  const pageSize = 10
-  const totalPages = Math.ceil(totalRecords / pageSize)
+  const pageSize = 10;
+  const totalPages = Math.ceil(totalRecords / pageSize);
 
   const getYoutubeRecords = async (newPage: number) => {
-    setPage(newPage)
-    setLoadedRecords(false)
+    setPage(newPage);
+    setLoadedRecords(false);
     try {
-      if (!user) throw new Error('no user email')
-      const userEmail = user.email || ''
-      const userYoutubeColl = collection(firestore, 'users', userEmail, 'youtube')
+      if (!user) throw new Error("no user email");
+      const userEmail = user.email || "";
+      const userYoutubeColl = collection(firestore, "users", userEmail, "youtube");
 
       /* Counting the total number of records */
-      const countRecords = (await getCountFromServer(userYoutubeColl)).data().count
+      const countRecords = (await getCountFromServer(userYoutubeColl)).data().count;
 
-      setTotalRecords(countRecords)
+      setTotalRecords(countRecords);
       /* ------------------------------------ */
 
       if (countRecords === 0) {
         // No records
-        setLoadedRecords(true)
+        setLoadedRecords(true);
 
-        return
+        return;
       }
 
-      const order = orderBy('last_update', 'desc')
-      let q = query(userYoutubeColl, order, limit(pageSize))
+      const order = orderBy("last_update", "desc");
+      let q = query(userYoutubeColl, order, limit(pageSize));
 
       // If it's not the first page, use startAfter to specify the document to start after
       if (newPage > 1) {
         const previousPageSnapshot = await getDocs(
           query(userYoutubeColl, order, limit(pageSize * (newPage - 1))),
-        )
-        const lastDoc = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1]
+        );
+        const lastDoc = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
 
-        q = query(userYoutubeColl, order, startAfter(lastDoc), limit(pageSize))
+        q = query(userYoutubeColl, order, startAfter(lastDoc), limit(pageSize));
       }
 
-      const snapshot = await getDocs(q)
+      const snapshot = await getDocs(q);
 
       // Check if the page exists
       if (snapshot.docs.length === 0) {
-        toast.error(`Page ${newPage} does not exist.`)
-        setLoadedRecords(true)
+        toast.error(`Page ${newPage} does not exist.`);
+        setLoadedRecords(true);
 
-        return
+        return;
       }
 
-      const tmpYoutubeRecords: YoutubeRecord[] = snapshot.docs.map(doc => {
-        const docData = doc.data()
+      const tmpYoutubeRecords: YoutubeRecord[] = snapshot.docs.map((doc) => {
+        const docData = doc.data();
 
         return {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -93,21 +93,21 @@ function YoutubePanel() {
           created_at: new Date(docData.created_at.seconds * 1000),
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           last_update: new Date(docData.last_update.seconds * 1000),
-        }
-      })
+        };
+      });
 
-      setRecords([...tmpYoutubeRecords])
-      setLoadedRecords(true)
+      setRecords([...tmpYoutubeRecords]);
+      setLoadedRecords(true);
     } catch (error) {
-      toast.error(String(error))
-      setLoadedRecords(true)
+      toast.error(String(error));
+      setLoadedRecords(true);
     }
-  }
+  };
 
   useEffect(() => {
-    getYoutubeRecords(1)
+    getYoutubeRecords(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   let recordsGrid = (
     <div className="p-4 my-4 border rounded-md bg-black-full border-white-full">
@@ -121,7 +121,7 @@ function YoutubePanel() {
         Analyze new video
       </Link>
     </div>
-  )
+  );
 
   if (loadedRecords && totalRecords > 0) {
     recordsGrid = (
@@ -129,9 +129,9 @@ function YoutubePanel() {
         <div className="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {records
             .filter(
-              record => searchVal === '' || record.video_title.toLowerCase().includes(searchVal),
+              (record) => searchVal === "" || record.video_title.toLowerCase().includes(searchVal),
             )
-            .map(record => {
+            .map((record) => {
               return (
                 <div
                   key={record.video_id}
@@ -150,7 +150,7 @@ function YoutubePanel() {
                     </a>
                   </div>
                   <div className="flex items-center justify-between">
-                    <Tooltip title={`${dayjs(record.last_update).format('DD MMM, YYYY')}`}>
+                    <Tooltip title={`${dayjs(record.last_update).format("DD MMM, YYYY")}`}>
                       <span className="text-sm text-white-low">
                         {dayjs(record.last_update).fromNow()}
                       </span>
@@ -163,16 +163,16 @@ function YoutubePanel() {
                     </Link>
                   </div>
                 </div>
-              )
+              );
             })}
         </div>
         <div className="grid my-2">
-          <Pagination
+          {/* <Pagination
             className="mx-auto custom-pagination"
             defaultCurrent={page}
             // eslint-disable-next-line react/no-unstable-nested-components
             itemRender={(current, type) => {
-              if (type === 'jump-next') {
+              if (type === "jump-next") {
                 return (
                   <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronRight
@@ -180,9 +180,9 @@ function YoutubePanel() {
                       className="w-5 h-5 text-white-low hover:text-primary"
                     />
                   </button>
-                )
+                );
               }
-              if (type === 'jump-prev') {
+              if (type === "jump-prev") {
                 return (
                   <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronLeft
@@ -190,21 +190,21 @@ function YoutubePanel() {
                       className="w-5 h-5 text-white-low hover:text-primary"
                     />
                   </button>
-                )
+                );
               }
-              if (type === 'prev') {
+              if (type === "prev") {
                 return (
                   <button className="px-2 py-2 bg-none rounded-r-md text-white-full" type="button">
                     <BsChevronLeft
                       aria-hidden="true"
                       className={`h-5 w-5 text-white-low ${
-                        page !== 1 ? 'hover:stroke-2' : 'cursor-not-allowed'
+                        page !== 1 ? "hover:stroke-2" : "cursor-not-allowed"
                       }`}
                     />
                   </button>
-                )
+                );
               }
-              if (type === 'next') {
+              if (type === "next") {
                 return (
                   <button
                     className="px-2 py-2 bg-black-full rounded-r-md text-white-full"
@@ -213,11 +213,11 @@ function YoutubePanel() {
                     <BsChevronRight
                       aria-hidden="true"
                       className={`h-5 w-5 text-white-low ${
-                        page !== totalPages ? 'hover:stroke-2' : 'cursor-not-allowed'
+                        page !== totalPages ? "hover:stroke-2" : "cursor-not-allowed"
                       }`}
                     />
                   </button>
-                )
+                );
               }
 
               return (
@@ -227,15 +227,15 @@ function YoutubePanel() {
                 >
                   {current}
                 </button>
-              )
+              );
             }}
             pageSize={pageSize}
             total={totalRecords}
             onChange={(currentPage, _) => getYoutubeRecords(currentPage)}
-          />
+          /> */}
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -251,10 +251,10 @@ function YoutubePanel() {
               id="search"
               placeholder="Search..."
               type="text"
-              onChange={e => {
-                const value = e.target.value.trim().toLowerCase()
+              onChange={(e) => {
+                const value = e.target.value.trim().toLowerCase();
 
-                setSearchVal(value)
+                setSearchVal(value);
               }}
             />
             <Link className="w-32 py-2 rounded-sm primary-button" href="/youtube/labs">
@@ -269,7 +269,7 @@ function YoutubePanel() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default YoutubePanel
+export default YoutubePanel;

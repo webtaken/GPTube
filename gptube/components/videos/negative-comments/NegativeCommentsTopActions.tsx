@@ -12,6 +12,8 @@ import {
   Input,
 } from '@nextui-org/react'
 
+import { DEFAULT_PAGE_PAGINATION } from '@/constants/general.constants'
+
 interface NegativeCommentsTopActionsProps extends ModelsYoutubeVideoNegativeCommentsRespBody {
   isLoading: boolean
   page: number
@@ -96,6 +98,7 @@ export function NegativeCommentsTopActions({
             isCompact
             showControls
             color="success"
+            defaultValue={DEFAULT_PAGE_PAGINATION}
             isDisabled={isFetching || isErrorComments}
             total={totalPages}
             onChange={pageChangeHandler}

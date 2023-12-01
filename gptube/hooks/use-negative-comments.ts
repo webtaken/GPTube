@@ -33,6 +33,10 @@ export function useNegativeComments(videoId: string, initPage: number, initPageS
     }
   }, [query.error, query.isError])
 
+  useEffect(() => {
+    setPage(1)
+  }, [pageSize])
+
   const pageChangeHandler = (currentPage: number) => {
     setPage(+currentPage)
     // if (!query.data?.next) return
@@ -43,7 +47,6 @@ export function useNegativeComments(videoId: string, initPage: number, initPageS
   }
 
   const pageSizeChangeHandler = (newPageSize: number) => {
-    setPage(1) // restart the initial page
     setPageSize(newPageSize)
   }
 

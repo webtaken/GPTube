@@ -5,16 +5,16 @@ import { collection, doc, getDoc } from 'firebase/firestore'
 import { AiFillYoutube } from 'react-icons/ai'
 import { useEffect, useState } from 'react'
 import { toast, Toaster } from 'react-hot-toast'
-import { Layout } from 'antd'
+// import { Layout } from 'antd'
 
-import BertResultsBanner from '@/components/SocialMedia/Youtube/BertResultsBanner'
-import RobertaResultsBanner from '@/components/SocialMedia/Youtube/RobertaResultsBanner'
-import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
+// import BertResultsBanner from '@/components/SocialMedia/Youtube/BertResultsBanner'
+// import RobertaResultsBanner from '@/components/SocialMedia/Youtube/RobertaResultsBanner'
+// import NegativeComments from '@/components/SocialMedia/Youtube/NegativeComments'
 import { paramValToString } from '@/utils'
 import { firestore } from '@/lib/firebase/config-firebase'
 import { useAuth } from '@/hooks/use-auth'
 
-const { Content } = Layout
+// const { Content } = Layout
 
 function YoutubeResults() {
   const { user } = useAuth()
@@ -69,7 +69,7 @@ function YoutubeResults() {
 
   return (
     <>
-      <Toaster />
+      {/* <Toaster />
       {analysis ? (
         <>
           <Content
@@ -128,7 +128,7 @@ function YoutubeResults() {
             We couldn&apos;t find your result 🙀 (404)!.
           </p>
         </Content>
-      )}
+      )} */}
     </>
   )
 }

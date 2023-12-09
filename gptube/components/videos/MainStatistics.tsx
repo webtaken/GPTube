@@ -4,15 +4,7 @@ import type { ModelsYoutubeVideoAnalyzed } from '@/gptube-api'
 import BertStats from './BertStats'
 import RobertaStats from './RobertaStats'
 
-interface MainStatisticsProps extends ModelsYoutubeVideoAnalyzed {
-  isLoading: boolean
-}
-
-export function MainStatistics({ results, isLoading }: MainStatisticsProps) {
-  if (isLoading) {
-    return <p className="font-semibold">Loading stats...</p>
-  }
-
+export function MainStatistics({ results }: ModelsYoutubeVideoAnalyzed) {
   return (
     <>
       <section className="w-full px-8 py-4 my-4 border rounded shadow-sm">

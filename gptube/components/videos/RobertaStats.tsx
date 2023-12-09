@@ -18,7 +18,7 @@ export default function RobertaStats({ results }: ModelsYoutubeVideoAnalyzed) {
       percentageFormatted: Math.round(100 * (results?.robertaResults?.negative || 0)),
       percentage: results?.robertaResults?.negative || 0,
       status: ModelScores.NEGATIVE,
-      color: '#f5a524',
+      color: '#f31260',
       name: 'negative 😠',
     },
     {

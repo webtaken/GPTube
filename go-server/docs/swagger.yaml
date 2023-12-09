@@ -653,12 +653,6 @@ definitions:
           $ref: '#/definitions/models.YoutubeVideoDashboard'
         type: array
     type: object
-  utils.HandleError.errorResponse:
-    properties:
-      error:
-        example: an error ocurred
-        type: string
-    type: object
   youtube.Comment:
     properties:
       etag:
@@ -949,18 +943,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.YoutubeAnalyzerRespBody'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
       summary: Performs the analysis of the youtube video
   /api/youtube/analysis-landing:
     post:
@@ -980,18 +974,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.YoutubeAnalyzerLandingRespBody'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/utils.HandleError.errorResponse'
+            $ref: '#/definitions/fiber.Error'
       summary: Simple analysis with BERT model for the landing page
   /api/youtube/pre-analysis:
     post:

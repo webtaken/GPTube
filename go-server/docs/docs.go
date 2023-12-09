@@ -65,22 +65,22 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.YoutubeAnalyzerRespBody"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -111,22 +111,22 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.YoutubeAnalyzerLandingRespBody"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/utils.HandleError.errorResponse"
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -1612,15 +1612,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.YoutubeVideoDashboard"
                     }
-                }
-            }
-        },
-        "utils.HandleError.errorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "an error ocurred"
                 }
             }
         },

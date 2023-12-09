@@ -7,8 +7,13 @@ import { Providers } from './providers'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
-  title: 'GPTube',
-  description: 'Welcome to a AI powered YouTube video analysis tool',
+  title: {
+    template: '%s | GPTube',
+    default: 'GPTube',
+  },
+  description:
+    'The official platform of GPTube, the most powerful sentiment analysis tool for youtube.',
+  metadataBase: new URL('https://www.gptube.ink/'),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

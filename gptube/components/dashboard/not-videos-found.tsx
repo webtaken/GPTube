@@ -1,9 +1,9 @@
 import { ButtonNewAnalysis } from './button-new-analysis'
 
-export function NotVideoFound() {
+export function NotVideoFound({ label }: { label: string }) {
   return (
     <div className="flex flex-col items-center gap-4">
-      <span className="text-lg font-medium">No videos found</span>
+      <span className="text-lg font-medium">{label}</span>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt="No videos yet"

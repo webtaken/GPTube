@@ -39,7 +39,7 @@ export default function Dashboard() {
             <CardBody className="space-y-6">
               {isLoadingVideos || isFetching ? (
                 <div className="flex justify-center">
-                  <Spinner color="default" label="Loading videos..." />
+                  <Spinner color="current" label="Loading videos" />
                 </div>
               ) : (
                 <div className="px-4">
@@ -47,7 +47,9 @@ export default function Dashboard() {
                     Total videos analyzed are <span className="font-bold">{count || 0}</span>
                   </p>
                   <div className="space-y-2">
-                    {!videos || videos.length === 0 ? <NotVideoFound /> : null}
+                    {!videos || videos.length === 0 ? (
+                      <NotVideoFound label="No videos found yet" />
+                    ) : null}
                     <section className="space-y-4">
                       {videos?.map(video => <CardVideo key={video.videoId} {...video} />)}
                     </section>

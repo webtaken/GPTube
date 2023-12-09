@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"errors"
 	"fmt"
 	"gptube/config"
 	"gptube/database"
 	"gptube/models"
 	"gptube/services"
-	"gptube/utils"
 	"log"
 	"math"
 	"net/http"
@@ -186,36 +184,33 @@ func YoutubePreAnalysisHandler(c *fiber.Ctx) error {
 // @Produce		json
 // @Param			video	body		models.YoutubeAnalyzerReqBody	true	"Youtube video analysis request body"
 // @Success		200		{object}	models.YoutubeAnalyzerRespBody
-// @Failure		204		{object}	utils.HandleError.errorResponse
-// @Failure		400		{object}	utils.HandleError.errorResponse
-// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	fiber.Error
+// @Failure		404		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
 // @Router			/api/youtube/analysis [post]
 func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "problem while parsing your request")
 	}
 
 	if body.VideoId == "" {
-		err := fmt.Errorf("you must provide the youtube video id")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "you must provide the youtube video id")
 	}
 
 	if body.UserId == "" {
-		err := fmt.Errorf("you must provide your user id")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "you must provide your user id")
 	}
 
 	videoData, err := services.GetVideoData(body.VideoId)
 	if err != nil {
 		if err.Error() == "video not found" {
-			err = fmt.Errorf("video analysis failed 😿, video not found please provide a valid video id")
-			return utils.HandleError(err, http.StatusBadRequest, c)
+			return fiber.NewError(http.StatusBadRequest, "video analysis failed 😿, video not found please provide a valid video id")
 		}
 		err = fmt.Errorf("video analysis for %q failed 😿, try again later or contact us",
 			videoData.Items[0].Snippet.Title)
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 
 	// This means we haven´t received email hence is a short video so we do
@@ -228,12 +223,10 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 		if err != nil {
 			err = fmt.Errorf("video analysis for %q failed 😿, try again later or contact us",
 				videoData.Items[0].Snippet.Title)
-			return utils.HandleError(err, http.StatusInternalServerError, c)
+			return fiber.NewError(http.StatusInternalServerError, err.Error())
 		}
 
 		if analysis.Results.BertResults.SuccessCount == 0 && analysis.Results.RobertaResults.SuccessCount == 0 {
-			err = fmt.Errorf("video analysis for %q failed 😿, couldn't analyze any comment",
-				videoData.Items[0].Snippet.Title)
 			log.Printf("[YoutubeAnalysisHandler] Couldn't analyze any comment for a model\n")
 			log.Printf("[YoutubeAnalysisHandler] Number of comments success Bert: %d\n",
 				analysis.Results.BertResults.SuccessCount)
@@ -243,7 +236,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 				analysis.Results.RobertaResults.SuccessCount)
 			log.Printf("[YoutubeAnalysisHandler] Number of comments failed Roberta: %d\n",
 				analysis.Results.RobertaResults.ErrorsCount)
-			return utils.HandleError(err, http.StatusNoContent, c)
+			return fiber.NewError(http.StatusNotFound, "We didn't found any negative comment.")
 		}
 
 		// sending the results to the user
@@ -258,8 +251,7 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 			// Sending the e-mail error to the user
 			log.Printf("[YoutubeAnalysisHandler] Error saving data to firebase: %v\n",
 				err.Error())
-			return utils.HandleError(errors.New("error while saving analysis results"),
-				http.StatusInternalServerError, c)
+			return fiber.NewError(http.StatusInternalServerError, "error while doing the analysis")
 		}
 
 		////////////////////////////////////////////////
@@ -357,32 +349,29 @@ func YoutubeAnalysisHandler(c *fiber.Ctx) error {
 // @Produce		json
 // @Param			video	body		models.YoutubeAnalyzerLandingReqBody	true	"Youtube video id"
 // @Success		200		{object}	models.YoutubeAnalyzerLandingRespBody
-// @Failure		204		{object}	utils.HandleError.errorResponse
-// @Failure		400		{object}	utils.HandleError.errorResponse
-// @Failure		500		{object}	utils.HandleError.errorResponse
+// @Failure		400		{object}	fiber.Error
+// @Failure		404		{object}	fiber.Error
+// @Failure		500		{object}	fiber.Error
 // @Router			/api/youtube/analysis-landing [post]
 func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	var body models.YoutubeAnalyzerLandingReqBody
 
 	if err := c.BodyParser(&body); err != nil {
-		err := fmt.Errorf("video analysis failed 😿, incorrect body encoding")
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, "video analysis failed 😿, incorrect body encoding")
 	}
 
 	if body.VideoID == "" {
-		err := fmt.Errorf("video analysis failed 😿, please provide a video id")
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, "video analysis failed 😿, please provide a video id")
 	}
 
 	videoData, err := services.GetVideoData(body.VideoID)
 	if err != nil {
 		if err.Error() == "video not found" {
-			err = fmt.Errorf("video analysis failed 😿, video not found please provide a valid video id")
-			return utils.HandleError(err, http.StatusBadRequest, c)
+			return fiber.NewError(http.StatusBadRequest, "video analysis failed 😿, video not found please provide a valid video id")
 		}
 		err = fmt.Errorf("video analysis for %q failed 😿, try again later or contact us",
 			videoData.Items[0].Snippet.Title)
-		return utils.HandleError(err, http.StatusBadRequest, c)
+		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 
 	// This means we haven´t received email hence is a short video so we do
@@ -391,13 +380,13 @@ func YoutubeAnalysisLandingHandler(c *fiber.Ctx) error {
 	if err != nil {
 		err = fmt.Errorf("video analysis for %q failed 😿, try again later or contact us",
 			videoData.Items[0].Snippet.Title)
-		return utils.HandleError(err, http.StatusInternalServerError, c)
+		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 
 	if results.BertResults.SuccessCount == 0 {
-		noContentError := fmt.Errorf("video analysis for %q failed 😿, we couldn't analyze any comment",
+		noContentError := fmt.Errorf("we didn't found any negative comment for video: %q",
 			videoData.Items[0].Snippet.Title)
-		return utils.HandleError(noContentError, http.StatusNoContent, c)
+		return fiber.NewError(http.StatusNotFound, noContentError.Error())
 	}
 
 	// sending the results to the user

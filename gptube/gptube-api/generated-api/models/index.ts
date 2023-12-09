@@ -46,7 +46,6 @@ export * from './ModelsYoutubeVideoAnalyzed';
 export * from './ModelsYoutubeVideoDashboard';
 export * from './ModelsYoutubeVideoNegativeCommentsRespBody';
 export * from './ModelsYoutubeVideosRespBody';
-export * from './UtilsHandleErrorErrorResponse';
 export * from './YoutubeComment';
 export * from './YoutubeCommentSnippet';
 export * from './YoutubeCommentSnippetAuthorChannelId';

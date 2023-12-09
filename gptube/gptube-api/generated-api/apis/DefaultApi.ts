@@ -31,7 +31,6 @@ import type {
   ModelsYoutubeVideoAnalyzed,
   ModelsYoutubeVideoNegativeCommentsRespBody,
   ModelsYoutubeVideosRespBody,
-  UtilsHandleErrorErrorResponse,
 } from '../models/index';
 import {
     FiberErrorFromJSON,
@@ -66,8 +65,6 @@ import {
     ModelsYoutubeVideoNegativeCommentsRespBodyToJSON,
     ModelsYoutubeVideosRespBodyFromJSON,
     ModelsYoutubeVideosRespBodyToJSON,
-    UtilsHandleErrorErrorResponseFromJSON,
-    UtilsHandleErrorErrorResponseToJSON,
 } from '../models/index';
 
 export interface ApiYoutubeAnalysisLandingPostRequest {

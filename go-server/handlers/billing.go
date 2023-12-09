@@ -8,7 +8,6 @@ import (
 	"gptube/database"
 	"gptube/models"
 	"gptube/services"
-	"gptube/utils"
 	"log"
 	"math"
 	"net/http"
@@ -351,7 +350,7 @@ func BillingSubscriptionsWebhooks(c *fiber.Ctx) error {
 
 		prettyJSON, err := json.MarshalIndent(webhookBody, "", "  ")
 		if err != nil {
-			return utils.HandleError(err, http.StatusInternalServerError, c)
+			return fiber.NewError(http.StatusInternalServerError, err.Error())
 		}
 
 		eventHandlers := make(map[string]func(

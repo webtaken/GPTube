@@ -1,7 +1,5 @@
 'use client'
 
-import { useParams } from 'next/navigation'
-
 import {
   DEFAULT_PAGE_PAGINATION,
   DEFAULT_PAGE_SIZE_PAGINATION,
@@ -11,8 +9,8 @@ import { NegativeCommentsTopActions } from '@/components/videos/negative-comment
 import { NegativeComments } from '@/components/videos/negative-comments/NegativeComments'
 
 // TODO: Set this page as protected route for new users
-function Video() {
-  const { videoId } = useParams<{ videoId: string }>()!
+function NegativeCommentsPage({ params }: { params: { videoId: string } }) {
+  const { videoId } = params
   const {
     commentsPage,
     isLoading: isLoadingComments,
@@ -47,4 +45,4 @@ function Video() {
   )
 }
 
-export default Video
+export default NegativeCommentsPage

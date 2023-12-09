@@ -1,14 +1,12 @@
 'use client'
 
-import { useParams } from 'next/navigation'
-
 import { useVideoStats } from '@/hooks/use-video-stats'
 import { VideoTopActions } from '@/components/videos/VideoTopActions'
 import { MainStatistics } from '@/components/videos/MainStatistics'
 
 // TODO: Set this page as protected route for new users
-function Video() {
-  const { videoId } = useParams<{ videoId: string }>()!
+function VideoPage({ params }: { params: { videoId: string } }) {
+  const { videoId } = params
   const { videoData, isLoading } = useVideoStats(videoId)
 
   return (
@@ -25,4 +23,4 @@ function Video() {
   )
 }
 
-export default Video
+export default VideoPage

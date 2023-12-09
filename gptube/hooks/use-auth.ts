@@ -32,8 +32,8 @@ export function useAuthActions() {
 
     try {
       await loginWithCredentials(data)
-      toast.success('Logged successfully 😸')
-      router.push('/')
+      toast.success('Logged in successfully 😸')
+      router.push('/dashboard')
     } catch (error) {
       if (error instanceof Error) {
         return toast.error(error.message)
@@ -46,8 +46,8 @@ export function useAuthActions() {
   const loginWithGoogleHandler = async () => {
     try {
       await loginWithGoogle()
-      toast.success('Logged successfully 😸')
-      router.push('/')
+      toast.success('Logged in successfully 😸')
+      router.push('/dashboard')
     } catch (error) {
       if (error instanceof Error) {
         return toast.error(error.message)
@@ -95,7 +95,7 @@ export function useAuthActions() {
     try {
       await signup(data)
       toast.success('Signed up successfully 😸')
-      router.push('/')
+      router.push('/dashboard')
     } catch (error) {
       if (error instanceof Error) {
         return toast.error(error.message)

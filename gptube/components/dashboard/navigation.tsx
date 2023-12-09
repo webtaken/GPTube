@@ -1,3 +1,4 @@
+'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Breadcrumbs, BreadcrumbItem } from '@nextui-org/react'
